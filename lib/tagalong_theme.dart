@@ -10,6 +10,13 @@ class TagAlongTheme {
       fontWeight: FontWeight.w700,
       color: Colors.black,
     ),
+    // Added italics - may need to change
+    bodyText2: GoogleFonts.openSans(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.italic,
+      color: Colors.black,
+    ),
     headline1: GoogleFonts.openSans(
       fontSize: 32.0,
       fontWeight: FontWeight.bold,

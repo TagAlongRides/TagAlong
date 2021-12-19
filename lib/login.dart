@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 // A Class for Facebook Login
 class Login extends StatelessWidget {
@@ -28,7 +30,7 @@ class Login extends StatelessWidget {
                         padding: EdgeInsets.all(16.0),
                         child: Text(
                           "Get a ride home for the holidays",
-                          style: Theme.of(context).textTheme.bodyText2
+                          style: Theme.of(context).textTheme.bodyText2,
                       )
                     )
                   ]
@@ -36,8 +38,25 @@ class Login extends StatelessWidget {
               )
             ),
             Expanded(
-              child: Container(
-
+              child: Center(
+                child: Container (
+                  height: 50,
+                  // Facebook Logo and Text
+                  child: SignInButton(
+                    Buttons.FacebookNew,
+                    onPressed: () async {
+                      final LoginResult result = await FacebookAuth.instance.login(); // by default we request the email and the public profile
+                      if (result.status == LoginStatus.success) {
+                        // you are logged
+                        print('Logged in!');
+                        final AccessToken accessToken = result.accessToken!;
+                      } else {
+                        print(result.status);
+                        print(result.message);
+                      }
+                    }
+                  )
+                )
               )
             )
           ]
@@ -46,18 +65,4 @@ class Login extends StatelessWidget {
     );
   }
 }
-// Center(
-// child: Column(
-// mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-// children: [
-// // Top half for image, "Tag Along", and Description
-// Container(
-// color: Colors.red,
-// ),
-// // Bottom-half for Facebook Login button
-// Container(
-// color: Colors.blue,
-// )
-// ]
-// )
-// )
+
