@@ -16,12 +16,24 @@ class Login extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Logo, "Tag Along", description
-                    Icon(Icons.directions_car_outlined),
-                    Text("Tag Along"),
-                    Text("Get a ride home for the holidays")
+                    Icon(
+                        Icons.directions_car_outlined,
+                        size: 75
+                    ),
+                    Text(
+                        "Tag Along",
+                        style: Theme.of(context).textTheme.headline1
+                    ),
+                    Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          "Get a ride home for the holidays",
+                          style: Theme.of(context).textTheme.bodyText2
+                      )
+                    )
                   ]
-                  )
                 )
+              )
             ),
             Expanded(
               child: Container(
