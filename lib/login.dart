@@ -8,60 +8,62 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center (
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo, "Tag Along", description
-                    Icon(
-                        Icons.directions_car_outlined,
-                        size: 75
-                    ),
-                    Text(
-                        "Tag Along",
-                        style: Theme.of(context).textTheme.headline1
-                    ),
-                    Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          "Get a ride home for the holidays",
-                          style: Theme.of(context).textTheme.bodyText2,
+    return SafeArea(
+      child: Scaffold(
+        body: Center (
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Logo, "Tag Along", description
+                      Icon(
+                          Icons.directions_car_outlined,
+                          size: 75
+                      ),
+                      Text(
+                          "Tag Along",
+                          style: Theme.of(context).textTheme.headline1
+                      ),
+                      Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            "Get a ride home for the holidays",
+                            style: Theme.of(context).textTheme.bodyText2,
+                        )
                       )
-                    )
-                  ]
+                    ]
+                  )
                 )
-              )
-            ),
-            Expanded(
-              child: Center(
-                child: Container (
-                  height: 50,
-                  // Facebook Logo and Text
-                  child: SignInButton(
-                    Buttons.FacebookNew,
-                    onPressed: () async {
-                      final LoginResult result = await FacebookAuth.instance.login(); // by default we request the email and the public profile
-                      if (result.status == LoginStatus.success) {
-                        // you are logged
-                        print('Logged in!');
-                        final AccessToken accessToken = result.accessToken!;
-                      } else {
-                        print(result.status);
-                        print(result.message);
+              ),
+              Expanded(
+                child: Center(
+                  child: Container (
+                    height: 50,
+                    // Facebook Logo and Text
+                    child: SignInButton(
+                      Buttons.FacebookNew,
+                      onPressed: () async {
+                        final LoginResult result = await FacebookAuth.instance.login(); // by default we request the email and the public profile
+                        if (result.status == LoginStatus.success) {
+                          // you are logged
+                          print('Logged in!');
+                          final AccessToken accessToken = result.accessToken!;
+                        } else {
+                          print(result.status);
+                          print(result.message);
+                        }
                       }
-                    }
+                    )
                   )
                 )
               )
-            )
-          ]
+            ]
+          )
         )
-      )
+      ),
     );
   }
 }
