@@ -10,7 +10,6 @@ TagAlong Project
 
 2. Facebook Account
 
-
 3. Key Information
 - Steven's Keystore password: "android"
 - AndroidKeystore key: "KKbO2Rcb+f+fSvX6GYs2PdTahwk="
