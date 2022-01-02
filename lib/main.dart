@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tagalong_theme.dart';
+import 'themes/tagalong_theme.dart';
 import 'login.dart';
 
 void main() {
@@ -12,7 +12,7 @@ class TagAlongApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // TODO: Need to update theme..
+    // TODO 12/29: Need to update theme..
     final theme = TagAlongTheme.light();
 
     return MaterialApp(

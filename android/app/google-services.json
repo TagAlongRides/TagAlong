@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "296547975151",
+    "project_id": "tagalong-1c5fb",
+    "storage_bucket": "tagalong-1c5fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296547975151:android:c529471aa0e06cf42d401a",
+        "android_client_info": {
+          "package_name": "com.tagalong.tagalong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296547975151-uj810065vabdsu214ji03b4ou94laosv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuBs95k43rf9yk_iI4cNv1CamipEBr3is"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296547975151-uj810065vabdsu214ji03b4ou94laosv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
