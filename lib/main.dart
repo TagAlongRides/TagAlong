@@ -16,7 +16,7 @@ class TagAlongApp extends StatelessWidget {
     final theme = TagAlongTheme.light();
 
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: theme,
       title: 'TagAlong App',
       home: const Login()
