@@ -6,9 +6,14 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 // A Class for Facebook Login
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -49,20 +54,7 @@ class Login extends StatelessWidget {
                     child: SignInButton(
                       Buttons.FacebookNew,
                       onPressed: () async {
-                        final LoginResult result = await FacebookAuth.instance.login(
-                            loginBehavior: LoginBehavior.nativeOnly); // by default we request the email and the public profile
-                        if (result.status == LoginStatus.success) {
-                          // you are logged
-                          print('Logged in!');
-                          print('User data:');
-                          final userData = await FacebookAuth.instance.getUserData();
-                          print(prettyPrint(userData));
-                          final AccessToken accessToken = result.accessToken!;
-                        } else {
-                          print(result.status);
-                          print(result.message);
-
-                        }
+                        print('DEBUG: Go to `RegisterUser` screen!');
                       }
                     )
                   )
@@ -108,6 +100,5 @@ class Login extends StatelessWidget {
       print(result.message);
     }
   }
-
 }
 

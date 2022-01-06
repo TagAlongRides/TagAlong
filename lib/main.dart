@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'themes/tagalong_theme.dart';
-import 'login.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   // Initialize Firebase
@@ -24,7 +24,7 @@ class TagAlongApp extends StatelessWidget {
       debugShowCheckedModeBanner: true,
       theme: theme,
       title: 'TagAlong App',
-      home: const Login()
+      home: const LoginScreen()
       );
   }
 }
