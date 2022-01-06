@@ -1,8 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'themes/tagalong_theme.dart';
 import 'login.dart';
 
-void main() {
+void main() async {
+  // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Run the TagAlong Application
   runApp(const TagAlongApp());
 }
 
@@ -14,7 +20,6 @@ class TagAlongApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO 12/29: Need to update theme..
     final theme = TagAlongTheme.light();
-
     return MaterialApp(
       debugShowCheckedModeBanner: true,
       theme: theme,

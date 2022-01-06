@@ -71,6 +71,7 @@ class TagAlongTheme {
   // 3
   static ThemeData light() {
     return ThemeData(
+      primaryColor: Colors.white,
       brightness: Brightness.light,
       checkboxTheme: CheckboxThemeData(
         fillColor: MaterialStateColor.resolveWith(
@@ -79,10 +80,10 @@ class TagAlongTheme {
           },
         ),
       ),
-      appBarTheme: const AppBarTheme(
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-      ),
+      // appBarTheme: const AppBarTheme(
+      //   foregroundColor: Colors.black,
+      //   backgroundColor: Colors.white,
+      // ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,

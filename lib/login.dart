@@ -27,7 +27,7 @@ class Login extends StatelessWidget {
                           size: 75
                       ),
                       Text(
-                          "Tag Along",
+                          "TagAlong",
                           style: Theme.of(context).textTheme.headline1
                       ),
                       Padding(
