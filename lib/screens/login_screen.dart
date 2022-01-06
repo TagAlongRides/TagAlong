@@ -53,8 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Facebook Logo and Text
                     child: SignInButton(
                       Buttons.FacebookNew,
-                      onPressed: () async {
+                      onPressed: () {
                         print('DEBUG: Go to `RegisterUser` screen!');
+                        Navigator.pushNamed(context, '/register_user');
                       }
                     )
                   )
