@@ -8,7 +8,7 @@ and login functionality with Facebook provider.
 class AuthService {
   // Our private instance of the Firebase Authentication SDK
   final _auth = FirebaseAuth.instance;
-  //
+  // Our private instance of the Facebook Authentication SDK
   final _fb = FacebookAuth.instance;
 
   // 1. Monitor Authentication state of our user (logged in, logged out, etc.)
@@ -19,17 +19,18 @@ class AuthService {
   // asynchronously sign in to Firebase with 3rd-party tokens.
   // If successful, signs user in, notifies via `authStateChanges` and will
   // create a Firebase account if one does not exist.
-  // Future<UserCredential> sign_in_with_credential(AuthCredential credential) {
-  //   return _auth.signInWithCredential(credential);
-  // }
-
   Future<UserCredential?> facebook_login() async {
-    final LoginResult result = await _fb.login();   // pop-up window to Facebook
+    // Attempt log in to Facebook (native window pop up) - asynchronous
+    final LoginResult result = await _fb.login();
+
+    // Log-in was sucessful
     if (result.status == LoginStatus.success) {
       final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(result.accessToken!.token);
+      print('DEBUG: Logging in to Facebook!');
       return _auth.signInWithCredential(facebookAuthCredential);
     }
+    // Log-in failed
     else {
       print('ERROR: Log in failed!');
     }

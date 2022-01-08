@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/landing_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'themes/tagalong_theme.dart';
 import 'screens/login_screen.dart';
@@ -15,8 +17,14 @@ void main() async {
   runApp(const TagAlongApp());
 }
 
-class TagAlongApp extends StatelessWidget {
+class TagAlongApp extends StatefulWidget {
   const TagAlongApp({Key? key}) : super(key: key);
+
+  @override
+  State<TagAlongApp> createState() => _TagAlongAppState();
+}
+
+class _TagAlongAppState extends State<TagAlongApp> {
 
   // This widget is the root of your application.
   @override
@@ -30,13 +38,16 @@ class TagAlongApp extends StatelessWidget {
         debugShowCheckedModeBanner: true,
         theme: theme,
         title: 'TagAlong App',
-        home: const LoginScreen(),
+        // home: LoginScreen(),
+        home: LandingScreen(),
         routes: <String, WidgetBuilder> {
-          '/register_user': (BuildContext context) => RegisterUserScreen()
+          '/register_user': (BuildContext context) => RegisterUserScreen(),
+          '/ride_board': (BuildContext context) => RideBoardScreen()
         }
         ),
     );
   }
+
 }
 
 

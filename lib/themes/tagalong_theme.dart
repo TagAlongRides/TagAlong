@@ -60,7 +60,7 @@ class TagAlongTheme {
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       color: Colors.white,
-    ),
+      ),
     headline6: GoogleFonts.openSans(
       fontSize: 20.0,
       fontWeight: FontWeight.w600,
@@ -71,6 +71,9 @@ class TagAlongTheme {
   // 3
   static ThemeData light() {
     return ThemeData(
+      appBarTheme: AppBarTheme(
+      backgroundColor: Colors.white24,
+      foregroundColor: Colors.black), //here you can give the text color
       primaryColor: Colors.white,
       brightness: Brightness.light,
       checkboxTheme: CheckboxThemeData(
