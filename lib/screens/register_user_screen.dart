@@ -64,8 +64,14 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(onPressed: (){}, child: Text("One")),
-                      ElevatedButton(onPressed: (){}, child: Text("Two"))
+                      ElevatedButton(
+                          onPressed: (){},
+                          child: Text("Skip Driver"),
+                          ),
+                      ElevatedButton(
+                          onPressed: (){},
+                          child: Text("Create Driver")
+                      )
                     ]
                   )
                 )
