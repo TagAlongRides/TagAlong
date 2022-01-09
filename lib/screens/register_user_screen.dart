@@ -59,22 +59,22 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
                   flex: 3,
                   child: SchoolRegistrationForm(),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                          onPressed: (){},
-                          child: Text("Skip Driver"),
-                          ),
-                      ElevatedButton(
-                          onPressed: (){},
-                          child: Text("Create Driver")
-                      )
-                    ]
-                  )
-                )
+                // Expanded(
+                //   flex: 1,
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //     children: [
+                //       ElevatedButton(
+                //           onPressed: (){},
+                //           child: Text("Skip Driver"),
+                //           ),
+                //       ElevatedButton(
+                //           onPressed: (){},
+                //           child: Text("Create Driver")
+                //       )
+                //     ]
+                //   )
+                // )
               ]
             ),
           )
