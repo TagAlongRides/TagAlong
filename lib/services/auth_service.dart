@@ -10,6 +10,8 @@ class AuthService {
   final _auth = FirebaseAuth.instance;
   // Our private instance of the Facebook Authentication SDK
   final _fb = FacebookAuth.instance;
+  // An instance of a User if logged in
+  late final UserCredential user_cred;
 
   // 1. Monitor Authentication state of our user (logged in, logged out, etc.)
   // `currentUser` is a Stream<User?> that notifies changes about sign-in state.
@@ -23,12 +25,13 @@ class AuthService {
     // Attempt log in to Facebook (native window pop up) - asynchronous
     final LoginResult result = await _fb.login();
 
-    // Log-in was sucessful
+    // Log-in was successful
     if (result.status == LoginStatus.success) {
       final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(result.accessToken!.token);
       print('DEBUG: Logging in to Facebook!');
-      return _auth.signInWithCredential(facebookAuthCredential);
+      user_cred = await _auth.signInWithCredential(facebookAuthCredential);
+      return user_cred;
     }
     // Log-in failed
     else {

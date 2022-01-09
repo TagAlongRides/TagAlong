@@ -43,6 +43,9 @@ dependencies:
   # 1/5/22 - Added Provider
   provider: ^6.0.2
 
+  # 1/8/22 - Added Cloud Firestore
+  cloud_firestore: ^3.1.6
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
