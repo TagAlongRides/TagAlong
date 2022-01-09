@@ -37,6 +37,7 @@ class LandingScreen extends StatelessWidget {
             // User is NOT registered
             else {
               print('DEBUG: User is NOT registered - going to RegisterUserScreen');
+              print('DEBUG: User JSON - $user');
               return RegisterUserScreen();
             }
           }

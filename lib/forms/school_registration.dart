@@ -124,13 +124,4 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
       ),
     );
   }
-
-  void validator() {
-    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-      print('valid');
-    }
-    else {
-      print('invalid');
-    }
-  }
 }
