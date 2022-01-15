@@ -8,8 +8,11 @@ TagAlong Project
 - Email: johntester3411@gmail.com 
 - Password: Johntester3411!
 
-2. Facebook Account
+- Email: alexribbon37
+- Password: Alexribbon37!
+- Facebook User: Alex Ribbon
+- Facebook Password: Alexribbon37!
 
-3. Key Information
+## Key Information
 - Steven's Keystore password: "android"
 - AndroidKeystore key: "KKbO2Rcb+f+fSvX6GYs2PdTahwk="
