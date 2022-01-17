@@ -11,7 +11,7 @@ TagAlong Project
 - Email: alexribbon37
 - Password: Alexribbon37!
 - Facebook User: Alex Ribbon
-- Facebook Password: Alexribbon37!
+- Facebook Password: AlexRibbon37!
 
 ## Key Information
 - Steven's Keystore password: "android"
