@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,28 +29,81 @@ class TagAlongApp extends StatefulWidget {
 
 class _TagAlongAppState extends State<TagAlongApp> {
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // TODO 12/29: Need to update theme..
     final theme = TagAlongTheme.light();
-    // TODO: AuthService is available to everyone, may need to refactor in future
+    // a single [AuthService] is now provided to all Widgets in the tree.
     return Provider(
       create: (BuildContext context) => AuthService(),
       child: MaterialApp(
         debugShowCheckedModeBanner: true,
         theme: theme,
         title: 'TagAlong App',
-        // home: LoginScreen(),
-        home: LandingScreen(),
+        home: AuthWrapper(),//LandingScreen(),
         routes: <String, WidgetBuilder> {
           '/register_user': (BuildContext context) => RegisterUserScreen(),
-          '/ride_board': (BuildContext context) => RideBoardScreen()
+          '/ride_board': (BuildContext context) => RideBoardScreen(),
+          '/login_screen': (BuildContext context) => LoginScreen(),
+          '/registration_wrapper': (BuildContext context) => RegistrationWrapper()
         }
         ),
     );
   }
 
 }
+
+/// [AuthWrapper] will be a wrapper Widget which will utilize [AuthService] in
+/// order to check whether the user is a Firebase user in the Auth. system or not.
+/// Based on sign-in state, it will navigate to LoginScreen OR RegistrationWrapper.
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  _AuthWrapperState createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  late StreamSubscription _streamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Check if the user is signed-in or signed-out
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
+    _streamSubscription = authService.userStatus.listen((User? user){
+      // 1. User is signed-in; Go to RegistrationWrapper
+      if (user != null) {
+        print('DEBUG: User is logged in in AuthWrapper.');
+        Navigator.pushReplacementNamed(context, '/registration_wrapper');
+      }
+      // 2. User is signed-out; Go to LoginScreen
+      else {
+        print('DEBUG: User is logged out in AuthWrapper.');
+        Navigator.pushReplacementNamed(context, '/login_screen');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Once Widget is destroyed, unsubscribe from AuthService auth events.
+    _streamSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: const SafeArea(
+        child: Center(
+          child: CircularProgressIndicator()
+        )
+      )
+    );
+  }
+}
+
 
 

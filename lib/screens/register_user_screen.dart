@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/forms/school_registration.dart';
+import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/widgets/school_registration.dart';
 import 'package:tagalong/services/auth_service.dart';
 
 class RegisterUserScreen extends StatefulWidget {
@@ -67,3 +68,58 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
     );
   }
 }
+
+
+/// [RegistrationWrapper] will be a wrapper Widget which will utilize [DataService]
+/// in order to check whether the user is a "registered" user, therefore has an
+/// account in the [users] collection within Cloud Firestore.
+class RegistrationWrapper extends StatefulWidget {
+  const RegistrationWrapper({Key? key}) : super(key: key);
+
+  @override
+  _RegistrationWrapperState createState() => _RegistrationWrapperState();
+}
+
+class _RegistrationWrapperState extends State<RegistrationWrapper> {
+
+  @override
+  void initState() {
+    super.initState();
+    print('Registration INIT STATE!!');
+    // Setup neccesary Services for checking registration
+    AuthService _authService = Provider.of<AuthService>(context, listen: false);
+    String? uid = _authService.getUid();
+    // TODO: Will most likely need to make DatabaseService a Provider
+    DatabaseService _databaseService = DatabaseService();
+
+    _databaseService.isUserRegistered(uid!).then((isRegistered) {
+      if (isRegistered) {
+        print('DEBUG: User is registered in register_user_screen. To Rideboard');
+        Navigator.pushReplacementNamed(context, '/ride_board');
+      }
+      // 2. User is NOT registered
+      else {
+        print('DEBUG: User is NOT registered in register_user_screen. To User Registration');
+        Navigator.pushReplacementNamed(context, '/register_user');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(),
+        body: const SafeArea(
+            child: Center(
+                child: CircularProgressIndicator()
+            )
+        )
+    );
+  }
+
+
+}
+
+
+
+

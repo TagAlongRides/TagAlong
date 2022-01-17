@@ -1,44 +1,59 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
-/*
-This class will be the main Model/service for our Firebase authentication
-and login functionality with Facebook provider.
- */
+/// [AuthService] is the main service for our Firebase authentication.
+/// It will contain the API for creating, signing in, and out, Firebase users
+/// within the FirebaseAuth system.
 class AuthService {
-  // Our private instance of the Firebase Authentication SDK
+
   final _auth = FirebaseAuth.instance;
-  // Our private instance of the Facebook Authentication SDK
   final _fb = FacebookAuth.instance;
-  // An instance of a User if logged in
-  late final UserCredential user_cred;
 
-  // 1. Monitor Authentication state of our user (logged in, logged out, etc.)
-  // `currentUser` is a Stream<User?> that notifies changes about sign-in state.
-  Stream<User?> get currentUser => _auth.authStateChanges();
+  /// Returns a Stream<User?>, which notifies changes in a user's sign-in state.
+  ///
+  /// Note: It has an immediate event when first "listened" to about the
+  /// current state of the user.
+  Stream<User?> get userStatus => _auth.authStateChanges();
 
-  // 2. Sign in with Facebook Credential.
-  // asynchronously sign in to Firebase with 3rd-party tokens.
-  // If successful, signs user in, notifies via `authStateChanges` and will
-  // create a Firebase account if one does not exist.
-  Future<UserCredential?> facebook_login() async {
-    // Attempt log in to Facebook (native window pop up) - asynchronous
-    final LoginResult result = await _fb.login();
-
-    // Log-in was successful
-    if (result.status == LoginStatus.success) {
-      final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(result.accessToken!.token);
-      print('DEBUG: Logging in to Facebook!');
-      user_cred = await _auth.signInWithCredential(facebookAuthCredential);
-      return user_cred;
+  /// Returns a unique String UID for a FirebaseAuth user OR null if
+  /// [user] doesn't exist or somehow [uid] does not exist for [user].
+  String? getUid() {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      return user.uid;
     }
-    // Log-in failed
     else {
-      print('ERROR: Log in failed!');
+      return null;
     }
   }
 
-  // 3. Sign out of Facebook, hence Firebase
+  /// Returns a Future<UserCredential?> that if the Facebook login is
+  /// successful, will create a user within the FirebaseAuth system and return
+  /// a UserCredential. If login fails, returns null and a pop-up message
+  Future<UserCredential?> facebookLogin() async {
+    final LoginResult result = await _fb.login();
+
+    // Log-in was successful
+    if (result.status == LoginStatus.success && result.accessToken != null) {
+      final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(result.accessToken!.token);
+      try {
+        UserCredential? user_cred = await _auth.signInWithCredential(facebookAuthCredential);
+        return user_cred;
+      }
+      // Log-in failed
+      on FirebaseAuthException catch (e) {
+        print('DEBUG: User could NOT log-in due to ${e.message}');
+        return null;
+      }
+    }
+    // Log-in failed
+    else {
+      print('DEBUG: User could NOT log-in!');
+    }
+  }
+
+
+  /// Sign-out of TagAlong.
   Future<void> sign_out() => _auth.signOut();
 }

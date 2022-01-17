@@ -30,9 +30,10 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
 
   @override
   Widget build(BuildContext context) {
-    var auth_service = Provider.of<AuthService>(context, listen: false);
-    var uid = auth_service.user_cred.user?.uid;
-    var data_service = DatabaseService(uid: uid);
+    AuthService _authService = Provider.of<AuthService>(context, listen: false);
+    String? uid = _authService.getUid();
+    // TODO: Will most likely need to make DatabaseService a Provider
+    DatabaseService _databaseService = DatabaseService();
 
     return Form(
       key: _formKey,
@@ -120,7 +121,8 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                         if (form.validate()) {
                           print('DEBUG: School registration was valid - Navigating to RideBoardScreen');
                           print('DEBUG: Attempt to write the user data...');
-                          data_service.update_user_data(
+                          _databaseService.update_user_data(
+                              uid,
                               uni_controller.text,
                               int.parse(year_controller.text),
                               email_controller.text,

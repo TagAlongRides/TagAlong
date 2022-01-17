@@ -15,7 +15,7 @@ class LandingScreen extends StatelessWidget {
     var auth_service = Provider.of<AuthService>(context, listen: false);
 
     return StreamBuilder(
-      stream: auth_service.currentUser,
+      stream: auth_service.userStatus,
       builder: (context, snapshot) {
         // Gotten data - check if user is logged in
         if (snapshot.connectionState == ConnectionState.active) {
