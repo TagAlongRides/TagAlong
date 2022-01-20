@@ -2,26 +2,26 @@ import 'package:tagalong/util/user_data.dart';
 
 /// A user model containing pertinent data
 class User {
-  String id = "";
-  DateTime createdAt = DateTime(0);
-  DateTime updatedAt = DateTime(0);
-  SignInMethod signInMethod = SignInMethod.invalid;
-  bool registered = false;
-  String firstName = "";
-  String lastName = "";
-  Institution institution = Institution.invalid;
-  Affiliation affiliation = Affiliation.invalid;
-  DateTime graduationYear = DateTime(0);
-  String phoneNumber = "";
-  String emailAddress = "";
+  final String _id;
+  final DateTime _createdAt;
+  DateTime _updatedAt = DateTime(0);
+  final SignInMethod _signInMethod;
+  bool _registered = false;
+  String _firstName = "";
+  String _lastName = "";
+  Institution _institution = Institution.invalid;
+  Affiliation _affiliation = Affiliation.invalid;
+  DateTime _graduationYear = DateTime(0);
+  String _phoneNumber = "";
+  String _emailAddress = "";
 
   /// Initializes a User.
   ///
   /// The minimum definition for a valid user requires an ID, a creation date,
   /// and a sign-in method.
-  User(this.id, this.createdAt, this.signInMethod) {
-    updatedAt = createdAt;
-    registered = false;
+  User(this._id, this._createdAt, this._signInMethod) {
+    _updatedAt = _createdAt;
+    _registered = false;
   }
 
   /// Registers a User.
@@ -35,38 +35,41 @@ class User {
       DateTime graduationYear,
       String phoneNumber,
       String emailAddress) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.institution = institution;
-    this.affiliation = affiliation;
-    this.graduationYear = graduationYear;
-    this.phoneNumber = phoneNumber;
-    this.emailAddress = emailAddress;
+    _firstName = firstName;
+    _lastName = lastName;
+    _institution = institution;
+    _affiliation = affiliation;
+    _graduationYear = graduationYear;
+    _phoneNumber = phoneNumber;
+    _emailAddress = emailAddress;
 
-    registered = true;
-    updatedAt = DateTime.now();
+    _registered = true;
+    // TODO: Probably don't want to rely on system time like this...
+    _updatedAt = DateTime.now();
   }
 
   /// Flag indicating whether a user is registered or not.
   bool isRegistered() {
-    return registered;
+    return _registered;
   }
 
   /// Convert a User object to a String map.
-  Map<String, dynamic> toMap() {
+  Map<String, String?> toMap() {
+    // TODO: the key values below should not be hardcoded, figure out a more
+    //  central location for them
     return {
-      'id': id,
-      'created': createdAt.toString(),
-      'last_updated': updatedAt.toString(),
-      'sign_in_method': signInMethod.name,
-      'is_registered': registered.toString(),
-      'first_name': firstName,
-      'last_name': lastName,
-      'institution': institution.name,
-      'affiliation': affiliation.name,
-      'grad_year': graduationYear.toString(),
-      'phone_number': phoneNumber,
-      'email_address': emailAddress
+      'id': _id,
+      'created': _createdAt.toString(),
+      'last_updated': _updatedAt.toString(),
+      'sign_in_method': _signInMethod.name,
+      'is_registered': _registered.toString(),
+      'first_name': _firstName,
+      'last_name': _lastName,
+      'institution': _institution.name,
+      'affiliation': _affiliation.name,
+      'grad_year': _graduationYear.year.toString(),
+      'phone_number': _phoneNumber,
+      'email_address': _emailAddress
     };
   }
 }
