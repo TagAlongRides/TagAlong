@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tagalong/services/auth_service.dart';
 
 class RideBoardScreen extends StatefulWidget {
   const RideBoardScreen({Key? key}) : super(key: key);
@@ -8,13 +10,25 @@ class RideBoardScreen extends StatefulWidget {
 }
 
 class _RideBoardScreenState extends State<RideBoardScreen> {
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Text("Ride Board")
-        )
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rideboard'),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                authService.signOut();
+              },
+              child: Text('Sign Out')
+          )
+        ]
+      ),
+      body: Center(
+        child: Text("Ride Board")
       )
     );
   }

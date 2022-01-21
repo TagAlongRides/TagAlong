@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// [DatabaseService] is the main service for our Firebase Cloud Firestore.
+///
 /// It will contain the API for basic CRUD operations among various collections.
 class DatabaseService {
 
-  /// A CollectionReference to our [users] collection
+  /// A CollectionReference to our [users] collection.
   final CollectionReference users = FirebaseFirestore.instance.collection('users');
 
 

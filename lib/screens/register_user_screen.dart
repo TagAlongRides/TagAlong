@@ -27,7 +27,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
           OutlinedButton(
               child: Text('Sign Out'),
               onPressed: (() {
-                auth_service.sign_out();
+                auth_service.signOut();
               })
           )
         ],
@@ -85,7 +85,7 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
   @override
   void initState() {
     super.initState();
-    print('Registration INIT STATE!!');
+
     // Setup neccesary Services for checking registration
     AuthService _authService = Provider.of<AuthService>(context, listen: false);
     String? uid = _authService.getUid();

@@ -55,5 +55,5 @@ class AuthService {
 
 
   /// Sign-out of TagAlong.
-  Future<void> sign_out() => _auth.signOut();
+  Future<void> signOut() => _auth.signOut();
 }
