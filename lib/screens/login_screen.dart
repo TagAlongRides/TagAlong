@@ -1,29 +1,22 @@
-import 'dart:convert';
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
-/// [LoginScreen] will be a Screen Widget that allows a signed-out FirebaseAuth
-/// User log in via Facebook, all through [AuthService].
-class LoginScreen extends StatefulWidget {
+/// [LoginScreen] will be a Screen Widget that either:
+///
+/// 1. Creates a new "TagAlong" User who is NOT registered.
+/// 2. Signs in a existing "TagAlong" User who may or may-not be registered.
+class LoginScreen extends StatelessWidget {
   const  LoginScreen({Key? key}) : super(key: key);
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
     // Obtain a reference to AuthService
-    AuthService _authService = Provider.of<AuthService>(context, listen: false);
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     return Scaffold(
         body: SafeArea(
@@ -64,14 +57,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Buttons.FacebookNew,
                                     onPressed: () async {
                                       print('DEBUG: login_screen - attempting to login via Facebook');
-                                      UserCredential? userCred = await _authService.facebookLogin();
-                                      if (userCred != null) {
+                                      bool? isRegistered = await tagAlongUserViewModel.createOrSignIn();
+                                      if (isRegistered == false) {
+                                        print('DEBUG: User is NOT registered - go to /registration_wrapper');
                                         Navigator.pushReplacementNamed(context, '/registration_wrapper');
                                       }
-                                      else{
-
+                                      else if (isRegistered == true){
+                                        print('DEBUG: User is registered - go to /registration_wrapper');
+                                        Navigator.pushReplacementNamed(context, '/registration_wrapper');
                                       }
-
+                                      else if (isRegistered == null) {
+                                        print('DEBUG: FAILED Facebook Login - Stay on LoginScreen!');
+                                      }
                                     }
                                 )
                             )
@@ -84,4 +81,5 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
 

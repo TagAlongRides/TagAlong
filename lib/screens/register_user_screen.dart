@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/widgets/school_registration.dart';
 import 'package:tagalong/services/auth_service.dart';
 
@@ -50,18 +52,11 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
           ]
         )
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: SchoolRegistrationForm(),
-                ),
-              ]
-            ),
+            child: SchoolRegistrationForm(),
           )
         ),
       )
@@ -85,14 +80,9 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
   @override
   void initState() {
     super.initState();
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
-    // Setup neccesary Services for checking registration
-    AuthService _authService = Provider.of<AuthService>(context, listen: false);
-    String? uid = _authService.getUid();
-    // TODO: Will most likely need to make DatabaseService a Provider
-    DatabaseService _databaseService = DatabaseService();
-
-    _databaseService.isUserRegistered(uid!).then((isRegistered) {
+    tagAlongUserViewModel.isRegistered().then((bool isRegistered) {
       if (isRegistered) {
         print('DEBUG: User is registered in register_user_screen. To Rideboard');
         Navigator.pushReplacementNamed(context, '/ride_board');

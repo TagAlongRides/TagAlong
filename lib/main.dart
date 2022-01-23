@@ -4,10 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/landing_screen.dart';
+import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'themes/tagalong_theme.dart';
 import 'screens/login_screen.dart';
 
@@ -33,18 +34,23 @@ class _TagAlongAppState extends State<TagAlongApp> {
   Widget build(BuildContext context) {
     final theme = TagAlongTheme.light();
     // a single [AuthService] is now provided to all Widgets in the tree.
-    return Provider(
-      create: (BuildContext context) => AuthService(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(create: (BuildContext context) => AuthService()),
+        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel())
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,
         theme: theme,
         title: 'TagAlong App',
-        home: AuthWrapper(),//LandingScreen(),
+        home: const AuthWrapper(),
         routes: <String, WidgetBuilder> {
-          '/register_user': (BuildContext context) => RegisterUserScreen(),
-          '/ride_board': (BuildContext context) => RideBoardScreen(),
-          '/login_screen': (BuildContext context) => LoginScreen(),
-          '/registration_wrapper': (BuildContext context) => RegistrationWrapper()
+          '/register_user': (BuildContext context) => const RegisterUserScreen(),
+          '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
+          '/ride_board': (BuildContext context) => const RideBoardScreen(),
+          '/login_screen': (BuildContext context) => const LoginScreen(),
+          '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
+          // '/register_driver': (BuildContext context) => const RegisterDri
         }
         ),
     );
@@ -74,12 +80,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _streamSubscription = authService.userStatus.listen((User? user){
       // 1. User is signed-in; Go to RegistrationWrapper
       if (user != null) {
-        print('DEBUG: User is logged in in AuthWrapper.');
+        print('DEBUG: User is logged-in in AuthWrapper. - Go to /registration_wrapper');
         Navigator.pushReplacementNamed(context, '/registration_wrapper');
       }
       // 2. User is signed-out; Go to LoginScreen
       else {
-        print('DEBUG: User is logged out in AuthWrapper.');
+        print('DEBUG: User is logged-out in AuthWrapper. - Go to /login_screen');
         Navigator.pushReplacementNamed(context, '/login_screen');
       }
     });
@@ -87,20 +93,25 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   void dispose() {
-    // Once Widget is destroyed, unsubscribe from AuthService auth events.
+    // Once push() occurs, this widget will be destroyed, therefore need to
+    // unsubscribe from AuthService auth events.
+    // TODO: Perhaps keep open and have it automatically take us back here?
     _streamSubscription.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: const SafeArea(
-        child: Center(
-          child: CircularProgressIndicator()
+    return Provider(
+      create: (BuildContext context) => TagAlongUserViewModel(),
+      child: Scaffold(
+        appBar: AppBar(),
+        body: const SafeArea(
+          child: Center(
+            child: CircularProgressIndicator()
+          )
         )
-      )
+      ),
     );
   }
 }

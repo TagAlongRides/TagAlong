@@ -29,7 +29,7 @@ class AuthService {
 
   /// Returns a Future<UserCredential?> that if the Facebook login is
   /// successful, will create a user within the FirebaseAuth system and return
-  /// a UserCredential. If login fails, returns null and a pop-up message
+  /// a UserCredential. If login fails, returns null.
   Future<UserCredential?> facebookLogin() async {
     final LoginResult result = await _fb.login();
 
