@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 class SchoolRegistrationForm extends StatefulWidget {
   const SchoolRegistrationForm({Key? key}) : super(key: key);
@@ -27,7 +28,6 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     var auth_service = Provider.of<AuthService>(context, listen: false);
@@ -37,11 +37,9 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Which University
-            TextFormField(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // 1. Which University
+          TextFormField(
               controller: uni_controller,
               decoration: const InputDecoration(
                 icon: Icon(Icons.location_city_outlined),
@@ -54,105 +52,94 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                   return 'Please enter a valid school';
                 }
                 return null;
-              }
-            ),
+              }),
 
-            // 2. Graduation Year
-            TextFormField(
-                controller: year_controller,
-                decoration: const InputDecoration(
-                  icon: const Icon(Icons.school_outlined),
-                  border: const UnderlineInputBorder(),
-                  labelText: 'Graduating Year/Class',
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid graduating year';
-                  }
-                  return null;
+          // 2. Graduation Year
+          TextFormField(
+              controller: year_controller,
+              decoration: const InputDecoration(
+                icon: const Icon(Icons.school_outlined),
+                border: const UnderlineInputBorder(),
+                labelText: 'Graduating Year/Class',
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid graduating year';
                 }
-            ),
+                return null;
+              }),
 
-            // 3. School Email
-            TextFormField(
-                controller: email_controller,
-                decoration: const InputDecoration(
-                  icon: const Icon(Icons.email_outlined),
-                  border: const UnderlineInputBorder(),
-                  labelText: 'University Email (.edu)',
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid .edu email';
-                  }
-                  return null;
+          // 3. School Email
+          TextFormField(
+              controller: email_controller,
+              decoration: const InputDecoration(
+                icon: const Icon(Icons.email_outlined),
+                border: const UnderlineInputBorder(),
+                labelText: 'University Email (.edu)',
+              ),
+              keyboardType: TextInputType.emailAddress,
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid .edu email';
                 }
-            ),
+                return null;
+              }),
 
-            // 4. Phone Number
-            TextFormField(
-                controller: phone_controller,
-                decoration: const InputDecoration(
-                  icon: const Icon(Icons.contact_phone_outlined),
-                  border: const UnderlineInputBorder(),
-                  labelText: 'Phone Number',
-                ),
-                keyboardType: TextInputType.phone,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
+          // 4. Phone Number
+          TextFormField(
+              controller: phone_controller,
+              decoration: const InputDecoration(
+                icon: const Icon(Icons.contact_phone_outlined),
+                border: const UnderlineInputBorder(),
+                labelText: 'Phone Number',
+              ),
+              keyboardType: TextInputType.phone,
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a valid phone number';
                 }
+                return null;
+              }),
+          SizedBox(height: 40),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            ElevatedButton(
+              onPressed: () {
+                logger.log.fine('onPressed');
+                final form = _formKey.currentState;
+                logger.log.fine('form is null: $form');
+                if (form != null) {
+                  if (form.validate()) {
+                    logger.log.fine('School registration was valid - '
+                        'Navigating to RideBoardScreen');
+                    logger.log.fine('Attempt to write the user data...');
+                    data_service.update_user_data(
+                        uni_controller.text,
+                        int.parse(year_controller.text),
+                        email_controller.text,
+                        phone_controller.text);
+                  } else {
+                    logger.log.warning('School registration not valid');
+                  }
+                }
+              },
+              child: Text("Skip Driver"),
             ),
-            SizedBox(height: 40),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      print('onPressed');
-                      final form = _formKey.currentState;
-                      print('form is null: $form');
-                      if (form != null) {
-                        if (form.validate()) {
-                          print('DEBUG: School registration was valid - Navigating to RideBoardScreen');
-                          print('DEBUG: Attempt to write the user data...');
-                          data_service.update_user_data(
-                              uni_controller.text,
-                              int.parse(year_controller.text),
-                              email_controller.text,
-                              phone_controller.text);
-                        }
-                        else {
-                          print('DEBUG: SCHOOL REGISTRATION NOT VALID');
-                        }
-                      }
-
-                    },
-                    child: Text("Skip Driver"),
-                  ),
-                  ElevatedButton(
-                      onPressed: (){
-                        final form = _formKey.currentState;
-                        if (form != null) {
-                          if (form.validate()) {
-                            print('DEBUG: School registration was valid - Navigating to DriverRegistrationScreen');
-
-                          }
-                          else {
-                            print('DEBUG: SCHOOL REGISTRATION NOT VALID');
-                          }
-                        }
-                      },
-                      child: Text("Create Driver")
-                  )
-                ]
-            )
-          ]
-        ),
+            ElevatedButton(
+                onPressed: () {
+                  final form = _formKey.currentState;
+                  if (form != null) {
+                    if (form.validate()) {
+                      logger.log.fine('School registration was valid - '
+                          'Navigating to DriverRegistrationScreen');
+                    } else {
+                      logger.log.warning('School registration not valid');
+                    }
+                  }
+                },
+                child: Text("Create Driver"))
+          ])
+        ]),
       ),
     );
   }

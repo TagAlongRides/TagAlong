@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 /*
 This class will be the main Model/service for our Firebase authentication
@@ -28,14 +29,14 @@ class AuthService {
     // Log-in was successful
     if (result.status == LoginStatus.success) {
       final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(result.accessToken!.token);
-      print('DEBUG: Logging in to Facebook!');
+          FacebookAuthProvider.credential(result.accessToken!.token);
+      logger.log.info('Logging in to Facebook');
       user_cred = await _auth.signInWithCredential(facebookAuthCredential);
       return user_cred;
     }
     // Log-in failed
     else {
-      print('ERROR: Log in failed!');
+      logger.log.warning('Facebook log-in failed');
     }
   }
 

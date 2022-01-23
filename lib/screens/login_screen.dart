@@ -1,23 +1,21 @@
 import 'dart:convert';
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 // A Class for Facebook Login
 class LoginScreen extends StatefulWidget {
-  const  LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   var logged_in = false;
   var registered = false;
 
@@ -49,7 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
   //   });
   // }
 
-
   @override
   Widget build(BuildContext context) {
     var auth_service = Provider.of<AuthService>(context, listen: false);
@@ -66,58 +63,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
         body: SafeArea(
-          child: Center (
-              child: Column(
-                  children: [
-                    Expanded(
-                        child: Container(
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Logo, "Tag Along", description
-                                  Icon(
-                                      Icons.directions_car_outlined,
-                                      size: 75
-                                  ),
-                                  Text(
-                                      "TagAlong",
-                                      style: Theme.of(context).textTheme.headline1
-                                  ),
-                                  Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Text(
-                                        "Get a ride home for the holidays",
-                                        style: Theme.of(context).textTheme.bodyText2,
-                                      )
-                                  )
-                                ]
-                            )
-                        )
-                    ),
-                    Expanded(
-                        child: Center(
-                            child: Container (
-                                height: 50,
-                                // Facebook Logo and Text
-                                child: SignInButton(
-                                    Buttons.FacebookNew,
-                                    onPressed: () {
-                                      print('DEBUG: Logging in!');
-                                      auth_service.facebook_login();
-                                      if (true) {
-
-                                      }
-                                      // Navigator.pushNamed(context, '/register_user');
-                                    }
-                                )
-                            )
-                        )
-                    )
-                  ]
-              )
-          ),
-        )
-    );
+      child: Center(
+          child: Column(children: [
+        Expanded(
+            child: Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+              // Logo, "Tag Along", description
+              Icon(Icons.directions_car_outlined, size: 75),
+              Text("TagAlong", style: Theme.of(context).textTheme.headline1),
+              Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    "Get a ride home for the holidays",
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ))
+            ]))),
+        Expanded(
+            child: Center(
+                child: Container(
+                    height: 50,
+                    // Facebook Logo and Text
+                    child: SignInButton(Buttons.FacebookNew, onPressed: () {
+                      logger.log.fine('Logging in');
+                      auth_service.facebook_login();
+                      if (true) {}
+                      // Navigator.pushNamed(context, '/register_user');
+                    }))))
+      ])),
+    ));
   }
 
   /*
@@ -125,11 +100,10 @@ class _LoginScreenState extends State<LoginScreen> {
   a "RideBoardScreen" widget if logged in, or "LoginScreen" else wise.
    */
   Widget _register_or_home() {
-    print('DEBUG: in _register_or_home - current state is $logged_in');
+    logger.log.fine('in _register_or_home - current state is $logged_in');
     if (logged_in == true) {
       return RideBoardScreen();
-    }
-    else {
+    } else {
       return _get_login_widget();
     }
   }
@@ -137,15 +111,14 @@ class _LoginScreenState extends State<LoginScreen> {
   /* _is_registered() will ask Firebase to see if a user is registered */
   // TODO: Add async realtime functionality
   bool _is_registered() {
-    print('DEBUG: is_registered: false');
+    logger.log.fine('is_registered: false');
     return false;
   }
+
   // A helper method for converting a Map reflecting JSON into a pretty string.
   String prettyPrint(Map json) {
     JsonEncoder encoder = new JsonEncoder.withIndent('  ');
     String pretty = encoder.convert(json);
     return pretty;
   }
-
 }
-

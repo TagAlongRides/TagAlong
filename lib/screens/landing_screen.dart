@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/login_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({Key? key}) : super(key: key);
@@ -23,28 +23,29 @@ class LandingScreen extends StatelessWidget {
 
           // User is LOGGED OUT
           if (user == null) {
-            print('DEBUG: User is logged OUT - going to LoginScreen');
+            logger.log.fine('User is logged OUT - going to LoginScreen');
             return LoginScreen();
           }
           // User is LOGGED IN
           else {
-            print('DEBUG: User is logged IN - Checking registration');
+            logger.log.fine('User is logged IN - Checking registration');
             // User is registered
             if (_is_registered() == true) {
-              print('DEBUG: User is registered');
+              logger.log.fine('User is registered');
               return const RideBoardScreen();
             }
             // User is NOT registered
             else {
-              print('DEBUG: User is NOT registered - going to RegisterUserScreen');
-              print('DEBUG: User JSON - $user');
+              logger.log.fine('User is NOT registered - '
+                  'going to RegisterUserScreen');
+              logger.log.fine('User JSON - $user');
               return RegisterUserScreen();
             }
           }
         }
         // Have not gotten data - progress indicator
         else {
-          print('DEBUG: Waiting for data - CircularProgressIndicator');
+          logger.log.fine('Waiting for data - CircularProgressIndicator');
           return Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -60,7 +61,7 @@ class LandingScreen extends StatelessWidget {
   * TODO: Add async realtime functionality
   */
   bool _is_registered() {
-    print('DEBUG: is_registered: false');
+    logger.log.fine('is_registered: false');
     return false;
   }
 }
