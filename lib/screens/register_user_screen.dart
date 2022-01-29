@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/data_service.dart';
@@ -77,22 +80,45 @@ class RegistrationWrapper extends StatefulWidget {
 
 class _RegistrationWrapperState extends State<RegistrationWrapper> {
 
+  Future<void> _setUpUser(TagAlongUserViewModel vm) async {
+    await vm.setUpUser(vm.getUid()!);
+
+    bool? isRegistered = vm.isRegistered();
+    if (isRegistered == true) {
+      print('DEBUG: User is registered in register_user_screen. To Rideboard');
+      Timer.run(() {
+        Navigator.pushReplacementNamed(context, '/ride_board');
+      });
+    }
+    // 2. User is NOT registered
+    else {
+      print('DEBUG: User is NOT registered in register_user_screen. To User Registration');
+      Timer.run(() {
+        Navigator.pushReplacementNamed(context, '/register_user');
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    _setUpUser(tagAlongUserViewModel);
 
-    tagAlongUserViewModel.isRegistered().then((bool isRegistered) {
-      if (isRegistered) {
-        print('DEBUG: User is registered in register_user_screen. To Rideboard');
-        Navigator.pushReplacementNamed(context, '/ride_board');
-      }
-      // 2. User is NOT registered
-      else {
-        print('DEBUG: User is NOT registered in register_user_screen. To User Registration');
-        Navigator.pushReplacementNamed(context, '/register_user');
-      }
-    });
+    // bool? isRegistered = tagAlongUserViewModel.isRegistered();
+    // if (isRegistered == true) {
+    //   print('DEBUG: User is registered in register_user_screen. To Rideboard');
+    //   Timer.run(() {
+    //     Navigator.pushReplacementNamed(context, '/ride_board');
+    //   });
+    // }
+    // // 2. User is NOT registered
+    // else {
+    //   print('DEBUG: User is NOT registered in register_user_screen. To User Registration');
+    //   Timer.run(() {
+    //     Navigator.pushReplacementNamed(context, '/register_user');
+    //   });
+    // }
   }
 
   @override

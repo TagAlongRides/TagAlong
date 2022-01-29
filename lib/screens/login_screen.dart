@@ -15,7 +15,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Obtain a reference to AuthService
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     return Scaffold(
@@ -57,17 +56,16 @@ class LoginScreen extends StatelessWidget {
                                     Buttons.FacebookNew,
                                     onPressed: () async {
                                       print('DEBUG: login_screen - attempting to login via Facebook');
-                                      bool? isRegistered = await tagAlongUserViewModel.createOrSignIn();
-                                      if (isRegistered == false) {
-                                        print('DEBUG: User is NOT registered - go to /registration_wrapper');
+                                      // the TagAlongUser can either sign-in (if they exist) or create a new
+                                      // account (if they don't exist)
+                                      await tagAlongUserViewModel.createOrSignIn();
+                                      bool userExists = tagAlongUserViewModel.userExists();
+                                      if (userExists == true) {
+                                        print('DEBUG: User exists - go to /registration_wrapper');
                                         Navigator.pushReplacementNamed(context, '/registration_wrapper');
                                       }
-                                      else if (isRegistered == true){
-                                        print('DEBUG: User is registered - go to /registration_wrapper');
-                                        Navigator.pushReplacementNamed(context, '/registration_wrapper');
-                                      }
-                                      else if (isRegistered == null) {
-                                        print('DEBUG: FAILED Facebook Login - Stay on LoginScreen!');
+                                      else {
+                                        print('DEBUG: User does NOT exist - stay on /login_screen');
                                       }
                                     }
                                 )

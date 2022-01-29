@@ -16,13 +16,21 @@ class TagAlongUser {
   String _phoneNumber = "";
   String _emailAddress = "";
 
-  /// Initializes a User.
+
+  /// Initializes an Unregistered User.
   ///
   /// The minimum definition for a valid user requires an ID, a creation date,
   /// and a sign-in method.
-  TagAlongUser(this._id, this._createdAt, this._signInMethod) {
-    _updatedAt = _createdAt;
+  TagAlongUser.unregisteredUser(this._id, this._createdAt, this._signInMethod) {
+    _updatedAt = DateTime.now();
     _registered = false;
+    _firstName = '';
+    _lastName = '';
+    _institution = Institution.invalid;
+    _affiliation = Affiliation.invalid;
+    _graduationYear = '';
+    _phoneNumber = '';
+    _emailAddress = '';
   }
 
   /// A named constructor to create a [TagAlongUser] from a Map<String, dynamic>
@@ -34,8 +42,8 @@ class TagAlongUser {
     this._registered = json['is_registered'];
     this._firstName = json['first_name'];
     this._lastName = json['last_name'];
-    this._institution = EnumToString.fromString(Institution.values, json['institution'])!;
-    this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation'])!;
+    this._institution = EnumToString.fromString(Institution.values, json['institution']) ?? Institution.invalid;
+    this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation']) ?? Affiliation.invalid;
     this._graduationYear = json['grad_year'];
     this._phoneNumber = json['phone_number'];
     this._emailAddress = json['email_address'];
@@ -68,26 +76,6 @@ class TagAlongUser {
   /// Flag indicating whether a user is registered or not.
   bool isRegistered() {
     return _registered;
-  }
-
-  /// Convert a User object to a String map.
-  Map<String, String?> toStringMap() {
-    // TODO: the key values below should not be hardcoded, figure out a more
-    //  central location for them
-    return {
-      'id': _id,
-      'created': _createdAt.toString(),
-      'last_updated': _updatedAt.toString(),
-      'sign_in_method': _signInMethod.name,
-      'is_registered': _registered.toString(),
-      'first_name': _firstName,
-      'last_name': _lastName,
-      'institution': _institution.name,
-      'affiliation': _affiliation.name,
-      'grad_year': _graduationYear,
-      'phone_number': _phoneNumber,
-      'email_address': _emailAddress
-    };
   }
 
   /// Convert a User object to a map that respects its values' types.

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 /// [AuthService] is the main service for our Firebase authentication.
+///
 /// It will contain the API for creating, signing in, and out, Firebase users
 /// within the FirebaseAuth system.
 class AuthService {
@@ -50,6 +51,7 @@ class AuthService {
     // Log-in failed
     else {
       print('DEBUG: User could NOT log-in!');
+      return null;
     }
   }
 

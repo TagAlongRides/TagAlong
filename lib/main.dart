@@ -33,7 +33,6 @@ class _TagAlongAppState extends State<TagAlongApp> {
   @override
   Widget build(BuildContext context) {
     final theme = TagAlongTheme.light();
-    // a single [AuthService] is now provided to all Widgets in the tree.
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
@@ -50,16 +49,15 @@ class _TagAlongAppState extends State<TagAlongApp> {
           '/ride_board': (BuildContext context) => const RideBoardScreen(),
           '/login_screen': (BuildContext context) => const LoginScreen(),
           '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
-          // '/register_driver': (BuildContext context) => const RegisterDri
         }
-        ),
+      ),
     );
   }
 
 }
 
 /// [AuthWrapper] will be a wrapper Widget which will utilize [AuthService] in
-/// order to check whether the user is a Firebase user in the Auth. system or not.
+/// order to check whether the user is a Firebase user in the Auth system or not.
 /// Based on sign-in state, it will navigate to LoginScreen OR RegistrationWrapper.
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({Key? key}) : super(key: key);
@@ -77,6 +75,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     // Check if the user is signed-in or signed-out
     AuthService authService = Provider.of<AuthService>(context, listen: false);
+    // authService.signOut();
     _streamSubscription = authService.userStatus.listen((User? user){
       // 1. User is signed-in; Go to RegistrationWrapper
       if (user != null) {
@@ -95,7 +94,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void dispose() {
     // Once push() occurs, this widget will be destroyed, therefore need to
     // unsubscribe from AuthService auth events.
-    // TODO: Perhaps keep open and have it automatically take us back here?
     _streamSubscription.cancel();
     super.dispose();
   }
