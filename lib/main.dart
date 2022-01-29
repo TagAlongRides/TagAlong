@@ -1,13 +1,18 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/landing_screen.dart';
+import 'package:tagalong/screens/login_screen.dart';
+import 'themes/tagalong_theme.dart';
+import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
-import 'themes/tagalong_theme.dart';
 
 void main() async {
   // Initialize Firebase
@@ -32,21 +37,84 @@ class _TagAlongAppState extends State<TagAlongApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // TODO 12/29: Need to update theme..
     final theme = TagAlongTheme.light();
-    // TODO: AuthService is available to everyone, may need to refactor in future
-    return Provider(
-      create: (BuildContext context) => AuthService(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(create: (BuildContext context) => AuthService()),
+        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel())
+      ],
       child: MaterialApp(
-          debugShowCheckedModeBanner: true,
-          theme: theme,
-          title: 'TagAlong App',
-          // home: LoginScreen(),
-          home: LandingScreen(),
-          routes: <String, WidgetBuilder>{
-            '/register_user': (BuildContext context) => RegisterUserScreen(),
-            '/ride_board': (BuildContext context) => RideBoardScreen()
-          }),
+        debugShowCheckedModeBanner: true,
+        theme: theme,
+        title: 'TagAlong App',
+        home: const AuthWrapper(),
+        routes: <String, WidgetBuilder> {
+          '/register_user': (BuildContext context) => const RegisterUserScreen(),
+          '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
+          '/ride_board': (BuildContext context) => const RideBoardScreen(),
+          '/login_screen': (BuildContext context) => const LoginScreen(),
+          '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
+        }
+      ),
     );
   }
 }
+
+/// [AuthWrapper] will be a wrapper Widget which will utilize [AuthService] in
+/// order to check whether the user is a Firebase user in the Auth system or not.
+/// Based on sign-in state, it will navigate to LoginScreen OR RegistrationWrapper.
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  _AuthWrapperState createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  late StreamSubscription _streamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Check if the user is signed-in or signed-out
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
+    // authService.signOut();
+    _streamSubscription = authService.userStatus.listen((User? user){
+      // 1. User is signed-in; Go to RegistrationWrapper
+      if (user != null) {
+        print('DEBUG: User is logged-in in AuthWrapper. - Go to /registration_wrapper');
+        Navigator.pushReplacementNamed(context, '/registration_wrapper');
+      }
+      // 2. User is signed-out; Go to LoginScreen
+      else {
+        print('DEBUG: User is logged-out in AuthWrapper. - Go to /login_screen');
+        Navigator.pushReplacementNamed(context, '/login_screen');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Once push() occurs, this widget will be destroyed, therefore need to
+    // unsubscribe from AuthService auth events.
+    _streamSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Provider(
+      create: (BuildContext context) => TagAlongUserViewModel(),
+      child: Scaffold(
+        appBar: AppBar(),
+        body: const SafeArea(
+          child: Center(
+            child: CircularProgressIndicator()
+          )
+        )
+      ),
+    );
+  }
+}
+

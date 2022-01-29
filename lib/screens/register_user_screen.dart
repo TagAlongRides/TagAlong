@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/forms/school_registration.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/widgets/school_registration.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({Key? key}) : super(key: key);
@@ -26,7 +30,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
           OutlinedButton(
               child: Text('Sign Out'),
               onPressed: (() {
-                auth_service.sign_out();
+                auth_service.signOut();
               })
           )
         ],
@@ -49,21 +53,73 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
           ]
         )
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: SchoolRegistrationForm(),
-                ),
-              ]
-            ),
+            child: SchoolRegistrationForm(),
           )
         ),
       )
     );
   }
 }
+
+
+/// [RegistrationWrapper] will be a wrapper Widget which will utilize [DataService]
+/// in order to check whether the user is a "registered" user, therefore has an
+/// account in the [users] collection within Cloud Firestore.
+class RegistrationWrapper extends StatefulWidget {
+  const RegistrationWrapper({Key? key}) : super(key: key);
+
+  @override
+  _RegistrationWrapperState createState() => _RegistrationWrapperState();
+}
+
+class _RegistrationWrapperState extends State<RegistrationWrapper> {
+
+  Future<void> _setUpUser(TagAlongUserViewModel vm) async {
+    await vm.setUpUser(vm.getUid()!);
+
+    bool? isRegistered = vm.isRegistered();
+    if (isRegistered == true) {
+      logger.log.fine('DEBUG: User is registered in register_user_screen. To Rideboard');
+      Timer.run(() {
+        Navigator.pushReplacementNamed(context, '/ride_board');
+      });
+    }
+    // 2. User is NOT registered
+    else {
+      logger.log.fine('DEBUG: User is NOT registered in register_user_screen. To User Registration');
+      Timer.run(() {
+        Navigator.pushReplacementNamed(context, '/register_user');
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    _setUpUser(tagAlongUserViewModel);
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(),
+        body: const SafeArea(
+            child: Center(
+                child: CircularProgressIndicator()
+            )
+        )
+    );
+  }
+
+
+}
+
+
+
+

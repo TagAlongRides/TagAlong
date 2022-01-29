@@ -4,19 +4,19 @@ import 'package:tagalong/util/user_data.dart';
 
 void main() {
   test('Initialization does not mark as registered', () {
-    final user = User("ABC123", DateTime.now(), SignInMethod.facebook);
+    final user = TagAlongUser("ABC123", DateTime.now(), SignInMethod.facebook);
     expect(user.isRegistered(), false);
   });
 
   test('Registering does mark as registered', () {
-    final user = User("ABC123", DateTime.now(), SignInMethod.facebook);
+    final user = TagAlongUser("ABC123", DateTime.now(), SignInMethod.facebook);
     user.registerUser("John", "Doe", Institution.virginiaTech,
         Affiliation.other, DateTime(2024), "1112223333", "johndoe@email.com");
     expect(user.isRegistered(), true);
   });
 
   test('toMap returns expected values', () {
-    final user = User("ABC123", DateTime.now(), SignInMethod.facebook);
+    final user = TagAlongUser("ABC123", DateTime.now(), SignInMethod.facebook);
     user.registerUser("John", "Doe", Institution.virginiaTech,
         Affiliation.other, DateTime(2024), "1112223333", "johndoe@email.com");
 
