@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 class DriverRegistrationForm extends StatefulWidget {
   const DriverRegistrationForm({Key? key}) : super(key: key);
@@ -132,7 +133,7 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
                     'car_year': yearValue,
                     'car_color': colorValue
                   };
-                  print(driverData.toString());
+                  logger.log.fine(driverData.toString());
                   tagAlongUserViewModel.updateTagAlongUser(driverData);
                   Navigator.pushReplacementNamed(context, '/ride_board');
                 },

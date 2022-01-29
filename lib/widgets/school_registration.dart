@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/data/models/user.dart';
-import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/services/data_service.dart';
-import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 
 class SchoolRegistrationForm extends StatefulWidget {
@@ -217,13 +214,13 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
           children: [
             ElevatedButton(
               onPressed: (){
-                print('onPressed on Skip Driver');
+                logger.log.fine('onPressed on Skip Driver');
                 final form = _formKey.currentState;
-                print('form is null: $form');
+                logger.log.fine('form is null: $form');
                 if (form != null) {
                   if (form.validate()) {
-                    print('DEBUG: School registration was valid - Navigating to RideBoardScreen');
-                    print('DEBUG: Attempt to write the user data...');
+                    logger.log.fine('DEBUG: School registration was valid - Navigating to RideBoardScreen');
+                    logger.log.fine('DEBUG: Attempt to write the user data...');
                     // TODO: Need better way of doing this + _updatedAt
                     Map<String, dynamic> registrationData = {
                       'first_name': firstName.text,
@@ -235,12 +232,12 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                       'phone_number': phoneController.text,
                       'is_registered': true
                     };
-                    print(registrationData.toString());
+                    logger.log.fine(registrationData.toString());
                     tagAlongUserViewModel.updateTagAlongUser(registrationData);
                     Navigator.pushReplacementNamed(context, '/ride_board');
                   }
                   else {
-                    print('DEBUG: SCHOOL REGISTRATION NOT VALID');
+                    logger.log.fine('DEBUG: SCHOOL REGISTRATION NOT VALID');
                   }
                 }
 
@@ -249,13 +246,13 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
             ),
             ElevatedButton(
                 onPressed: (){
-                  print('onPressed on Create Driver');
+                  logger.log.fine('onPressed on Create Driver');
                   final form = _formKey.currentState;
                   if (form != null) {
                     if (form.validate()) {
 
-                      print('DEBUG: School registration was valid - Navigating to RideBoardScreen');
-                      print('DEBUG: Attempt to write the user data...');
+                      logger.log.fine('DEBUG: School registration was valid - Navigating to RideBoardScreen');
+                      logger.log.fine('DEBUG: Attempt to write the user data...');
                       // TODO: Need better way of doing this + _updatedAt
                       Map<String, dynamic> registrationData = {
                         'first_name': firstName.text,
@@ -267,17 +264,17 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                         'phone_number': phoneController.text,
                         'is_registered': true
                       };
-                      print(registrationData.toString());
+                      logger.log.fine(registrationData.toString());
                       tagAlongUserViewModel.updateTagAlongUser(registrationData);
                       Navigator.pushReplacementNamed(context, '/register_driver');
 
                     }
                     else {
-                      print('DEBUG: SCHOOL REGISTRATION NOT VALID');
+                      logger.log.fine('DEBUG: SCHOOL REGISTRATION NOT VALID');
                     }
                   }
                 },
-                child: Text("Create Driver")
+                child: const Text("Create Driver")
             )
           ]
       )

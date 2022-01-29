@@ -1,10 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 /// [LoginScreen] will be a Screen Widget that either:
 ///
@@ -55,17 +54,17 @@ class LoginScreen extends StatelessWidget {
                                 child: SignInButton(
                                     Buttons.FacebookNew,
                                     onPressed: () async {
-                                      print('DEBUG: login_screen - attempting to login via Facebook');
+                                      logger.log.fine('DEBUG: login_screen - attempting to login via Facebook');
                                       // the TagAlongUser can either sign-in (if they exist) or create a new
                                       // account (if they don't exist)
                                       await tagAlongUserViewModel.createOrSignIn();
                                       bool userExists = tagAlongUserViewModel.userExists();
                                       if (userExists == true) {
-                                        print('DEBUG: User exists - go to /registration_wrapper');
+                                        logger.log.fine('DEBUG: User exists - go to /registration_wrapper');
                                         Navigator.pushReplacementNamed(context, '/registration_wrapper');
                                       }
                                       else {
-                                        print('DEBUG: User does NOT exist - stay on /login_screen');
+                                        logger.log.fine('DEBUG: User does NOT exist - stay on /login_screen');
                                       }
                                     }
                                 )

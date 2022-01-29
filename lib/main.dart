@@ -4,18 +4,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/login_screen.dart';
+import 'themes/tagalong_theme.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'themes/tagalong_theme.dart';
-import 'screens/login_screen.dart';
+import 'package:tagalong/util/log.dart' as logger;
+
 
 void main() async {
   // Initialize Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Set up logging
+  logger.setupLogger();
 
   // Run the TagAlong Application
   runApp(const TagAlongApp());
@@ -29,7 +34,7 @@ class TagAlongApp extends StatefulWidget {
 }
 
 class _TagAlongAppState extends State<TagAlongApp> {
-
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final theme = TagAlongTheme.light();
@@ -53,7 +58,6 @@ class _TagAlongAppState extends State<TagAlongApp> {
       ),
     );
   }
-
 }
 
 /// [AuthWrapper] will be a wrapper Widget which will utilize [AuthService] in
@@ -113,6 +117,4 @@ class _AuthWrapperState extends State<AuthWrapper> {
     );
   }
 }
-
-
 

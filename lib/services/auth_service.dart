@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 /// [AuthService] is the main service for our Firebase authentication.
 ///
@@ -44,13 +45,13 @@ class AuthService {
       }
       // Log-in failed
       on FirebaseAuthException catch (e) {
-        print('DEBUG: User could NOT log-in due to ${e.message}');
+        logger.log.fine('DEBUG: User could NOT log-in due to ${e.message}');
         return null;
       }
     }
     // Log-in failed
     else {
-      print('DEBUG: User could NOT log-in!');
+      logger.log.fine('DEBUG: User could NOT log-in!');
       return null;
     }
   }

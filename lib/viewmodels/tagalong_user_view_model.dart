@@ -4,6 +4,7 @@ import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/util/user_data.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 /// [TagAlongUser] ViewModel which contains business logic.
 class TagAlongUserViewModel {
@@ -21,7 +22,7 @@ class TagAlongUserViewModel {
   /// Returns a unique String UID for a TagAlongUser
   String? getUid() {
     String? uid = _authService.getUid();
-    print('DEBUG: getUid() - $uid');
+    logger.log.fine('DEBUG: getUid() - $uid');
     return uid;
   }
 
@@ -78,10 +79,10 @@ class TagAlongUserViewModel {
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
   Future<void> setUpUser(String uid, {SignInMethod signInMethod = SignInMethod.facebook}) async {
-    print('DEBUG: setUpUser()');
+    logger.log.fine('DEBUG: setUpUser()');
     // Check if [user] exists in memory
     if (tagAlongUser != null) {
-      print('DEBUG: TagAlongUser instance already in memory.');
+      logger.log.fine('DEBUG: TagAlongUser instance already in memory.');
       return;
     }
     else {
@@ -91,21 +92,21 @@ class TagAlongUserViewModel {
       // User exists - initialize our TagAlongUser `user` instance
       if (snapshot.exists) {
         Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
-        print('DEBUG: data exists! Looks like:');
-        print('${userData.toString()}');
+        logger.log.fine('DEBUG: data exists! Looks like:');
+        logger.log.fine('${userData.toString()}');
         // Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.data);
         tagAlongUser = TagAlongUser.fromJson(userData!);
-        print('DEBUG: User exists!');
+        logger.log.fine('DEBUG: User exists!');
         // tagAlongUser = TagAlongUser.fromJson(userData);
-        // print('DEBUG: User exists!');
+        // logger.log.fine('DEBUG: User exists!');
       }
       // User does not exist - create an unregisteredUser
       else {
         tagAlongUser = TagAlongUser.unregisteredUser(uid, DateTime.now(), signInMethod);
-        print('DEBUG: User did not exist!');
+        logger.log.fine('DEBUG: User did not exist!');
       }
-      print('DEBUG: TagAlongUser was initialized.');
-      print('The TagAlongUser is: ${tagAlongUser?.toMap().toString()}');
+      logger.log.fine('DEBUG: TagAlongUser was initialized.');
+      logger.log.fine('The TagAlongUser is: ${tagAlongUser?.toMap().toString()}');
       await addUserToFirestore(uid);
 
     }
@@ -115,10 +116,10 @@ class TagAlongUserViewModel {
   Future<void> addUserToFirestore(String uid) async {
     if (userExists()) {
       await databaseService.users.doc(uid).set(tagAlongUser!.toMap());
-      print('DEBUG: Added TagAlongUser ${uid}.');
+      logger.log.fine('DEBUG: Added TagAlongUser ${uid}.');
     }
     else {
-      print('DEBUG: TagAlongUser does not exist in ViewModel.');
+      logger.log.fine('DEBUG: TagAlongUser does not exist in ViewModel.');
     }
   }
 

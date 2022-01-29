@@ -1,13 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/data/models/user.dart';
-import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/widgets/school_registration.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({Key? key}) : super(key: key);
@@ -85,14 +83,14 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
 
     bool? isRegistered = vm.isRegistered();
     if (isRegistered == true) {
-      print('DEBUG: User is registered in register_user_screen. To Rideboard');
+      logger.log.fine('DEBUG: User is registered in register_user_screen. To Rideboard');
       Timer.run(() {
         Navigator.pushReplacementNamed(context, '/ride_board');
       });
     }
     // 2. User is NOT registered
     else {
-      print('DEBUG: User is NOT registered in register_user_screen. To User Registration');
+      logger.log.fine('DEBUG: User is NOT registered in register_user_screen. To User Registration');
       Timer.run(() {
         Navigator.pushReplacementNamed(context, '/register_user');
       });
@@ -105,20 +103,6 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     _setUpUser(tagAlongUserViewModel);
 
-    // bool? isRegistered = tagAlongUserViewModel.isRegistered();
-    // if (isRegistered == true) {
-    //   print('DEBUG: User is registered in register_user_screen. To Rideboard');
-    //   Timer.run(() {
-    //     Navigator.pushReplacementNamed(context, '/ride_board');
-    //   });
-    // }
-    // // 2. User is NOT registered
-    // else {
-    //   print('DEBUG: User is NOT registered in register_user_screen. To User Registration');
-    //   Timer.run(() {
-    //     Navigator.pushReplacementNamed(context, '/register_user');
-    //   });
-    // }
   }
 
   @override
