@@ -78,7 +78,7 @@ class TagAlongUserViewModel {
   /// user must exist within the FirebaseAuth system.
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
-  Future<void> setUpUser(String uid, {SignInMethod signInMethod = SignInMethod.facebook}) async {
+  Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
     logger.log.fine('setUpUser()');
     // Check if [user] exists in memory
     if (tagAlongUser != null) {
@@ -87,17 +87,17 @@ class TagAlongUserViewModel {
     }
     else {
       // Query `users` collection for [uid] user and see if they exist
+      logger.log.fine('Querying data for user $uid');
       DocumentSnapshot snapshot = await databaseService.users.doc(uid).get();
 
       // User exists - initialize our TagAlongUser `user` instance
       if (snapshot.exists) {
         Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
-        logger.log.fine('data exists! Looks like:');
+        logger.log.fine('Data exists! Looks like:');
         logger.log.fine(userData.toString());
         tagAlongUser = TagAlongUser.fromJson(userData);
         logger.log.fine('DEBUG: User exists!');
-        // tagAlongUser = TagAlongUser.fromJson(userData);
-        // logger.log.fine('DEBUG: User exists!');
+        return;
       }
       // User does not exist - create an unregisteredUser
       else {
@@ -106,13 +106,13 @@ class TagAlongUserViewModel {
       }
       logger.log.fine('DEBUG: TagAlongUser was initialized.');
       logger.log.fine('The TagAlongUser is: ${tagAlongUser?.toMap().toString()}');
-      await addUserToFirestore(uid);
+      await addTagAlongUserToFirestore(uid);
 
     }
   }
 
   /// Adds a [TagAlongUser] to the Firestore `users` collection.
-  Future<void> addUserToFirestore(String uid) async {
+  Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
       await databaseService.users.doc(uid).set(tagAlongUser!.toMap());
       logger.log.fine('DEBUG: Added TagAlongUser ${uid}.');

@@ -23,11 +23,11 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
               onPressed: () {
                 authService.signOut();
               },
-              child: Text('Sign Out')
+              child: const Text('Sign Out')
           )
         ]
       ),
-      body: Center(
+      body: const Center(
         child: Text("Ride Board")
       )
     );

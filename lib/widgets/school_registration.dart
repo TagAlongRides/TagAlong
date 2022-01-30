@@ -21,9 +21,10 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
   bool _addGradYear = true;
 
   String? gradValue = '2022';
-  String? universityValue = InstitutionExtension.names[Institution.virginiaTech];
-  String? affiliationValue = AffiliationExtension.names[Affiliation.undergraduateStudent];
-  List<String> affiliations = AffiliationExtension.getNames();
+  String? universityValue = Institution.VIRGINIA_TECH;
+  String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
+  List<String> affiliations = Affiliation.values;
+  List<String> institutions = Institution.values;
   List<String> gradYears = ['2022', '2023', '2024', '2025', '2026', '2027', '2028'];
 
   @override
@@ -62,7 +63,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
 
       // 2. Last Name
       Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
             controller: lastName,
             decoration: const InputDecoration(
@@ -90,14 +91,13 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                 labelText: "University"
             ),
             // icon: const Icon(Icons.school_outlined),
-            items: const [
-              // TODO: Fix with Enums
-              DropdownMenuItem<String>(
-                  value: "Virginia Tech",
-                  child: Text("Virginia Tech")
-              ),
-
-            ],
+            items: institutions
+                .map<DropdownMenuItem<String>>((String institution) {
+              return DropdownMenuItem<String>(
+                  value: institution,
+                  child: Text(institution)
+              );
+            }).toList(),
             onChanged: (String? value) {
               // Call setState() to rebuild the widget with the current value
               setState(() {
@@ -108,9 +108,9 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
           )
       ),
 
-      // 4. Affiliation?
+      // 4. Affiliation
       Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
             value: affiliationValue,
             decoration: const InputDecoration(
@@ -131,7 +131,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
               // remove the Graduation date from the list
               setState(() {
                 affiliationValue = value!;
-                if (['Undergraduate', 'Graduate'].contains(value)){
+                if (['Undergraduate Student', 'Graduate Student'].contains(value)){
                   _addGradYear = true;
                 }
                 else {
@@ -145,7 +145,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
       if (_addGradYear)
       // 5. Graduation Year - Dependant on `Affiliation`
         Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: DropdownButtonFormField<String>(
               value: gradValue,
               decoration: const InputDecoration(
@@ -175,8 +175,8 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
         child: TextFormField(
             controller: emailController,
             decoration: const InputDecoration(
-              icon: const Icon(Icons.email_outlined),
-              border: const UnderlineInputBorder(),
+              icon: Icon(Icons.email_outlined),
+              border: UnderlineInputBorder(),
               labelText: 'University Email (.edu)',
             ),
             keyboardType: TextInputType.emailAddress,
@@ -209,7 +209,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
         ),
       ),
 
-      SizedBox(height: 40),
+      const SizedBox(height: 40),
       Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -220,8 +220,8 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                 logger.log.fine('form is null: $form');
                 if (form != null) {
                   if (form.validate()) {
-                    logger.log.fine('DEBUG: School registration was valid - Navigating to RideBoardScreen');
-                    logger.log.fine('DEBUG: Attempt to write the user data...');
+                    logger.log.fine('School registration was valid');
+                    logger.log.fine('Attempting to write the following user data');
                     // TODO: Need better way of doing this + _updatedAt
                     Map<String, dynamic> registrationData = {
                       'first_name': firstName.text,
@@ -251,9 +251,8 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                   final form = _formKey.currentState;
                   if (form != null) {
                     if (form.validate()) {
-
-                      logger.log.fine('DEBUG: School registration was valid - Navigating to RideBoardScreen');
-                      logger.log.fine('DEBUG: Attempt to write the user data...');
+                      logger.log.fine('School registration was valid');
+                      logger.log.fine('Attempting to write the following user data');
                       // TODO: Need better way of doing this + _updatedAt
                       Map<String, dynamic> registrationData = {
                         'first_name': firstName.text,

@@ -28,7 +28,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
         actions: [
           // TODO: STRICTLY DEBUGGING - NEED TO TAKE OUT
           OutlinedButton(
-              child: Text('Sign Out'),
+              child: const Text('Sign Out'),
               onPressed: (() {
                 authService.signOut();
               })

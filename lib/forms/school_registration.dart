@@ -41,7 +41,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     List<Widget> childrenList = [
       Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
             controller: firstName,
             decoration: const InputDecoration(
