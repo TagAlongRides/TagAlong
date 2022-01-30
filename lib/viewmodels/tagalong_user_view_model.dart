@@ -115,13 +115,14 @@ class TagAlongUserViewModel {
   Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
       await databaseService.users.doc(uid).set(tagAlongUser!.toMap());
-      logger.log.fine('DEBUG: Added TagAlongUser ${uid}.');
+      logger.log.fine('DEBUG: Added TagAlongUser $uid.');
     }
     else {
       logger.log.fine('DEBUG: TagAlongUser instance does not exist in ViewModel.');
     }
   }
 
+  /// Updates a [TagAlongUser] with `jsonData` - does not replace.
   Future<void> updateTagAlongUser(Map<String, dynamic> jsonData) async {
     await _databaseService.users.doc(getUid()).update(jsonData);
   }

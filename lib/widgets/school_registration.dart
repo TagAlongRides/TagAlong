@@ -191,7 +191,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
 
       // 7. Phone Number
       Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
             controller: phoneController,
             decoration: const InputDecoration(
