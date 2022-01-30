@@ -6,12 +6,12 @@ class TagAlongUser {
   late String _id;
   late DateTime _createdAt;
   DateTime _updatedAt = DateTime(0);
-  late SignInMethod _signInMethod;
+  late String _signInMethod;
   bool _registered = false;
   String _firstName = "";
   String _lastName = "";
-  Institution _institution = Institution.invalid;
-  Affiliation _affiliation = Affiliation.invalid;
+  String _institution = Institution.INVALID;
+  String _affiliation = Affiliation.INVALID;
   String _graduationYear = "";
   String _phoneNumber = "";
   String _emailAddress = "";
@@ -26,8 +26,8 @@ class TagAlongUser {
     _registered = false;
     _firstName = '';
     _lastName = '';
-    _institution = Institution.invalid;
-    _affiliation = Affiliation.invalid;
+    _institution = Institution.INVALID;
+    _affiliation = Affiliation.INVALID;
     _graduationYear = '';
     _phoneNumber = '';
     _emailAddress = '';
@@ -38,12 +38,15 @@ class TagAlongUser {
     this._id = json['id'];
     this._createdAt = json['created'].toDate();
     this._updatedAt = json['last_updated'].toDate();
-    this._signInMethod = EnumToString.fromString(SignInMethod.values, json['sign_in_method'])!;
     this._registered = json['is_registered'];
     this._firstName = json['first_name'];
     this._lastName = json['last_name'];
-    this._institution = EnumToString.fromString(Institution.values, json['institution']) ?? Institution.invalid;
-    this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation']) ?? Affiliation.invalid;
+    this._signInMethod = json['sign_in_method'];
+    this._institution = json['institution'];
+    this._affiliation = json['affiliation'];
+    // this._signInMethod = EnumToString.fromString(SignInMethod.values, json['sign_in_method'])!;
+    // this._institution = EnumToString.fromString(Institution.values, json['institution'])!;
+    // this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation'])!;
     this._graduationYear = json['grad_year'];
     this._phoneNumber = json['phone_number'];
     this._emailAddress = json['email_address'];
@@ -55,8 +58,8 @@ class TagAlongUser {
   void registerUser(
       String firstName,
       String lastName,
-      Institution institution,
-      Affiliation affiliation,
+      String institution,
+      String affiliation,
       String graduationYear,
       String phoneNumber,
       String emailAddress) {
@@ -86,12 +89,12 @@ class TagAlongUser {
       'id': _id,
       'created': _createdAt,
       'last_updated': _updatedAt,
-      'sign_in_method': _signInMethod.name,
+      'sign_in_method': _signInMethod,
       'is_registered': _registered,
       'first_name': _firstName,
       'last_name': _lastName,
-      'institution': _institution.name,
-      'affiliation': _affiliation.name,
+      'institution': _institution,
+      'affiliation': _affiliation,
       'grad_year': _graduationYear,
       'phone_number': _phoneNumber,
       'email_address': _emailAddress

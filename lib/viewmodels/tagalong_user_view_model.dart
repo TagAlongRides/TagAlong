@@ -78,27 +78,26 @@ class TagAlongUserViewModel {
   /// user must exist within the FirebaseAuth system.
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
-  Future<void> setUpUser(String uid, {SignInMethod signInMethod = SignInMethod.facebook}) async {
-    logger.log.fine('DEBUG: setUpUser()');
+  Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
+    logger.log.fine('setUpUser()');
     // Check if [user] exists in memory
     if (tagAlongUser != null) {
-      logger.log.fine('DEBUG: TagAlongUser instance already in memory.');
+      logger.log.fine('TagAlongUser instance already in memory.');
       return;
     }
     else {
       // Query `users` collection for [uid] user and see if they exist
+      logger.log.fine('Querying data for user $uid');
       DocumentSnapshot snapshot = await databaseService.users.doc(uid).get();
 
       // User exists - initialize our TagAlongUser `user` instance
       if (snapshot.exists) {
-        Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
-        logger.log.fine('DEBUG: data exists! Looks like:');
-        logger.log.fine('${userData.toString()}');
-        // Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.data);
-        tagAlongUser = TagAlongUser.fromJson(userData!);
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+        logger.log.fine('Data exists! Looks like:');
+        logger.log.fine(userData.toString());
+        tagAlongUser = TagAlongUser.fromJson(userData);
         logger.log.fine('DEBUG: User exists!');
-        // tagAlongUser = TagAlongUser.fromJson(userData);
-        // logger.log.fine('DEBUG: User exists!');
+        return;
       }
       // User does not exist - create an unregisteredUser
       else {
@@ -107,22 +106,23 @@ class TagAlongUserViewModel {
       }
       logger.log.fine('DEBUG: TagAlongUser was initialized.');
       logger.log.fine('The TagAlongUser is: ${tagAlongUser?.toMap().toString()}');
-      await addUserToFirestore(uid);
+      await addTagAlongUserToFirestore(uid);
 
     }
   }
 
   /// Adds a [TagAlongUser] to the Firestore `users` collection.
-  Future<void> addUserToFirestore(String uid) async {
+  Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
       await databaseService.users.doc(uid).set(tagAlongUser!.toMap());
-      logger.log.fine('DEBUG: Added TagAlongUser ${uid}.');
+      logger.log.fine('DEBUG: Added TagAlongUser $uid.');
     }
     else {
-      logger.log.fine('DEBUG: TagAlongUser does not exist in ViewModel.');
+      logger.log.fine('DEBUG: TagAlongUser instance does not exist in ViewModel.');
     }
   }
 
+  /// Updates a [TagAlongUser] with `jsonData` - does not replace.
   Future<void> updateTagAlongUser(Map<String, dynamic> jsonData) async {
     await _databaseService.users.doc(getUid()).update(jsonData);
   }

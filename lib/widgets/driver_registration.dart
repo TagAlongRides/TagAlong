@@ -31,7 +31,7 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
 
             // 1. Make
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: DropdownButtonFormField<String>(
                 value: makeValue,
                 decoration: const InputDecoration(
@@ -54,7 +54,7 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
 
             // 2. Model
             Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: DropdownButtonFormField<String>(
                     value: modelValue,
                     decoration: const InputDecoration(
@@ -77,7 +77,7 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
 
             // 3. Year
             Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: DropdownButtonFormField<String>(
                     value: yearValue,
                     decoration: const InputDecoration(
@@ -100,7 +100,7 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
 
             // 4. Color
             Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: DropdownButtonFormField<String>(
                     value: colorValue,
                     decoration: const InputDecoration(
