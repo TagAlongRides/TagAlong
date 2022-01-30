@@ -54,17 +54,17 @@ class LoginScreen extends StatelessWidget {
                                 child: SignInButton(
                                     Buttons.FacebookNew,
                                     onPressed: () async {
-                                      logger.log.fine('DEBUG: login_screen - attempting to login via Facebook');
+                                      logger.log.fine('login_screen - attempting to login via Facebook');
                                       // the TagAlongUser can either sign-in (if they exist) or create a new
                                       // account (if they don't exist)
                                       await tagAlongUserViewModel.createOrSignIn();
                                       bool userExists = tagAlongUserViewModel.userExists();
                                       if (userExists == true) {
-                                        logger.log.fine('DEBUG: User exists - go to /registration_wrapper');
+                                        logger.log.fine('login_screen - User exists - go to /registration_wrapper');
                                         Navigator.pushReplacementNamed(context, '/registration_wrapper');
                                       }
                                       else {
-                                        logger.log.fine('DEBUG: User does NOT exist - stay on /login_screen');
+                                        logger.log.fine('login_screen - User cannot sign-in - stay on /login_screen');
                                       }
                                     }
                                 )

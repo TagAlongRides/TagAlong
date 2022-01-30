@@ -83,12 +83,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _streamSubscription = authService.userStatus.listen((User? user){
       // 1. User is signed-in; Go to RegistrationWrapper
       if (user != null) {
-        print('DEBUG: User is logged-in in AuthWrapper. - Go to /registration_wrapper');
+        logger.log.fine('User is logged-in in AuthWrapper. - Go to /registration_wrapper');
         Navigator.pushReplacementNamed(context, '/registration_wrapper');
       }
       // 2. User is signed-out; Go to LoginScreen
       else {
-        print('DEBUG: User is logged-out in AuthWrapper. - Go to /login_screen');
+        logger.log.fine('User is logged-out in AuthWrapper. - Go to /login_screen');
         Navigator.pushReplacementNamed(context, '/login_screen');
       }
     });

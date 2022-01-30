@@ -5,11 +5,15 @@ enum SignInMethod {
 
 extension SignInMethodExtension on SignInMethod {
   static const names = {
-    SignInMethod.invalid: 'invalid',
-    SignInMethod.facebook: 'facebook',
+    SignInMethod.invalid: 'Invalid',
+    SignInMethod.facebook: 'Facebook',
   };
 
   String? get name => names[this];
+
+  static List<String> getNames() {
+    return names.values.toList();
+  }
 }
 
 enum Institution {
@@ -19,11 +23,15 @@ enum Institution {
 
 extension InstitutionExtension on Institution {
   static const names = {
-    Institution.invalid: 'invalid',
-    Institution.virginiaTech: 'virginia_tech',
+    Institution.invalid: 'Invalid',
+    Institution.virginiaTech: 'Virginia Tech',
   };
 
   String? get name => names[this];
+
+  static List<String> getNames() {
+    return names.values.toList().sublist(1);
+  }
 }
 
 enum Affiliation {
@@ -37,13 +45,17 @@ enum Affiliation {
 
 extension AffiliationExtension on Affiliation {
   static const names = {
-    Affiliation.invalid: 'invalid',
-    Affiliation.undergraduateStudent: 'student_undergrad',
-    Affiliation.graduateStudent: 'student_grad',
-    Affiliation.postDoc: 'post_doc',
-    Affiliation.facultyStaff: 'faculty_staff',
-    Affiliation.other: 'other',
+    Affiliation.invalid: 'Invalid',
+    Affiliation.undergraduateStudent: 'Undergraduate Student',
+    Affiliation.graduateStudent: 'Graduate Student',
+    Affiliation.postDoc: 'Post-Doc',
+    Affiliation.facultyStaff: 'Faculty Staff',
+    Affiliation.other: 'Other',
   };
 
   String? get name => names[this];
+
+  static List<String> getNames() {
+    return names.values.toList().sublist(1);
+  }
 }

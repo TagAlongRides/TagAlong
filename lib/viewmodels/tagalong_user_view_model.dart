@@ -79,10 +79,10 @@ class TagAlongUserViewModel {
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
   Future<void> setUpUser(String uid, {SignInMethod signInMethod = SignInMethod.facebook}) async {
-    logger.log.fine('DEBUG: setUpUser()');
+    logger.log.fine('setUpUser()');
     // Check if [user] exists in memory
     if (tagAlongUser != null) {
-      logger.log.fine('DEBUG: TagAlongUser instance already in memory.');
+      logger.log.fine('TagAlongUser instance already in memory.');
       return;
     }
     else {
@@ -92,7 +92,7 @@ class TagAlongUserViewModel {
       // User exists - initialize our TagAlongUser `user` instance
       if (snapshot.exists) {
         Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
-        logger.log.fine('DEBUG: data exists! Looks like:');
+        logger.log.fine('data exists! Looks like:');
         logger.log.fine('${userData.toString()}');
         // Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.data);
         tagAlongUser = TagAlongUser.fromJson(userData!);
@@ -119,7 +119,7 @@ class TagAlongUserViewModel {
       logger.log.fine('DEBUG: Added TagAlongUser ${uid}.');
     }
     else {
-      logger.log.fine('DEBUG: TagAlongUser does not exist in ViewModel.');
+      logger.log.fine('DEBUG: TagAlongUser instance does not exist in ViewModel.');
     }
   }
 

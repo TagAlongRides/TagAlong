@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
@@ -18,11 +19,11 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   bool _addGradYear = true;
-  // TODO: Enum changes
+
   String? gradValue = '2022';
-  String? universityValue = 'Virginia Tech';
-  String? affiliationValue = 'Undergraduate';
-  List<String> affiliations = ['Undergraduate', 'Graduate', 'Post-doc', 'Faculty/Staff', 'Other'];
+  String? universityValue = InstitutionExtension.names[Institution.virginiaTech];
+  String? affiliationValue = AffiliationExtension.names[Affiliation.undergraduateStudent];
+  List<String> affiliations = AffiliationExtension.getNames();
   List<String> gradYears = ['2022', '2023', '2024', '2025', '2026', '2027', '2028'];
 
   @override
@@ -41,7 +42,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     List<Widget> childrenList = [
       Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
             controller: firstName,
             decoration: const InputDecoration(
@@ -81,11 +82,11 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
 
       // 3. College/University
       Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
             value: universityValue,
-            decoration: InputDecoration(
-                icon: const Icon(Icons.school_outlined),
+            decoration: const InputDecoration(
+                icon: Icon(Icons.school_outlined),
                 labelText: "University"
             ),
             // icon: const Icon(Icons.school_outlined),
@@ -118,10 +119,10 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
             ),
             // icon: const Icon(Icons.school_outlined),
             items: affiliations
-                .map<DropdownMenuItem<String>>((String affliation) {
+                .map<DropdownMenuItem<String>>((String affiliation) {
               return DropdownMenuItem<String>(
-                  value: affliation,
-                  child: Text(affliation)
+                  value: affiliation,
+                  child: Text(affiliation)
               );
             }).toList(),
             onChanged: (String? value) {
@@ -170,7 +171,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
 
       // 6. School Email
       Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
             controller: emailController,
             decoration: const InputDecoration(
@@ -194,8 +195,8 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
         child: TextFormField(
             controller: phoneController,
             decoration: const InputDecoration(
-              icon: const Icon(Icons.contact_phone_outlined),
-              border: const UnderlineInputBorder(),
+              icon: Icon(Icons.contact_phone_outlined),
+              border: UnderlineInputBorder(),
               labelText: 'Phone Number',
             ),
             keyboardType: TextInputType.phone,
@@ -242,7 +243,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                 }
 
               },
-              child: Text("Skip Driver"),
+              child: const Text("Skip Driver"),
             ),
             ElevatedButton(
                 onPressed: (){
