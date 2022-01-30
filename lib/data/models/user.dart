@@ -42,8 +42,8 @@ class TagAlongUser {
     this._registered = json['is_registered'];
     this._firstName = json['first_name'];
     this._lastName = json['last_name'];
-    this._institution = EnumToString.fromString(Institution.values, json['institution']) ?? Institution.invalid;
-    this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation']) ?? Affiliation.invalid;
+    this._institution = EnumToString.fromString(Institution.values, json['institution'])!;
+    this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation'])!;
     this._graduationYear = json['grad_year'];
     this._phoneNumber = json['phone_number'];
     this._emailAddress = json['email_address'];

@@ -91,11 +91,10 @@ class TagAlongUserViewModel {
 
       // User exists - initialize our TagAlongUser `user` instance
       if (snapshot.exists) {
-        Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
         logger.log.fine('data exists! Looks like:');
-        logger.log.fine('${userData.toString()}');
-        // Map<String, dynamic> userData = Map<String, dynamic>.from(snapshot.data);
-        tagAlongUser = TagAlongUser.fromJson(userData!);
+        logger.log.fine(userData.toString());
+        tagAlongUser = TagAlongUser.fromJson(userData);
         logger.log.fine('DEBUG: User exists!');
         // tagAlongUser = TagAlongUser.fromJson(userData);
         // logger.log.fine('DEBUG: User exists!');

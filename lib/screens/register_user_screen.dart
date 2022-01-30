@@ -18,7 +18,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var auth_service = Provider.of<AuthService>(context);
+    var authService = Provider.of<AuthService>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +30,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
           OutlinedButton(
               child: Text('Sign Out'),
               onPressed: (() {
-                auth_service.signOut();
+                authService.signOut();
               })
           )
         ],
