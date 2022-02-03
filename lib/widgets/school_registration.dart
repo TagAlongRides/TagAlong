@@ -211,8 +211,6 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
               },
             )
         ),
-
-      const SizedBox(height: 40),
     ];
 
     return Form(
@@ -235,9 +233,8 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
             child: Center(
               child: ElevatedButton(
                 onPressed: (){
-                  logger.log.fine('onPressed on Skip Driver');
+                  logger.log.fine('onPressed on Register Button');
                   final form = _formKey.currentState;
-                  logger.log.fine('form is null: $form');
                   if (form != null) {
                     if (form.validate()) {
                       logger.log.fine('School registration was valid');
@@ -255,6 +252,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                       };
                       logger.log.fine(registrationData.toString());
                       tagAlongUserViewModel.updateTagAlongUser(registrationData);
+
                       Navigator.pushReplacementNamed(context, '/ride_board');
                     }
                     else {

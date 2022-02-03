@@ -29,6 +29,11 @@ class AuthService {
     }
   }
 
+  /// Return the current [User] if signed-in, or null if not.
+  User? getUser() {
+    return _auth.currentUser;
+  }
+
   /// Returns a Future<UserCredential?> that if the Facebook login is
   /// successful, will create a user within the FirebaseAuth system and return
   /// a UserCredential. If login fails, returns null.

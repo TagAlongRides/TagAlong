@@ -16,6 +16,8 @@ class TagAlongUser {
   String _phoneNumber = "";
   String _emailAddress = "";
 
+  String get email => _emailAddress;
+
 
   /// Initializes an Unregistered User.
   ///

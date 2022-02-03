@@ -26,6 +26,25 @@ class TagAlongUserViewModel {
     return uid;
   }
 
+  /// Returns the current [User] if they are currently signed-in, or `null` if
+  /// not.
+  User? getUser() {
+    return _authService.getUser();
+  }
+
+  /// Sends a Email verification to [TagAlongUser] `email`.
+  Future<void> sendEmailVerificationToUser() async {
+    if (userExists()) {
+      String? studentEmail = tagAlongUser?.email;
+      User? user = getUser();
+      if (studentEmail != null && user != null) {
+        await user.updateEmail(studentEmail);
+        await user.sendEmailVerification();
+        logger.log.fine('Sent verification email to $studentEmail');
+      }
+    }
+  }
+
   /// Returns a bool? on whether our [tagAlongUser] instance is registered.
   bool? isRegistered() {
     if (userExists()) {
@@ -125,6 +144,8 @@ class TagAlongUserViewModel {
   /// Updates a [TagAlongUser] with `jsonData` - does not replace.
   Future<void> updateTagAlongUser(Map<String, dynamic> jsonData) async {
     await _databaseService.users.doc(getUid()).update(jsonData);
+    logger.log.fine('Updated TagAlongUser with following data:');
+    logger.log.fine('$jsonData');
   }
 
 
