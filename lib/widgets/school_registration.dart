@@ -41,7 +41,10 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
   @override
   Widget build(BuildContext context) {
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    // Keep TextFormFields on top, DropdownMenus below
     List<Widget> childrenList = [
+
+      // First Name
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
@@ -61,7 +64,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
         ),
       ),
 
-      // 2. Last Name
+      // Last Name
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
@@ -81,7 +84,47 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
         ),
       ),
 
-      // 3. College/University
+      // School Email
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: TextFormField(
+            controller: emailController,
+            decoration: const InputDecoration(
+              icon: Icon(Icons.email_outlined),
+              border: UnderlineInputBorder(),
+              labelText: 'University Email (.edu)',
+            ),
+            keyboardType: TextInputType.emailAddress,
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid .edu email';
+              }
+              return null;
+            }
+        ),
+      ),
+
+      // Phone Number
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: TextFormField(
+            controller: phoneController,
+            decoration: const InputDecoration(
+              icon: Icon(Icons.contact_phone_outlined),
+              border: UnderlineInputBorder(),
+              labelText: 'Phone Number',
+            ),
+            keyboardType: TextInputType.phone,
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid phone number';
+              }
+              return null;
+            }
+        ),
+      ),
+
+      // College/University
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
@@ -108,7 +151,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
           )
       ),
 
-      // 4. Affiliation
+      // Affiliation
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
@@ -143,7 +186,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
       ),
 
       if (_addGradYear)
-      // 5. Graduation Year - Dependant on `Affiliation`
+      // Graduation Year - Dependant on `Affiliation`
         Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: DropdownButtonFormField<String>(
@@ -169,86 +212,32 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
             )
         ),
 
-      // 6. School Email
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: TextFormField(
-            controller: emailController,
-            decoration: const InputDecoration(
-              icon: Icon(Icons.email_outlined),
-              border: UnderlineInputBorder(),
-              labelText: 'University Email (.edu)',
-            ),
-            keyboardType: TextInputType.emailAddress,
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid .edu email';
-              }
-              return null;
-            }
-        ),
-      ),
-
-      // 7. Phone Number
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: TextFormField(
-            controller: phoneController,
-            decoration: const InputDecoration(
-              icon: Icon(Icons.contact_phone_outlined),
-              border: UnderlineInputBorder(),
-              labelText: 'Phone Number',
-            ),
-            keyboardType: TextInputType.phone,
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid phone number';
-              }
-              return null;
-            }
-        ),
-      ),
-
       const SizedBox(height: 40),
-      Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: (){
-                logger.log.fine('onPressed on Skip Driver');
-                final form = _formKey.currentState;
-                logger.log.fine('form is null: $form');
-                if (form != null) {
-                  if (form.validate()) {
-                    logger.log.fine('School registration was valid');
-                    logger.log.fine('Attempting to write the following user data');
-                    // TODO: Need better way of doing this + _updatedAt
-                    Map<String, dynamic> registrationData = {
-                      'first_name': firstName.text,
-                      'last_name': lastName.text,
-                      'institution': universityValue,
-                      'affiliation': affiliationValue,
-                      'grad_year': gradValue,
-                      'email_address': emailController.text,
-                      'phone_number': phoneController.text,
-                      'is_registered': true
-                    };
-                    logger.log.fine(registrationData.toString());
-                    tagAlongUserViewModel.updateTagAlongUser(registrationData);
-                    Navigator.pushReplacementNamed(context, '/ride_board');
-                  }
-                  else {
-                    logger.log.fine('DEBUG: SCHOOL REGISTRATION NOT VALID');
-                  }
-                }
+    ];
 
-              },
-              child: const Text("Skip Driver"),
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          // 1. Get a Scrollable View
+          Expanded(
+            flex: 5,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: childrenList,
+              ),
             ),
-            ElevatedButton(
+          ),
+
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: ElevatedButton(
                 onPressed: (){
-                  logger.log.fine('onPressed on Create Driver');
+                  logger.log.fine('onPressed on Skip Driver');
                   final form = _formKey.currentState;
+                  logger.log.fine('form is null: $form');
                   if (form != null) {
                     if (form.validate()) {
                       logger.log.fine('School registration was valid');
@@ -266,32 +255,21 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                       };
                       logger.log.fine(registrationData.toString());
                       tagAlongUserViewModel.updateTagAlongUser(registrationData);
-                      Navigator.pushReplacementNamed(context, '/register_driver');
-
+                      Navigator.pushReplacementNamed(context, '/ride_board');
                     }
                     else {
                       logger.log.fine('DEBUG: SCHOOL REGISTRATION NOT VALID');
                     }
                   }
                 },
-                child: const Text("Create Driver")
-            )
-          ]
-      )
-    ];
-
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: childrenList,
-        ),
+                child: const Text("Register"),
+              ),
+            ),
+          )
+        ]
       ),
     );
   }
-
-
 }
 
 
