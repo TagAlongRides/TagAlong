@@ -252,6 +252,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                       };
                       logger.log.fine(registrationData.toString());
                       tagAlongUserViewModel.updateTagAlongUser(registrationData).then((_) {
+                        logger.log.fine('Updated user with registration information!');
                         tagAlongUserViewModel.sendEmailVerificationToUser().then((_) {
                           Navigator.pushReplacementNamed(context, '/ride_board');
                         });
