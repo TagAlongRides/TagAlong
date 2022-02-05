@@ -1,5 +1,4 @@
 import 'package:tagalong/util/user_data.dart';
-import 'package:enum_to_string/enum_to_string.dart';
 
 /// A user model containing pertinent data
 class TagAlongUser {

@@ -258,6 +258,8 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
                       // Send an email verification to `email_address`.
                       await tagAlongUserViewModel.sendEmailVerificationToUser();
+
+                      // TODO: Move to "RegistrationComplete" Screen?
                       await Navigator.pushReplacementNamed(context, '/ride_board');
 
                     }

@@ -33,7 +33,7 @@ class TagAlongUserViewModel {
   }
 
   /// Sends a Email verification to [TagAlongUser] `email` as well as
-  /// sets up the logged-in [User] instac
+  /// updates the [TagAlongUser] `email`
   Future<void> sendEmailVerificationToUser() async {
     if (userExists()) {
       String? studentEmail = tagAlongUser?.email;
