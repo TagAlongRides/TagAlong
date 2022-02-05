@@ -32,10 +32,13 @@ class TagAlongUserViewModel {
     return _authService.getUser();
   }
 
-  /// Sends a Email verification to [TagAlongUser] `email`.
+  /// Sends a Email verification to [TagAlongUser] `email` as well as
+  /// sets up the logged-in [User] instac
   Future<void> sendEmailVerificationToUser() async {
     if (userExists()) {
-      String? studentEmail = tagAlongUser?.email;
+      // String? studentEmail = tagAlongUser?.email;
+      // TODO: FIX hard-coded
+      String? studentEmail = 'spak9@gmu.edu';
       User? user = getUser();
       if (studentEmail != null && user != null) {
         await user.updateEmail(studentEmail);
@@ -55,7 +58,7 @@ class TagAlongUserViewModel {
     }
   }
 
-  /// Returns a bool on whether [tagAlongUser] instance exists.
+  /// Returns a bool on whether [tagAlongUser] instance exists (in-memory).
   bool userExists() {
     if (tagAlongUser == null) {
       return false;
@@ -115,7 +118,6 @@ class TagAlongUserViewModel {
         logger.log.fine('Data exists! Looks like:');
         logger.log.fine(userData.toString());
         tagAlongUser = TagAlongUser.fromJson(userData);
-        logger.log.fine('DEBUG: User exists!');
         return;
       }
       // User does not exist - create an unregisteredUser
@@ -144,6 +146,7 @@ class TagAlongUserViewModel {
   /// Updates a [TagAlongUser] with `jsonData` - does not replace.
   Future<void> updateTagAlongUser(Map<String, dynamic> jsonData) async {
     await _databaseService.users.doc(getUid()).update(jsonData);
+    tagAlongUser = TagAlongUser.fromJson(jsonData);
     logger.log.fine('Updated TagAlongUser with following data:');
     logger.log.fine('$jsonData');
   }

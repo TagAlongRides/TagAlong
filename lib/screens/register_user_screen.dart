@@ -80,18 +80,18 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
 
   Future<void> _setUpUser(TagAlongUserViewModel vm) async {
     await vm.setUpUser(vm.getUid()!);
-
     bool? isRegistered = vm.isRegistered();
+
     if (isRegistered == true) {
       logger.log.fine('DEBUG: User is registered in register_user_screen. To Rideboard');
-      Timer.run(() {
+      Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, '/ride_board');
       });
     }
     // 2. User is NOT registered
     else {
       logger.log.fine('DEBUG: User is NOT registered in register_user_screen. To User Registration');
-      Timer.run(() {
+      Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, '/register_user');
       });
     }

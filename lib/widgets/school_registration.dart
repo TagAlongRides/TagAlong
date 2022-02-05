@@ -237,7 +237,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                   final form = _formKey.currentState;
                   if (form != null) {
                     if (form.validate()) {
-                      logger.log.fine('School registration was valid');
+                      logger.log.fine('User registration was valid');
                       logger.log.fine('Attempting to write the following user data');
                       // TODO: Need better way of doing this + _updatedAt
                       Map<String, dynamic> registrationData = {
@@ -251,12 +251,16 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                         'is_registered': true
                       };
                       logger.log.fine(registrationData.toString());
-                      tagAlongUserViewModel.updateTagAlongUser(registrationData);
-
-                      Navigator.pushReplacementNamed(context, '/ride_board');
+                      tagAlongUserViewModel.updateTagAlongUser(registrationData).then((_) {
+                        tagAlongUserViewModel.sendEmailVerificationToUser().then((_) {
+                          Navigator.pushReplacementNamed(context, '/ride_board');
+                        });
+                      });
+                      // tagAlongUserViewModel.sendEmailVerificationToUser();
+                      // Navigator.pushReplacementNamed(context, '/ride_board');
                     }
                     else {
-                      logger.log.fine('DEBUG: SCHOOL REGISTRATION NOT VALID');
+                      logger.log.fine('User registration was NOT valid.');
                     }
                   }
                 },

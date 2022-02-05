@@ -35,7 +35,7 @@ class LoginScreen extends StatelessWidget {
                                   style: Theme.of(context).textTheme.headline1
                               ),
                               Padding(
-                                  padding: EdgeInsets.all(16.0),
+                                  padding: const EdgeInsets.all(16.0),
                                   child: Text(
                                     "Get a ride home for the holidays",
                                     style: Theme.of(context).textTheme.bodyText2,
