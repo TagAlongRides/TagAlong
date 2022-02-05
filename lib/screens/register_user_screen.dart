@@ -7,6 +7,8 @@ import 'package:tagalong/widgets/school_registration.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
+
+
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({Key? key}) : super(key: key);
 
@@ -57,7 +59,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(20.0),
-            child: SchoolRegistrationForm(),
+            child: UserRegistrationForm(),
           )
         ),
       )

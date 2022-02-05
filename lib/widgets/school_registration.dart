@@ -5,14 +5,14 @@ import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
-class SchoolRegistrationForm extends StatefulWidget {
-  const SchoolRegistrationForm({Key? key}) : super(key: key);
+class UserRegistrationForm extends StatefulWidget {
+  const UserRegistrationForm({Key? key}) : super(key: key);
 
   @override
-  _SchoolRegistrationFormState createState() => _SchoolRegistrationFormState();
+  _UserRegistrationFormState createState() => _UserRegistrationFormState();
 }
 
-class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
+class _UserRegistrationFormState extends State<UserRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
   final firstName = TextEditingController();
   final lastName = TextEditingController();
@@ -232,7 +232,7 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
             flex: 1,
             child: Center(
               child: ElevatedButton(
-                onPressed: (){
+                onPressed: () async {
                   logger.log.fine('onPressed on Register Button');
                   final form = _formKey.currentState;
                   if (form != null) {
@@ -251,14 +251,15 @@ class _SchoolRegistrationFormState extends State<SchoolRegistrationForm> {
                         'is_registered': true
                       };
                       logger.log.fine(registrationData.toString());
-                      tagAlongUserViewModel.updateTagAlongUser(registrationData).then((_) {
-                        logger.log.fine('Updated user with registration information!');
-                        tagAlongUserViewModel.sendEmailVerificationToUser().then((_) {
-                          Navigator.pushReplacementNamed(context, '/ride_board');
-                        });
-                      });
-                      // tagAlongUserViewModel.sendEmailVerificationToUser();
-                      // Navigator.pushReplacementNamed(context, '/ride_board');
+
+                      // Update the Unregistered TagAlongUser in database
+                      await tagAlongUserViewModel.updateTagAlongUser(registrationData);
+                      logger.log.fine('Updated user with registration information!');
+
+                      // Send an email verification to `email_address`.
+                      await tagAlongUserViewModel.sendEmailVerificationToUser();
+                      await Navigator.pushReplacementNamed(context, '/ride_board');
+
                     }
                     else {
                       logger.log.fine('User registration was NOT valid.');
