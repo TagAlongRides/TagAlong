@@ -92,7 +92,7 @@ class TagAlongTheme {
         backgroundColor: Colors.black,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: Colors.green,
+        // selectedItemColor: Colors.green,
       ),
       textTheme: lightTextTheme,
     );

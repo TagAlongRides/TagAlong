@@ -12,6 +12,7 @@ class RideBoardScreen extends StatefulWidget {
 }
 
 class _RideBoardScreenState extends State<RideBoardScreen> {
+  int _selectedItem = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,34 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
       ),
       body: const Center(
         child: Text("Ride Board")
-      )
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            label: 'Ride Board',
+            icon: Icon(Icons.home_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: 'My Rides',
+            icon: Icon(Icons.directions_car_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: 'Messages',
+            icon: Icon(Icons.message_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: 'Account',
+            icon: Icon(Icons.account_circle_outlined),
+          ),
+        ],
+        currentIndex: _selectedItem,
+        onTap: (int index) {
+          setState(() {
+            _selectedItem = index;
+          });
+        }
+      ),
     );
   }
 }
