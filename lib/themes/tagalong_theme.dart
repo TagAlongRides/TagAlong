@@ -71,18 +71,18 @@ class TagAlongTheme {
   // 3
   static ThemeData light() {
     return ThemeData(
-      appBarTheme: AppBarTheme(
-      backgroundColor: Colors.white24,
-      foregroundColor: Colors.black), //here you can give the text color
-      primaryColor: Colors.white,
-      brightness: Brightness.light,
-      checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateColor.resolveWith(
-              (states) {
-            return Colors.black;
-          },
-        ),
-      ),
+      // appBarTheme: AppBarTheme(
+      // backgroundColor: Colors.white24,
+      // foregroundColor: Colors.black), //here you can give the text color
+      // primaryColor: Colors.white,
+      // brightness: Brightness.light,
+      // checkboxTheme: CheckboxThemeData(
+      //   fillColor: MaterialStateColor.resolveWith(
+      //         (states) {
+      //       return Colors.black;
+      //     },
+      //   ),
+      // ),
       // appBarTheme: const AppBarTheme(
       //   foregroundColor: Colors.black,
       //   backgroundColor: Colors.white,
