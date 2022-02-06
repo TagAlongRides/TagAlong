@@ -26,6 +26,26 @@ class TagAlongUserViewModel {
     return uid;
   }
 
+  /// Returns the current [User] if they are currently signed-in, or `null` if
+  /// not.
+  User? getUser() {
+    return _authService.getUser();
+  }
+
+  /// Sends a Email verification to [TagAlongUser] `email` as well as
+  /// updates the [TagAlongUser] `email`
+  Future<void> sendEmailVerificationToUser() async {
+    if (userExists()) {
+      String? studentEmail = tagAlongUser?.email;
+      User? user = getUser();
+      if (studentEmail != null && user != null) {
+        await user.updateEmail(studentEmail);
+        await user.sendEmailVerification();
+        logger.log.fine('Sent verification email to $studentEmail');
+      }
+    }
+  }
+
   /// Returns a bool? on whether our [tagAlongUser] instance is registered.
   bool? isRegistered() {
     if (userExists()) {
@@ -36,7 +56,7 @@ class TagAlongUserViewModel {
     }
   }
 
-  /// Returns a bool on whether [tagAlongUser] instance exists.
+  /// Returns a bool on whether [tagAlongUser] instance exists (in-memory).
   bool userExists() {
     if (tagAlongUser == null) {
       return false;
@@ -46,7 +66,8 @@ class TagAlongUserViewModel {
     }
   }
 
-  // TODO: Will most likely need to add a "provider" login parameter
+  // TODO: Will most likely need to add a "provider" login parameter.
+  // TODO: Error handling
   /// Triggers a Facebook Sign-in event via [AuthService].
   ///
   /// If successful, build a unregistered [User] and store in Firestore.
@@ -80,11 +101,13 @@ class TagAlongUserViewModel {
   /// If the User !exist, create an "unregistered User" and write to Firestore.
   Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
     logger.log.fine('setUpUser()');
-    // Check if [user] exists in memory
+    // 1. [user] exists in memory
     if (tagAlongUser != null) {
       logger.log.fine('TagAlongUser instance already in memory.');
       return;
     }
+
+    // 2. [user] does NOT exist in memory
     else {
       // Query `users` collection for [uid] user and see if they exist
       logger.log.fine('Querying data for user $uid');
@@ -96,7 +119,6 @@ class TagAlongUserViewModel {
         logger.log.fine('Data exists! Looks like:');
         logger.log.fine(userData.toString());
         tagAlongUser = TagAlongUser.fromJson(userData);
-        logger.log.fine('DEBUG: User exists!');
         return;
       }
       // User does not exist - create an unregisteredUser
@@ -107,7 +129,6 @@ class TagAlongUserViewModel {
       logger.log.fine('DEBUG: TagAlongUser was initialized.');
       logger.log.fine('The TagAlongUser is: ${tagAlongUser?.toMap().toString()}');
       await addTagAlongUserToFirestore(uid);
-
     }
   }
 
@@ -118,13 +139,23 @@ class TagAlongUserViewModel {
       logger.log.fine('DEBUG: Added TagAlongUser $uid.');
     }
     else {
-      logger.log.fine('DEBUG: TagAlongUser instance does not exist in ViewModel.');
+      logger.log.fine('TagAlongUser instance does not exist in ViewModel - cannot happen');
     }
   }
 
   /// Updates a [TagAlongUser] with `jsonData` - does not replace.
   Future<void> updateTagAlongUser(Map<String, dynamic> jsonData) async {
     await _databaseService.users.doc(getUid()).update(jsonData);
+    logger.log.fine('updateTagAlongUser(): jsonData - $jsonData');
+    // TODO: Need a much better solution of "caching" our User in memory
+    // TODO: rather than always querying for it...
+    tagAlongUser = null;
+    String? uid = getUid();
+    if (uid != null) {
+      await setUpUser(uid);
+    }
+    logger.log.fine('Updated TagAlongUser with following data:');
+    logger.log.fine('$jsonData');
   }
 
 

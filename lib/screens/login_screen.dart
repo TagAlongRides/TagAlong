@@ -22,33 +22,31 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                   children: [
                     Expanded(
-                        child: Container(
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Logo, "Tag Along", description
-                                  const Icon(
-                                      Icons.directions_car_outlined,
-                                      size: 75
-                                  ),
-                                  Text(
-                                      "TagAlong",
-                                      style: Theme.of(context).textTheme.headline1
-                                  ),
-                                  Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Text(
-                                        "Get a ride home for the holidays",
-                                        style: Theme.of(context).textTheme.bodyText2,
-                                      )
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Logo, "Tag Along", description
+                              const Icon(
+                                  Icons.directions_car_outlined,
+                                  size: 75
+                              ),
+                              Text(
+                                  "TagAlong",
+                                  style: Theme.of(context).textTheme.headline1
+                              ),
+                              Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    "Get a ride home for the holidays",
+                                    style: Theme.of(context).textTheme.bodyText2,
                                   )
-                                ]
-                            )
+                              )
+                            ]
                         )
                     ),
                     Expanded(
                         child: Center(
-                            child: Container (
+                            child: SizedBox (
                                 height: 40,
                                 // Facebook Logo and Text
                                 child: SignInButton(

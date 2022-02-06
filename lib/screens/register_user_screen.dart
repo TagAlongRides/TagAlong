@@ -7,6 +7,8 @@ import 'package:tagalong/widgets/school_registration.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
+
+
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({Key? key}) : super(key: key);
 
@@ -57,7 +59,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(20.0),
-            child: SchoolRegistrationForm(),
+            child: UserRegistrationForm(),
           )
         ),
       )
@@ -80,18 +82,18 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
 
   Future<void> _setUpUser(TagAlongUserViewModel vm) async {
     await vm.setUpUser(vm.getUid()!);
-
     bool? isRegistered = vm.isRegistered();
+
     if (isRegistered == true) {
       logger.log.fine('DEBUG: User is registered in register_user_screen. To Rideboard');
-      Timer.run(() {
+      Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, '/ride_board');
       });
     }
     // 2. User is NOT registered
     else {
       logger.log.fine('DEBUG: User is NOT registered in register_user_screen. To User Registration');
-      Timer.run(() {
+      Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, '/register_user');
       });
     }

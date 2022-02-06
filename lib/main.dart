@@ -79,7 +79,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     // Check if the user is signed-in or signed-out
     AuthService authService = Provider.of<AuthService>(context, listen: false);
-    // authService.signOut();
     _streamSubscription = authService.userStatus.listen((User? user){
       // 1. User is signed-in; Go to RegistrationWrapper
       if (user != null) {
@@ -104,16 +103,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (BuildContext context) => TagAlongUserViewModel(),
-      child: Scaffold(
-        appBar: AppBar(),
-        body: const SafeArea(
-          child: Center(
-            child: CircularProgressIndicator()
-          )
+    return Scaffold(
+      appBar: AppBar(),
+      body: const SafeArea(
+        child: Center(
+          child: CircularProgressIndicator()
         )
-      ),
+      )
     );
   }
 }
