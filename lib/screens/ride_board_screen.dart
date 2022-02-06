@@ -18,6 +18,7 @@ class RideBoardScreen extends StatefulWidget {
 
 class _RideBoardScreenState extends State<RideBoardScreen> {
   int _selectedItem = 0;
+  int count = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +42,8 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
       body: Center(
         child: IndexedStack(
           index: _selectedItem,
-          children: const [
-            RideBoardList(),
+          children: [
+            RideBoardList(count: count),
             MyRides(),
             Messages(),
             Account()
@@ -74,6 +75,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
         onTap: (int index) {
           setState(() {
             _selectedItem = index;
+            count++;
           });
         }
       ),
