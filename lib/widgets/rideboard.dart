@@ -5,9 +5,8 @@ import '../viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 class RideBoardList extends StatefulWidget {
-  int count;
 
-  RideBoardList({Key? key, required this.count}) : super(key: key);
+  const RideBoardList({Key? key}) : super(key: key);
 
   @override
   _RideBoardListState createState() => _RideBoardListState();
@@ -17,6 +16,6 @@ class _RideBoardListState extends State<RideBoardList> {
   @override
   Widget build(BuildContext context) {
     // TODO: Make List<Ride>
-    return Text('Ride Board ${widget.count}');
+    return const Text('Ride Board');
   }
 }
