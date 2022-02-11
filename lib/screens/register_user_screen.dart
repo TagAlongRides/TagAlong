@@ -8,7 +8,6 @@ import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
-
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({Key? key}) : super(key: key);
 

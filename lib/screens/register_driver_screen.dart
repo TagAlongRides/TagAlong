@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/widgets/driver_registration.dart';
 
+import '../widgets/new_driver_registration.dart';
+
 class RegisterDriverScreen extends StatefulWidget {
   const RegisterDriverScreen({Key? key}) : super(key: key);
 
@@ -49,13 +51,13 @@ class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
                 ]
             )
         ),
-        body: const SafeArea(
-          child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: DriverRegistrationForm(),
-              )
-          ),
+        body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: NewDriverRegistrationForm(),
+              // TODO: TESTING - UNCOMMENT ALL BELOW WHEN DONE
+              // child: DriverRegistrationForm(),
+            )
         )
     );
   }

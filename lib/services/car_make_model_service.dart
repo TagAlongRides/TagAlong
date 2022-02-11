@@ -9,9 +9,9 @@ class CarMakeModelService {
 
 
   /// Exposes a List<String> of `Make` values.
-  Future<List<String>?> getMakes() async {
+  Future<List<String>> getMakes() async {
 
-    List<String>? makeList;
+    List<String> makeList = [];
 
     // Get response
     Uri makesUrl = Uri.parse('https://carmakemodeldb.com/api/v1/car-lists/get/all/makes?api_token=$_apiToken');
@@ -35,8 +35,9 @@ class CarMakeModelService {
 
 
   /// Exposes a List<String> of `Model` values.
-  Future<List<String>?> getModels({required String make}) async {
-    List<String>? modelList;
+  Future<List<String>> getModels({required String make}) async {
+
+    List<String> modelList = [];
 
     // Get response based on [make]
     Uri modelUrl = Uri.parse("https://carmakemodeldb.com/api/v1/car-lists/get/all/models/$make?api_token=$_apiToken");
