@@ -11,7 +11,6 @@ class MakeDropDownButtonWidget extends StatefulWidget {
 }
 
 class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
-  String? currMake;
   late RegisterDriverViewModel _registerDriverViewModel;
   late Future<List<String>> makeList;
 
@@ -25,7 +24,6 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    currMake = _registerDriverViewModel.make;
     return FutureBuilder<List<String>>(
       future: makeList,
       builder: (context, AsyncSnapshot<List<String>> snapshot) {
@@ -37,7 +35,7 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
           // By this time, `makeList` is a completed Future and contains
           // a List<String> of ALL makes
           return DropdownButton<String>(
-            value: currMake,
+            value: _registerDriverViewModel.make,
             items: snapshot.data?.map((makeOption) =>
               DropdownMenuItem<String>(
                 child: Text(makeOption),

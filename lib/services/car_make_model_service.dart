@@ -63,8 +63,8 @@ class CarMakeModelService {
 
 
   /// Exposes a List<String> of `year` values.
-  Future<List<String>?> getYears({required String make, required String model}) async {
-    List<String>? yearList;
+  Future<List<String>> getYears({required String make, required String model}) async {
+    List<String> yearList = [];
 
     // Get response
     Uri yearUrl = Uri.parse('https://carmakemodeldb.com/api/v1/car-lists/get/year-range/$make/$model?api_token=$_apiToken');

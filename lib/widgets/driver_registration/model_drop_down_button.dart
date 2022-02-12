@@ -11,7 +11,6 @@ class ModelDropDownButton extends StatefulWidget {
 }
 
 class _ModelDropDownButtonState extends State<ModelDropDownButton> {
-  String? currModel;
   late RegisterDriverViewModel _registerDriverViewModel;
   late Future<List<String>> modelList;
 
@@ -21,12 +20,14 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
     // Prepare our car model list within initState for FutureBuilder.
     // Note: This widget builds ONLY if `make` exists
     _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: false);
-    modelList = _registerDriverViewModel.getModels();
   }
 
   @override
   Widget build(BuildContext context) {
-    currModel = _registerDriverViewModel.model;
+    if (_registerDriverViewModel.hasMakeUpdated) {
+      modelList = _registerDriverViewModel.getModels();
+      _registerDriverViewModel.hasMakeUpdated = false;
+    }
     return FutureBuilder<List<String>>(
         future: modelList,
         builder: (context, AsyncSnapshot<List<String>> snapshot) {
@@ -38,7 +39,7 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
             // By this time, `modelList` is a completed Future and contains
             // a List<String> of ALL models of said `make`
             return DropdownButton<String>(
-              value: currModel,
+              value: _registerDriverViewModel.model,
               items: snapshot.data?.map((modelOption) =>
                   DropdownMenuItem<String>(
                       child: Text(modelOption),

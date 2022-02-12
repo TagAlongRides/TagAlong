@@ -8,6 +8,9 @@ class RegisterDriverViewModel extends ChangeNotifier {
   String? model;
   String? year;
   String? color;
+  bool hasMakeUpdated = false;
+  bool hasModelUpdated = false;
+  bool hasYearUpdated = false;
 
   final CarMakeModelService _carMakeModelService = CarMakeModelService();
 
@@ -19,7 +22,7 @@ class RegisterDriverViewModel extends ChangeNotifier {
     this.model = null;
     this.year = null;
     this.color = null;
-
+    this.hasMakeUpdated = true;
     // Tell listening Widgets to rebuild
     logger.log.fine('updateMake($make) - notifying listeners');
     notifyListeners();
@@ -32,9 +35,21 @@ class RegisterDriverViewModel extends ChangeNotifier {
     this.model = model;
     this.year = null;
     this.color = null;
-
+    this.hasModelUpdated = true;
     // Tell listening Widgets to rebuild
     logger.log.fine('updateModel($model) - notifying listeners');
+    notifyListeners();
+  }
+
+  /// Updates [year] and resets [color].
+  ///
+  /// This function will also notify all listeners to rebuild.
+  void updateYear({required String year}) {
+    this.year = year;
+    this.color = null;
+    this.hasYearUpdated = true;
+    // Tell listening Widgets to rebuild
+    logger.log.fine('updateYear($year) - notifying listeners');
     notifyListeners();
   }
 
@@ -44,5 +59,9 @@ class RegisterDriverViewModel extends ChangeNotifier {
 
   Future<List<String>> getModels() async {
     return await _carMakeModelService.getModels(make: this.make!);
+  }
+
+  Future<List<String>> getYears() async {
+    return await _carMakeModelService.getYears(make: this.make!, model: this.model!);
   }
 }

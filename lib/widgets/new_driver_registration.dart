@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'driver_registration/fake_drop_down_button.dart';
 import 'driver_registration/make_drop_down_button.dart';
 import 'driver_registration/model_drop_down_button.dart';
+import 'driver_registration/year_drop_down_button.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
@@ -29,8 +29,10 @@ class _NewDriverRegistrationFormState extends State<NewDriverRegistrationForm> {
 
     // Will rebuild on any state change from the ViewModel
     RegisterDriverViewModel _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: true);
-    bool _showModelDropDownButton = (_registerDriverViewModel.make != null && _registerDriverViewModel.model == null)
-      || (_registerDriverViewModel.make != null && _registerDriverViewModel.model != null);
+    bool _showModelDropDownButton = (_registerDriverViewModel.make != null);
+    bool _showYearDropDownButton = (_registerDriverViewModel.make != null && _registerDriverViewModel.model != null);
+    // bool _showModelDropDownButton = (_registerDriverViewModel.make != null && _registerDriverViewModel.model == null)
+    //   || (_registerDriverViewModel.make != null && _registerDriverViewModel.model != null);
 
     return Form(
       key: _formKey,
@@ -43,11 +45,11 @@ class _NewDriverRegistrationFormState extends State<NewDriverRegistrationForm> {
 
             // 2. Model - dependant on Make
             if (_showModelDropDownButton)
-              ModelDropDownButton()
-            else
-              FakeDropDownButton(label: "asdf")
+              ModelDropDownButton(),
 
-            // 3. Year - depend
+            // 3. Year - dependant on Make & Model
+            if (_showYearDropDownButton)
+              YearDropDownButton()
           ]
         )
       )
