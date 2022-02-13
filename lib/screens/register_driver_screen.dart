@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/widgets/driver_registration.dart';
+import 'package:tagalong/widgets/driver_registration_form.dart';
 
 import '../widgets/driver_registration_form.dart';
 
@@ -54,9 +54,7 @@ class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
         body: Center(
             child: Padding(
               padding: EdgeInsets.all(40.0),
-              child: NewDriverRegistrationForm(),
-              // TODO: TESTING - UNCOMMENT ALL BELOW WHEN DONE
-              // child: DriverRegistrationForm(),
+              child: DriverRegistrationForm(),
             )
         )
     );

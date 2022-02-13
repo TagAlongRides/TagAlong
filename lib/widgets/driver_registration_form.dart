@@ -14,14 +14,14 @@ import 'package:tagalong/util/log.dart' as logger;
 /// Depending on the state, it will render different widgets:
 /// 1. A true <data>DropDownButton
 /// 2. A fake disabled DropDownButton
-class NewDriverRegistrationForm extends StatefulWidget {
-  const NewDriverRegistrationForm({Key? key}) : super(key: key);
+class DriverRegistrationForm extends StatefulWidget {
+  const DriverRegistrationForm({Key? key}) : super(key: key);
 
   @override
-  _NewDriverRegistrationFormState createState() => _NewDriverRegistrationFormState();
+  _DriverRegistrationFormState createState() => _DriverRegistrationFormState();
 }
 
-class _NewDriverRegistrationFormState extends State<NewDriverRegistrationForm> {
+class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -77,7 +77,19 @@ class _NewDriverRegistrationFormState extends State<NewDriverRegistrationForm> {
             flex: 1,
             child: Center(
               child: ElevatedButton(
-                onPressed: () {  },
+                onPressed: () {
+                  // // TODO: Need a better way of doign this?
+                  // Map<String, dynamic> driverData = {
+                  //   'is_driver': true,
+                  //   'car_make': makeValue,
+                  //   'car_model': modelValue,
+                  //   'car_year': yearValue,
+                  //   'car_color': colorValue
+                  // };
+                  // logger.log.fine(driverData.toString());
+                  // tagAlongUserViewModel.updateTagAlongUser(driverData);
+                  // Navigator.pushReplacementNamed(context, '/ride_board');
+                },
                 child: const Text('Let\'s Go!'),
               )
             ),
