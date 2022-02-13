@@ -8,6 +8,7 @@ class RegisterDriverViewModel extends ChangeNotifier {
   String? model;
   String? year;
   String? color;
+
   bool hasMakeUpdated = false;
   bool hasModelUpdated = false;
   bool hasYearUpdated = false;
@@ -50,6 +51,12 @@ class RegisterDriverViewModel extends ChangeNotifier {
     this.hasYearUpdated = true;
     // Tell listening Widgets to rebuild
     logger.log.fine('updateYear($year) - notifying listeners');
+    notifyListeners();
+  }
+
+  /// Updates [color]
+  void updateColor({required String color}) {
+    this.color = color;
     notifyListeners();
   }
 
