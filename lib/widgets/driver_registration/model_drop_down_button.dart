@@ -38,7 +38,7 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
             logger.log.fine('Done!');
             // By this time, `modelList` is a completed Future and contains
             // a List<String> of ALL models of said `make`
-            return DropdownButton<String>(
+            return DropdownButtonFormField<String>(
               value: _registerDriverViewModel.model,
               items: snapshot.data?.map((modelOption) =>
                   DropdownMenuItem<String>(

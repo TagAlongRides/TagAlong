@@ -34,7 +34,7 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
           logger.log.fine('Done!');
           // By this time, `makeList` is a completed Future and contains
           // a List<String> of ALL makes
-          return DropdownButton<String>(
+          return DropdownButtonFormField<String>(
             value: _registerDriverViewModel.make,
             items: snapshot.data?.map((makeOption) =>
               DropdownMenuItem<String>(
