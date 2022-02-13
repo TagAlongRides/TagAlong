@@ -56,6 +56,9 @@ dependencies:
   # 1/22/22 - Added Logging
   logging: ^1.0.2
 
+  # 2/13/22 - Phone number input field
+  intl_phone_number_input: ^0.7.0
+
 
 dev_dependencies:
   flutter_test:
