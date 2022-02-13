@@ -40,36 +40,38 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
         children: [
           Expanded(
             flex: 5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Make
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: MakeDropDownButtonWidget()
-                ),
-
-                // 2. Model - dependant on Make
-                if (_showModelDropDownButton)
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Make
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: ModelDropDownButton()
+                    child: MakeDropDownButtonWidget()
                   ),
 
-                // 3. Year - dependant on Make & Model
-                if (_showYearDropDownButton)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: YearDropDownButton()
-                  ),
+                  // 2. Model - dependant on Make
+                  if (_showModelDropDownButton)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: ModelDropDownButton()
+                    ),
 
-                // 4. Color - A static enum list therefore no async
-                if (_showColorDropDownButton)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: ColorDropDownButton()
-                  )
-              ]
+                  // 3. Year - dependant on Make & Model
+                  if (_showYearDropDownButton)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: YearDropDownButton()
+                    ),
+
+                  // 4. Color - A static enum list therefore no async
+                  if (_showColorDropDownButton)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: ColorDropDownButton()
+                    )
+                ]
+              ),
             ),
           ),
 
