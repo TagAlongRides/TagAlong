@@ -53,7 +53,7 @@ class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
         ),
         body: Center(
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(40.0),
               child: NewDriverRegistrationForm(),
               // TODO: TESTING - UNCOMMENT ALL BELOW WHEN DONE
               // child: DriverRegistrationForm(),

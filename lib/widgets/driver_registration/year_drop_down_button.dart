@@ -33,13 +33,17 @@ class _YearDropDownButtonState extends State<YearDropDownButton> {
         future: yearList,
         builder: (context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           else if (snapshot.connectionState == ConnectionState.done) {
             logger.log.fine('Done!');
             // By this time, `modelList` is a completed Future and contains
             // a List<String> of ALL models of said `make`
             return DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Car Year'
+              ),
               value: _registerDriverViewModel.year,
               items: snapshot.data?.map((yearOption) =>
                   DropdownMenuItem<String>(

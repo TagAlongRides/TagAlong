@@ -36,22 +36,47 @@ class _NewDriverRegistrationFormState extends State<NewDriverRegistrationForm> {
 
     return Form(
       key: _formKey,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Make
-            MakeDropDownButtonWidget(),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1. Make
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: MakeDropDownButtonWidget()
+                ),
 
-            // 2. Model - dependant on Make
-            if (_showModelDropDownButton)
-              ModelDropDownButton(),
+                // 2. Model - dependant on Make
+                if (_showModelDropDownButton)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: ModelDropDownButton()
+                  ),
 
-            // 3. Year - dependant on Make & Model
-            if (_showYearDropDownButton)
-              YearDropDownButton()
-          ]
-        )
+                // 3. Year - dependant on Make & Model
+                if (_showYearDropDownButton)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: YearDropDownButton()
+                  )
+              ]
+            ),
+          ),
+
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () {  },
+                child: const Text('Let\'s Go!'),
+              )
+            ),
+
+          )
+        ]
       )
     );
   }

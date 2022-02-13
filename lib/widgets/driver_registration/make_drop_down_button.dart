@@ -28,13 +28,17 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
       future: makeList,
       builder: (context, AsyncSnapshot<List<String>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
         else if (snapshot.connectionState == ConnectionState.done) {
           logger.log.fine('Done!');
           // By this time, `makeList` is a completed Future and contains
           // a List<String> of ALL makes
           return DropdownButtonFormField<String>(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Car Make'
+            ),
             value: _registerDriverViewModel.make,
             items: snapshot.data?.map((makeOption) =>
               DropdownMenuItem<String>(

@@ -32,13 +32,17 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
         future: modelList,
         builder: (context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           else if (snapshot.connectionState == ConnectionState.done) {
             logger.log.fine('Done!');
             // By this time, `modelList` is a completed Future and contains
             // a List<String> of ALL models of said `make`
             return DropdownButtonFormField<String>(
+              decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Car Model'
+              ),
               value: _registerDriverViewModel.model,
               items: snapshot.data?.map((modelOption) =>
                   DropdownMenuItem<String>(
