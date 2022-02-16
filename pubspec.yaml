@@ -59,6 +59,9 @@ dependencies:
   # 2/13/22 - Phone number input field
   intl_phone_number_input: ^0.7.0
 
+  # 2/15/22 - UUID
+  uuid: 3.0.5
+
 
 dev_dependencies:
   flutter_test:

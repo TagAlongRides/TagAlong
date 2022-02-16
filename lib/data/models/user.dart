@@ -5,15 +5,17 @@ class TagAlongUser {
   late String _id;
   late DateTime _createdAt;
   DateTime _updatedAt = DateTime(0);
-  late String _signInMethod;
-  bool _registered = false;
+  String _institution = Institution.INVALID;
   String _firstName = "";
   String _lastName = "";
-  String _institution = Institution.INVALID;
-  String _affiliation = Affiliation.INVALID;
   String _graduationYear = "";
   String _phoneNumber = "";
   String _emailAddress = "";
+  Driver? _driverData;
+  bool _verified = false;
+  bool _registered = false;
+  late String _signInMethod;
+
 
   String get email => _emailAddress;
 
@@ -21,17 +23,22 @@ class TagAlongUser {
   /// Initializes an Unregistered User.
   ///
   /// The minimum definition for a valid user requires an ID, a creation date,
-  /// and a sign-in method.
-  TagAlongUser.unregisteredUser(this._id, this._createdAt, this._signInMethod) {
+  /// and a sign-in method. This is used when a user successfully logs in with
+  /// Facebook, but never completes user registration.
+  TagAlongUser.unregisteredUser({required String id, required DateTime createdAt, required String signinMethod}) {
+    _id = id;
+    _createdAt = createdAt;
     _updatedAt = DateTime.now();
-    _registered = false;
+    _institution = Institution.INVALID;
     _firstName = '';
     _lastName = '';
-    _institution = Institution.INVALID;
-    _affiliation = Affiliation.INVALID;
     _graduationYear = '';
     _phoneNumber = '';
     _emailAddress = '';
+    _driverData = null;
+    _verified = false;
+    _registered = false;
+
   }
 
   /// A named constructor to create a [TagAlongUser] from a Map<String, dynamic>
@@ -44,10 +51,6 @@ class TagAlongUser {
     this._lastName = json['last_name'];
     this._signInMethod = json['sign_in_method'];
     this._institution = json['institution'];
-    this._affiliation = json['affiliation'];
-    // this._signInMethod = EnumToString.fromString(SignInMethod.values, json['sign_in_method'])!;
-    // this._institution = EnumToString.fromString(Institution.values, json['institution'])!;
-    // this._affiliation = EnumToString.fromString(Affiliation.values, json['affiliation'])!;
     this._graduationYear = json['grad_year'];
     this._phoneNumber = json['phone_number'];
     this._emailAddress = json['email_address'];
@@ -60,19 +63,17 @@ class TagAlongUser {
       String firstName,
       String lastName,
       String institution,
-      String affiliation,
       String graduationYear,
       String phoneNumber,
       String emailAddress) {
     _firstName = firstName;
     _lastName = lastName;
     _institution = institution;
-    _affiliation = affiliation;
     _graduationYear = graduationYear;
     _phoneNumber = phoneNumber;
     _emailAddress = emailAddress;
-
     _registered = true;
+
     // TODO: Probably don't want to rely on system time like this...
     _updatedAt = DateTime.now();
   }
@@ -84,8 +85,6 @@ class TagAlongUser {
 
   /// Convert a User object to a map that respects its values' types.
   Map<String, dynamic> toMap() {
-    // TODO: the key values below should not be hardcoded, figure out a more
-    //  central location for them
     return {
       'id': _id,
       'created': _createdAt,
@@ -95,7 +94,6 @@ class TagAlongUser {
       'first_name': _firstName,
       'last_name': _lastName,
       'institution': _institution,
-      'affiliation': _affiliation,
       'grad_year': _graduationYear,
       'phone_number': _phoneNumber,
       'email_address': _emailAddress

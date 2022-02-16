@@ -18,7 +18,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   final lastName = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
-  bool _addGradYear = true;
 
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'US');
   String? gradValue = 'N/A';
@@ -88,6 +87,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               helperText: "* Required"
             ),
             keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.next,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -109,6 +109,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               helperText: "* Required"
             ),
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value) {
               // TODO: Update email domain validation to be dynamic with institution selection
@@ -168,37 +169,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             },
           )),
 
-      // Affiliation
-      // Padding(
-      //     padding: const EdgeInsets.symmetric(vertical: 16.0),
-      //     child: DropdownButtonFormField<String>(
-      //       value: affiliationValue,
-      //       decoration: const InputDecoration(
-      //           icon: Icon(Icons.school_rounded), labelText: "Affiliation"),
-      //       // icon: const Icon(Icons.school_outlined),
-      //       items: affiliations
-      //           .map<DropdownMenuItem<String>>((String affiliation) {
-      //         return DropdownMenuItem<String>(
-      //             value: affiliation, child: Text(affiliation));
-      //       }).toList(),
-      //       onChanged: (String? value) {
-      //         // Call setState() to rebuild the widget with the current value.
-      //         // Will check if `{Undergraduate, Graduate}` is chosen, if NOT,
-      //         // remove the Graduation date from the list
-      //         setState(() {
-      //           affiliationValue = value!;
-      //           if (['Undergraduate Student', 'Graduate Student']
-      //               .contains(value)) {
-      //             _addGradYear = true;
-      //           } else {
-      //             _addGradYear = false;
-      //           }
-      //         });
-      //       },
-      //     )),
-      //
-      // if (_addGradYear)
-        // Graduation Year - Dependant on `Affiliation`
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
