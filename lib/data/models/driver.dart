@@ -14,9 +14,9 @@ class Driver {
 
   /// A Map<String, dynamic> into a [Driver] instance.
   Driver.fromJson(Map<String, dynamic> json):
-      createdAt = json['created_at'].toDate(),
-      vehicle = json['vehicle'],
-      isActive = json['is_active'];
+      createdAt = json['created_at'].toDate() as DateTime,
+      vehicle = json['vehicle'] as Vehicle,
+      isActive = json['is_active'] as bool;
 
   /// A [Driver] instance into a Map<String, dynamic>
   Map<String, dynamic> toJson() {

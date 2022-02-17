@@ -19,12 +19,12 @@ class Vehicle {
 
   /// A Map<String, dynamic> into a [Vehicle] instance
   Vehicle.fromJson(Map<String, dynamic> json):
-    vehicleId = json['vehicle_id'],
-    createdAt = json['created_at'].toDate(),
-    make = json['make'],
-    model = json['model'],
-    year = json['year'],
-    color = json['color'];
+    vehicleId = json['vehicle_id'] as String,
+    createdAt = json['created_at'].toDate() as DateTime,
+    make = json['make'] as String,
+    model = json['model'] as String,
+    year = json['year'] as String,
+    color = json['color'] as String;
 
   /// A [Vehicle] instance into a Map<String, dynamic>
   Map<String, dynamic> toJson() {

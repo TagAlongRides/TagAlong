@@ -1,3 +1,4 @@
+import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/util/user_data.dart';
 
 /// A user model containing pertinent data
@@ -55,7 +56,12 @@ class TagAlongUser {
     this._institution = json['institution'],
     this._graduationYear = json['grad_year'],
     this._phoneNumber = json['phone_number'],
-    this._emailAddress = json['email_address'];
+    this._emailAddress = json['email_address'] {
+    if (json['driver_data'] == Map) {
+      _driverData = Driver.fromJson(json['driver_data']);
+  }
+
+  }
 
 
   /// Registers a User.
@@ -75,6 +81,8 @@ class TagAlongUser {
     _phoneNumber = phoneNumber;
     _emailAddress = emailAddress;
     _registered = true;
+    _driverData = null;
+    _verified = false;
 
     // TODO: Probably don't want to rely on system time like this...
     _updatedAt = DateTime.now();
