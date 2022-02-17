@@ -13,6 +13,8 @@ import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
+import 'viewmodels/register_driver_view_model.dart';
+
 
 void main() async {
   // Initialize Firebase
@@ -41,13 +43,16 @@ class _TagAlongAppState extends State<TagAlongApp> {
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
-        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel())
+        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
+        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,
         theme: theme,
         title: 'TagAlong App',
-        home: const AuthWrapper(),
+        // TODO: TESTING UNCOMMENT AFTER
+        // home: const AuthWrapper(),
+          home: const RegisterDriverScreen(),
         routes: <String, WidgetBuilder> {
           '/register_user': (BuildContext context) => const RegisterUserScreen(),
           '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
