@@ -25,36 +25,38 @@ class TagAlongUser {
   /// The minimum definition for a valid user requires an ID, a creation date,
   /// and a sign-in method. This is used when a user successfully logs in with
   /// Facebook, but never completes user registration.
-  TagAlongUser.unregisteredUser({required String id, required DateTime createdAt, required String signinMethod}) {
-    _id = id;
-    _createdAt = createdAt;
-    _updatedAt = DateTime.now();
-    _institution = Institution.INVALID;
-    _firstName = '';
-    _lastName = '';
-    _graduationYear = '';
-    _phoneNumber = '';
-    _emailAddress = '';
-    _driverData = null;
-    _verified = false;
-    _registered = false;
-
+  TagAlongUser.unregisteredUser({
+    required String id,
+    required DateTime createdAt,
+    required String signinMethod}) {
+      _id = id;
+      _createdAt = createdAt;
+      _updatedAt = DateTime.now();
+      _institution = Institution.INVALID;
+      _firstName = '';
+      _lastName = '';
+      _graduationYear = '';
+      _phoneNumber = '';
+      _emailAddress = '';
+      _driverData = null;
+      _verified = false;
+      _registered = false;
   }
 
   /// A named constructor to create a [TagAlongUser] from a Map<String, dynamic>
-  TagAlongUser.fromJson(Map<String, dynamic> json) {
-    this._id = json['id'];
-    this._createdAt = json['created'].toDate();
-    this._updatedAt = json['last_updated'].toDate();
-    this._registered = json['is_registered'];
-    this._firstName = json['first_name'];
-    this._lastName = json['last_name'];
-    this._signInMethod = json['sign_in_method'];
-    this._institution = json['institution'];
-    this._graduationYear = json['grad_year'];
-    this._phoneNumber = json['phone_number'];
+  TagAlongUser.fromJson(Map<String, dynamic> json):
+    this._id = json['id'],
+    this._createdAt = json['created'].toDate(),
+    this._updatedAt = json['last_updated'].toDate(),
+    this._registered = json['is_registered'],
+    this._firstName = json['first_name'],
+    this._lastName = json['last_name'],
+    this._signInMethod = json['sign_in_method'],
+    this._institution = json['institution'],
+    this._graduationYear = json['grad_year'],
+    this._phoneNumber = json['phone_number'],
     this._emailAddress = json['email_address'];
-  }
+
 
   /// Registers a User.
   ///
