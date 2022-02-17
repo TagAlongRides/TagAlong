@@ -18,15 +18,15 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   final lastName = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
-  bool _addGradYear = true;
 
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'US');
-  String? gradValue = '2022';
+  String? gradValue = 'N/A';
   String? universityValue = Institution.VIRGINIA_TECH;
   String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
   List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
   List<String> gradYears = [
+    'N/A',
     '2022',
     '2023',
     '2024',
@@ -61,8 +61,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             decoration: const InputDecoration(
               icon: Icon(Icons.account_circle_outlined),
               border: UnderlineInputBorder(),
-              labelText: 'First Name',
+              labelText: 'First Name*',
+              helperText: "* Required"
             ),
+            textInputAction: TextInputAction.next,
             keyboardType: TextInputType.name,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
@@ -81,9 +83,11 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             decoration: const InputDecoration(
               icon: Icon(Icons.account_circle),
               border: UnderlineInputBorder(),
-              labelText: 'Last Name',
+              labelText: 'Last Name*',
+              helperText: "* Required"
             ),
             keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.next,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -101,9 +105,11 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             decoration: const InputDecoration(
               icon: Icon(Icons.email_outlined),
               border: UnderlineInputBorder(),
-              labelText: 'University Email (.edu)',
+              labelText: 'University Email (.edu)*',
+              helperText: "* Required"
             ),
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value) {
               // TODO: Update email domain validation to be dynamic with institution selection
@@ -130,6 +136,12 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           keyboardType: TextInputType.phone,
           autoValidateMode: AutovalidateMode.onUserInteraction,
           ignoreBlank: true,
+          inputDecoration: const InputDecoration(
+            icon: Icon(Icons.phone),
+            border: UnderlineInputBorder(),
+            labelText: 'Phone Number*',
+            helperText: "* Required"
+          ),
         ),
       ),
 
@@ -139,7 +151,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: DropdownButtonFormField<String>(
             value: universityValue,
             decoration: const InputDecoration(
-                icon: Icon(Icons.school_outlined), labelText: "University"),
+              icon: Icon(Icons.school_outlined),
+              labelText: "University*",
+              helperText: '* Required'
+            ),
             // icon: const Icon(Icons.school_outlined),
             items: institutions
                 .map<DropdownMenuItem<String>>((String institution) {
@@ -154,55 +169,24 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             },
           )),
 
-      // Affiliation
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
-            value: affiliationValue,
+            value: gradValue,
             decoration: const InputDecoration(
-                icon: Icon(Icons.school_rounded), labelText: "Affiliation"),
+              icon: Icon(Icons.school_rounded),
+              labelText: "Graduation Year (Optional)"),
             // icon: const Icon(Icons.school_outlined),
-            items: affiliations
-                .map<DropdownMenuItem<String>>((String affiliation) {
-              return DropdownMenuItem<String>(
-                  value: affiliation, child: Text(affiliation));
+            items: gradYears.map<DropdownMenuItem<String>>((String grad) {
+              return DropdownMenuItem<String>(value: grad, child: Text(grad));
             }).toList(),
             onChanged: (String? value) {
-              // Call setState() to rebuild the widget with the current value.
-              // Will check if `{Undergraduate, Graduate}` is chosen, if NOT,
-              // remove the Graduation date from the list
+              // Call setState() to rebuild the widget with the current value
               setState(() {
-                affiliationValue = value!;
-                if (['Undergraduate Student', 'Graduate Student']
-                    .contains(value)) {
-                  _addGradYear = true;
-                } else {
-                  _addGradYear = false;
-                }
+                gradValue = value!;
               });
             },
           )),
-
-      if (_addGradYear)
-        // Graduation Year - Dependant on `Affiliation`
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: DropdownButtonFormField<String>(
-              value: gradValue,
-              decoration: const InputDecoration(
-                  icon: Icon(Icons.school_rounded),
-                  labelText: "Graduation Year"),
-              // icon: const Icon(Icons.school_outlined),
-              items: gradYears.map<DropdownMenuItem<String>>((String grad) {
-                return DropdownMenuItem<String>(value: grad, child: Text(grad));
-              }).toList(),
-              onChanged: (String? value) {
-                // Call setState() to rebuild the widget with the current value
-                setState(() {
-                  gradValue = value!;
-                });
-              },
-            )),
     ];
 
     return Form(

@@ -31,7 +31,7 @@ dependencies:
     sdk: flutter
 
   # 12/18/21 - Added Google Fonts, SignIn Buttons, font_awesome_icons, Facebook Auth
-  google_fonts: ^2.1.0
+  google_fonts: 2.2.0
   flutter_signin_button: ^2.0.0
   font_awesome_flutter: ^9.0.0
   flutter_facebook_auth: ^3.5.7
@@ -58,6 +58,9 @@ dependencies:
 
   # 2/13/22 - Phone number input field
   intl_phone_number_input: ^0.7.0
+
+  # 2/15/22 - UUID
+  uuid: 3.0.5
 
 
 dev_dependencies:
