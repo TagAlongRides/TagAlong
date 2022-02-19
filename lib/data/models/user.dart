@@ -9,7 +9,7 @@ class TagAlongUser {
   String _institution = Institution.INVALID;
   String _firstName = "";
   String _lastName = "";
-  String _graduationYear = "";
+  String? _graduationYear;
   String _phoneNumber = "";
   String _emailAddress = "";
   Driver? _driverData;
@@ -36,7 +36,7 @@ class TagAlongUser {
       _institution = Institution.INVALID;
       _firstName = '';
       _lastName = '';
-      _graduationYear = '';
+      _graduationYear = null;
       _phoneNumber = '';
       _emailAddress = '';
       _driverData = null;

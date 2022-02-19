@@ -20,13 +20,12 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   final phoneController = TextEditingController();
 
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'US');
-  String? gradValue = 'N/A';
+  String? gradValue;
   String? universityValue = Institution.VIRGINIA_TECH;
   String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
   List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
   List<String> gradYears = [
-    'N/A',
     '2022',
     '2023',
     '2024',

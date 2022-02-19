@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 
 class WelcomeScreen extends StatelessWidget {
@@ -7,6 +10,8 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    String email = tagAlongUserViewModel.tagAlongUser!.email;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Welcome')
@@ -15,28 +20,53 @@ class WelcomeScreen extends StatelessWidget {
         children: [
           Expanded(
             flex: 5,
-            child: Center(
-              child: Column(
-                children: const [
-                  Icon(
-                    Icons.mark_email_unread_outlined,
-                    size: 40
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                    child: Text('Welcome to TagAlong!')
-                  )
-                ]
-              )
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.mark_email_unread_outlined,
+                  size: 150
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text('Welcome to TagAlong!')
+                ),
+                const Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text('We sent a confirmation email to:')
+                ),
+                Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(email)
+                ),
+                const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text('Check your school email and click the link to'
+                        ' get started!')
+                ),
+              ]
             )
           ),
 
-          ElevatedButton(
-            onPressed: () {
-              logger.log.fine('dasf');
-            },
-            child: const Text('OK'),
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: SizedBox(
+                height: 50,
+                width: 100,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // TODO: Testing email verification
+                    tagAlongUserViewModel.getUser()?.reload();
+                    logger.log.fine(tagAlongUserViewModel.getUser()?.emailVerified);
 
+
+                  },
+                  child: const Text('OK'),
+
+                ),
+              ),
+            ),
           )
         ]
       )
