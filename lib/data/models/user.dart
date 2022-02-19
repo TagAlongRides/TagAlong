@@ -42,6 +42,7 @@ class TagAlongUser {
       _driverData = null;
       _verified = false;
       _registered = false;
+      _signInMethod = signinMethod;
   }
 
   /// A named constructor to create a [TagAlongUser] from a Map<String, dynamic>
@@ -49,20 +50,19 @@ class TagAlongUser {
     this._id = json['id'],
     this._createdAt = json['created'].toDate(),
     this._updatedAt = json['last_updated'].toDate(),
-    this._registered = json['is_registered'],
+    this._institution = json['institution'],
     this._firstName = json['first_name'],
     this._lastName = json['last_name'],
     this._signInMethod = json['sign_in_method'],
-    this._institution = json['institution'],
     this._graduationYear = json['grad_year'],
+    this._registered = json['is_registered'],
+    this._verified = json['is_verified'],
     this._phoneNumber = json['phone_number'],
     this._emailAddress = json['email_address'] {
     if (json['driver_data'] == Map) {
       _driverData = Driver.fromJson(json['driver_data']);
+    }
   }
-
-  }
-
 
   /// Registers a User.
   ///
@@ -94,7 +94,7 @@ class TagAlongUser {
   }
 
   /// Convert a User object to a map that respects its values' types.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': _id,
       'created': _createdAt,
@@ -106,7 +106,9 @@ class TagAlongUser {
       'institution': _institution,
       'grad_year': _graduationYear,
       'phone_number': _phoneNumber,
-      'email_address': _emailAddress
+      'email_address': _emailAddress,
+      'is_verified': _verified,
+      'driver_data': _driverData
     };
   }
 

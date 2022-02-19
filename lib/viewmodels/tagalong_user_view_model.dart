@@ -22,7 +22,7 @@ class TagAlongUserViewModel {
   /// Returns a unique String UID for a TagAlongUser
   String? getUid() {
     String? uid = _authService.getUid();
-    logger.log.fine('DEBUG: getUid() - $uid');
+    logger.log.fine('getUid() - $uid');
     return uid;
   }
 
@@ -39,10 +39,15 @@ class TagAlongUserViewModel {
       String? studentEmail = tagAlongUser?.email;
       User? user = getUser();
       if (studentEmail != null && user != null) {
+        // TODO: Need to reauthenticate our Firebase `User` again because updating - Firebase security sensitive.
+        // TODO: For now, just always sign-in AND register
         await user.updateEmail(studentEmail);
         await user.sendEmailVerification();
-        logger.log.fine('Sent verification email to $studentEmail');
+        logger.log.fine('sendEmailVerificationToUser() - Sent verification email to $studentEmail');
       }
+    }
+    else {
+      logger.log.fine('sendEmailVerificationToUser() - User does NOT exist, how is this possible?');
     }
   }
 
@@ -70,7 +75,7 @@ class TagAlongUserViewModel {
   // TODO: Error handling
   /// Triggers a Facebook Sign-in event via [AuthService].
   ///
-  /// If successful, build a unregistered [User] and store in Firestore.
+  /// If successful, build an unregistered [User] and store in Firestore.
   /// Else, convey error messages appropriately.
   Future<void> createOrSignIn() async {
     // Perform the Facebook login
@@ -103,31 +108,35 @@ class TagAlongUserViewModel {
     logger.log.fine('setUpUser()');
     // 1. [user] exists in memory
     if (tagAlongUser != null) {
-      logger.log.fine('TagAlongUser instance already in memory.');
+      logger.log.fine('setUpUser() - TagAlongUser instance already in memory.');
       return;
     }
 
     // 2. [user] does NOT exist in memory
     else {
       // Query `users` collection for [uid] user and see if they exist
-      logger.log.fine('Querying data for user $uid');
+      logger.log.fine('setUpUser() - Querying data for user $uid');
       DocumentSnapshot snapshot = await databaseService.users.doc(uid).get();
 
-      // User exists - initialize our TagAlongUser `user` instance
+      // User exists - initialize our TagAlongUser `user` instance and return
       if (snapshot.exists) {
         Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
-        logger.log.fine('Data exists! Looks like:');
+        logger.log.fine('setUpUser() - User exists! Looks like:');
         logger.log.fine(userData.toString());
         tagAlongUser = TagAlongUser.fromJson(userData);
         return;
       }
-      // User does not exist - create an unregisteredUser
+      // User does not exist - create an unregisteredUser and add to Firestore
+      // as an "Unregistered TagAlongUser"
       else {
-        tagAlongUser = TagAlongUser.unregisteredUser(uid, DateTime.now(), signInMethod);
-        logger.log.fine('DEBUG: User did not exist!');
+        logger.log.fine('setUpUser() - User did not exist!');
+        tagAlongUser = TagAlongUser.unregisteredUser(
+            id: uid,
+            createdAt: DateTime.now(),
+            signinMethod: signInMethod);
       }
-      logger.log.fine('DEBUG: TagAlongUser was initialized.');
-      logger.log.fine('The TagAlongUser is: ${tagAlongUser?.toMap().toString()}');
+      logger.log.fine('setUpUser() - TagAlongUser was initialized.');
+      logger.log.fine('setUpUser() - The TagAlongUser is: ${tagAlongUser?.toJson().toString()}');
       await addTagAlongUserToFirestore(uid);
     }
   }
@@ -135,11 +144,11 @@ class TagAlongUserViewModel {
   /// Adds a [TagAlongUser] to the Firestore `users` collection.
   Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
-      await databaseService.users.doc(uid).set(tagAlongUser!.toMap());
-      logger.log.fine('DEBUG: Added TagAlongUser $uid.');
+      await databaseService.users.doc(uid).set(tagAlongUser!.toJson());
+      logger.log.fine('addTagAlongUserToFirestore() - Added TagAlongUser $uid.');
     }
     else {
-      logger.log.fine('TagAlongUser instance does not exist in ViewModel - cannot happen');
+      logger.log.fine('addTagAlongUserToFirestore() - TagAlongUser instance does not exist in ViewModel; cannot happen');
     }
   }
 

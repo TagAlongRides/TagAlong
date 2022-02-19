@@ -5,15 +5,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/login_screen.dart';
+import 'package:tagalong/screens/welcome_screen.dart';
 import 'themes/tagalong_theme.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
-import 'viewmodels/register_driver_view_model.dart';
 
 
 void main() async {
@@ -50,14 +51,13 @@ class _TagAlongAppState extends State<TagAlongApp> {
         debugShowCheckedModeBanner: true,
         theme: theme,
         title: 'TagAlong App',
-        // TODO: TESTING UNCOMMENT AFTER
-        // home: const AuthWrapper(),
-          home: const RegisterDriverScreen(),
+        home: const AuthWrapper(),
         routes: <String, WidgetBuilder> {
           '/register_user': (BuildContext context) => const RegisterUserScreen(),
           '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
           '/ride_board': (BuildContext context) => const RideBoardScreen(),
           '/login_screen': (BuildContext context) => const LoginScreen(),
+          '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
           '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
         }
       ),

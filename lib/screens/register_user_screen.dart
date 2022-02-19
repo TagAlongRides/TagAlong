@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'package:tagalong/widgets/school_registration.dart';
+import 'package:tagalong/widgets/user_registration_form.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
@@ -84,14 +84,14 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
     bool? isRegistered = vm.isRegistered();
 
     if (isRegistered == true) {
-      logger.log.fine('DEBUG: User is registered in register_user_screen. To Rideboard');
+      logger.log.fine('_setUpUser() - User is registered in register_user_screen. To Rideboard');
       Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, '/ride_board');
       });
     }
     // 2. User is NOT registered
     else {
-      logger.log.fine('DEBUG: User is NOT registered in register_user_screen. To User Registration');
+      logger.log.fine('_setUpUser() - User is NOT registered in register_user_screen. To User Registration');
       Timer(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, '/register_user');
       });
