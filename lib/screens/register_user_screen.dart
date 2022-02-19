@@ -57,7 +57,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
       body: const SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: UserRegistrationForm(),
           )
         ),
