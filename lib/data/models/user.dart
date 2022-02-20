@@ -12,14 +12,17 @@ class TagAlongUser {
   String? _graduationYear;
   String _phoneNumber = "";
   String _emailAddress = "";
-  Driver? _driverData;
-  bool _verified = false;
+  Driver? driverData;
   bool _registered = false;
   late String _signInMethod;
 
 
   String get email => _emailAddress;
 
+  /// Flag indicating whether a user is registered or not.
+  bool isRegistered() {
+    return _registered;
+  }
 
   /// Initializes an Unregistered User.
   ///
@@ -39,8 +42,7 @@ class TagAlongUser {
       _graduationYear = null;
       _phoneNumber = '';
       _emailAddress = '';
-      _driverData = null;
-      _verified = false;
+      driverData = null;
       _registered = false;
       _signInMethod = signinMethod;
   }
@@ -56,11 +58,10 @@ class TagAlongUser {
     this._signInMethod = json['sign_in_method'],
     this._graduationYear = json['grad_year'],
     this._registered = json['is_registered'],
-    this._verified = json['is_verified'],
     this._phoneNumber = json['phone_number'],
     this._emailAddress = json['email_address'] {
     if (json['driver_data'] == Map) {
-      _driverData = Driver.fromJson(json['driver_data']);
+      driverData = Driver.fromJson(json['driver_data']);
     }
   }
 
@@ -81,16 +82,10 @@ class TagAlongUser {
     _phoneNumber = phoneNumber;
     _emailAddress = emailAddress;
     _registered = true;
-    _driverData = null;
-    _verified = false;
+    driverData = null;
 
     // TODO: Probably don't want to rely on system time like this...
     _updatedAt = DateTime.now();
-  }
-
-  /// Flag indicating whether a user is registered or not.
-  bool isRegistered() {
-    return _registered;
   }
 
   /// Convert a User object to a map that respects its values' types.
@@ -107,10 +102,24 @@ class TagAlongUser {
       'grad_year': _graduationYear,
       'phone_number': _phoneNumber,
       'email_address': _emailAddress,
-      'is_verified': _verified,
-      'driver_data': _driverData
+      'driver_data': driverData?.toJson()
     };
   }
 
+  /// Updates this instance's [TagAlongUser] in-memory only
+  void updateTagAlongUser(Map<String, dynamic> data) {
+    _id = data['id'] ?? _id;
+    _createdAt = data['created']?.toDate() ?? _createdAt;
+    _updatedAt = data['last_updated']?.toDate() ?? _updatedAt;
+    _signInMethod = data['sign_in_method'] ?? _signInMethod;
+    _registered = data['is_registered'] ?? _registered;
+    _firstName = data['first_name'] ?? _firstName;
+    _lastName = data['last_name'] ?? _lastName;
+    _institution = data['institution'] ?? _institution;
+    _graduationYear = data['grad_year'] ?? _graduationYear;
+    _phoneNumber = data['phone_number'] ?? _phoneNumber;
+    _emailAddress = data['email_address'] ?? _emailAddress;
+    driverData = data['driver_data'] ?? driverData;
+  }
 
 }

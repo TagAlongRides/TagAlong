@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
@@ -14,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
     String email = tagAlongUserViewModel.tagAlongUser!.email;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome')
+        title: const Text('TagAlong')
       ),
       body: Column(
         children: [
@@ -32,11 +31,11 @@ class WelcomeScreen extends StatelessWidget {
                   child: Text('Welcome to TagAlong!')
                 ),
                 const Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
                     child: Text('We sent a confirmation email to:')
                 ),
                 Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Text(email)
                 ),
                 const Padding(
@@ -55,15 +54,14 @@ class WelcomeScreen extends StatelessWidget {
                 height: 50,
                 width: 100,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // TODO: Testing email verification
-                    tagAlongUserViewModel.getUser()?.reload();
+                    await tagAlongUserViewModel.getUser()?.reload();
                     logger.log.fine(tagAlongUserViewModel.getUser()?.emailVerified);
 
-
+                    Navigator.pushReplacementNamed(context, '/driver_registration_prompt');
                   },
                   child: const Text('OK'),
-
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
@@ -141,6 +142,16 @@ class TagAlongUserViewModel {
     }
   }
 
+  /// Updates our TagAlongUser instance's `driverData`
+  void updateDriverData(Driver driverData) {
+    if (userExists()) {
+      tagAlongUser!.driverData = driverData;
+    }
+    else {
+
+    }
+  }
+
   /// Adds a [TagAlongUser] to the Firestore `users` collection.
   Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
@@ -152,19 +163,19 @@ class TagAlongUserViewModel {
     }
   }
 
+  /// Updates this instance's [TagAlongUser] in-memory only
+  void updateTagAlongUserInternal(Map<String, dynamic> data) {
+    tagAlongUser?.updateTagAlongUser(data);
+    logger.log.fine('updateTagAlongUserInternal() - TagAlongUser after update:\n'
+        '${tagAlongUser?.toJson().toString()}');
+  }
+
   /// Updates a [TagAlongUser] with `jsonData` - does not replace.
-  Future<void> updateTagAlongUser(Map<String, dynamic> jsonData) async {
-    await _databaseService.users.doc(getUid()).update(jsonData);
-    logger.log.fine('updateTagAlongUser(): jsonData - $jsonData');
-    // TODO: Need a much better solution of "caching" our User in memory
-    // TODO: rather than always querying for it...
-    tagAlongUser = null;
-    String? uid = getUid();
-    if (uid != null) {
-      await setUpUser(uid);
-    }
-    logger.log.fine('Updated TagAlongUser with following data:');
-    logger.log.fine('$jsonData');
+  Future<void> updateTagAlongUserFirestore() async {
+    Map<String, dynamic> tagAlongUserData = tagAlongUser!.toJson();
+    await _databaseService.users.doc(getUid()).update(tagAlongUserData);
+    logger.log.fine('updateTagAlongUser(): jsonData - $tagAlongUserData');
+
   }
 
 

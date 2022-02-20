@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/DriverRegistrationPromptScreen.dart';
 import 'package:tagalong/screens/login_screen.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'themes/tagalong_theme.dart';
@@ -56,6 +57,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
           '/register_user': (BuildContext context) => const RegisterUserScreen(),
           '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
           '/ride_board': (BuildContext context) => const RideBoardScreen(),
+          '/driver_registration_prompt': (BuildContext context) => const DriverRegistrationPromptScreen(),
           '/login_screen': (BuildContext context) => const LoginScreen(),
           '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
           '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),

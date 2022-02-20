@@ -223,7 +223,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                   if (form.validate()) {
                     logger.log.fine('UserRegistrationForm - User registration was valid');
                     logger.log.fine('UserRegistrationForm -Attempting to write the following user data');
-                    // TODO: Need better way of doing this + _updatedAt
                     Map<String, dynamic> registrationData = {
                       'first_name': firstName.text,
                       'last_name': lastName.text,
@@ -233,15 +232,17 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                       'grad_year': gradValue,
                       'is_registered': true
                     };
+                    // 1. Update our [TagAlongUser] in-memory
+                    tagAlongUserViewModel.updateTagAlongUserInternal(registrationData);
 
-                    // Update the Unregistered TagAlongUser in database
-                    await tagAlongUserViewModel.updateTagAlongUser(registrationData);
+                    // 2. Update the Registered TagAlongUser in Firestore
+                    await tagAlongUserViewModel.updateTagAlongUserFirestore();
                     logger.log.fine('UserRegistrationForm - Updated user with registration information!');
 
-                    // Send an email verification to `email_address`.
+                    // 3. Send an email verification to `email_address`.
                     await tagAlongUserViewModel.sendEmailVerificationToUser();
 
-                    // TODO: Move to "RegistrationComplete" Screen?
+                    // 4. Navigate to `WelcomeScreen`
                     Navigator.pushReplacementNamed(context, '/welcome_screen');
 
                   }

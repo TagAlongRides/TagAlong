@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'driver_registration/color_drop_down_button.dart';
@@ -79,18 +80,26 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
             flex: 1,
             child: Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // // TODO: Need a better way of doign this?
-                  // Map<String, dynamic> driverData = {
-                  //   'is_driver': true,
-                  //   'car_make': makeValue,
-                  //   'car_model': modelValue,
-                  //   'car_year': yearValue,
-                  //   'car_color': colorValue
-                  // };
-                  // logger.log.fine(driverData.toString());
-                  // tagAlongUserViewModel.updateTagAlongUser(driverData);
-                  // Navigator.pushReplacementNamed(context, '/ride_board');
+                onPressed: () async {
+                  // Form is VALID
+                  if (_formKey.currentState!.validate()) {
+                    // 1. Create [Driver] instance
+                    Driver? driver = _registerDriverViewModel.createDriver();
+                    if (driver == null) {
+                      logger.log.fine('DriverRegistrationForm - Driver not valid?');
+                    }
+                    else {
+                      // 1. Update our [TagAlongUser] in-memory
+                      Map<String, dynamic> data = {'driver_data': driver};
+                      tagAlongUserViewModel.updateTagAlongUserInternal(data);
+
+                      // 2. Update [TagAlongUser] in Firestore
+                      tagAlongUserViewModel.updateTagAlongUserFirestore();
+
+                      // 3. Navigate to Rideboard
+                      Navigator.pushReplacementNamed(context, '/ride_board');
+                    }
+                  }
                 },
                 child: const Text('Let\'s Go!'),
               )

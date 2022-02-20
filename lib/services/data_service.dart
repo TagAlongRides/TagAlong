@@ -5,7 +5,7 @@ import 'package:tagalong/data/models/user.dart';
 
 /// [DatabaseService] is the main service for our Firebase Cloud Firestore.
 ///
-/// It will contain the API for basic CRUD operations among various collections.
+/// It will contain references to various collections.
 class DatabaseService {
 
   /// A CollectionReference to our [users] collection.
