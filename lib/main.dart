@@ -4,14 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/DriverRegistrationPromptScreen.dart';
 import 'package:tagalong/screens/login_screen.dart';
+import 'package:tagalong/screens/welcome_screen.dart';
 import 'themes/tagalong_theme.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+
 
 
 void main() async {
@@ -41,7 +45,8 @@ class _TagAlongAppState extends State<TagAlongApp> {
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
-        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel())
+        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
+        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,
@@ -52,7 +57,9 @@ class _TagAlongAppState extends State<TagAlongApp> {
           '/register_user': (BuildContext context) => const RegisterUserScreen(),
           '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
           '/ride_board': (BuildContext context) => const RideBoardScreen(),
+          '/driver_registration_prompt': (BuildContext context) => const DriverRegistrationPromptScreen(),
           '/login_screen': (BuildContext context) => const LoginScreen(),
+          '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
           '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
         }
       ),

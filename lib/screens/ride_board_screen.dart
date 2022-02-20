@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/widgets/rideboard.dart';
-import 'package:tagalong/widgets/messages.dart';
 import 'package:tagalong/widgets/account.dart';
 import '../viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -23,8 +22,8 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
   Widget build(BuildContext context) {
     AuthService authService = Provider.of<AuthService>(context, listen: false);
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
-    logger.log.fine('In Ride Board!');
-    logger.log.fine('${tagAlongUserViewModel.tagAlongUser?.toMap()}');
+    logger.log.fine('RideboardScreen - In Ride Board!');
+    logger.log.fine('RideboardScreen - ${tagAlongUserViewModel.tagAlongUser?.toJson()}');
 
     return Scaffold(
       appBar: AppBar(

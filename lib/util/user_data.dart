@@ -2,14 +2,14 @@ class SignInMethod {
   static const String INVALID = 'Invalid';
   static const String FACEBOOK = 'Facebook';
 
-  static List<String> values = [INVALID, FACEBOOK];
+  static List<String> values = [FACEBOOK];
 }
 
 class Institution {
   static const String INVALID = 'Invalid';
   static const String VIRGINIA_TECH = 'Virginia Tech';
 
-  static List<String> values = [INVALID, VIRGINIA_TECH];
+  static List<String> values = [VIRGINIA_TECH];
 }
 
 class Affiliation {
