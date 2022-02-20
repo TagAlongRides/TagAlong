@@ -123,7 +123,8 @@ class TagAlongUserViewModel {
       if (snapshot.exists) {
         Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
         logger.log.fine('setUpUser() - User exists! Looks like:');
-        logger.log.fine(userData.toString());
+        logger.log.fine('setUpUser() - ${userData.toString()}');
+        print('DRIVER DATA TYPE: ${userData['driver_data'].runtimeType}');
         tagAlongUser = TagAlongUser.fromJson(userData);
         return;
       }

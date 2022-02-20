@@ -23,7 +23,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
     AuthService authService = Provider.of<AuthService>(context, listen: false);
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     logger.log.fine('RideboardScreen - In Ride Board!');
-    logger.log.fine('${tagAlongUserViewModel.tagAlongUser?.toJson()}');
+    logger.log.fine('RideboardScreen - ${tagAlongUserViewModel.tagAlongUser?.toJson()}');
 
     return Scaffold(
       appBar: AppBar(

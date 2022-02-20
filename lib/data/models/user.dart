@@ -60,10 +60,11 @@ class TagAlongUser {
     this._registered = json['is_registered'],
     this._phoneNumber = json['phone_number'],
     this._emailAddress = json['email_address'] {
-    if (json['driver_data'] == Map) {
-      driverData = Driver.fromJson(json['driver_data']);
+    if (json['driver_data'] != null) {
+      this.driverData = Driver.fromJson(json['driver_data']);
     }
   }
+
 
   /// Registers a User.
   ///
