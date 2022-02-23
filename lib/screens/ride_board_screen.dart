@@ -27,6 +27,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
     logger.log.fine('RideboardScreen - In Ride Board!');
     // logger.log.fine('RideboardScreen - ${tagAlongUserViewModel.tagAlongUser?.toJson()}');
 
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rideboard'),
