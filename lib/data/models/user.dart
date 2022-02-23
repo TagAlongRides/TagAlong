@@ -9,17 +9,20 @@ class TagAlongUser {
   String _institution = Institution.INVALID;
   String _firstName = "";
   String _lastName = "";
-  String _graduationYear = "";
+  String? _graduationYear;
   String _phoneNumber = "";
   String _emailAddress = "";
-  Driver? _driverData;
-  bool _verified = false;
+  Driver? driverData;
   bool _registered = false;
   late String _signInMethod;
 
 
   String get email => _emailAddress;
 
+  /// Flag indicating whether a user is registered or not.
+  bool isRegistered() {
+    return _registered;
+  }
 
   /// Initializes an Unregistered User.
   ///
@@ -36,12 +39,12 @@ class TagAlongUser {
       _institution = Institution.INVALID;
       _firstName = '';
       _lastName = '';
-      _graduationYear = '';
+      _graduationYear = null;
       _phoneNumber = '';
       _emailAddress = '';
-      _driverData = null;
-      _verified = false;
+      driverData = null;
       _registered = false;
+      _signInMethod = signinMethod;
   }
 
   /// A named constructor to create a [TagAlongUser] from a Map<String, dynamic>
@@ -49,18 +52,17 @@ class TagAlongUser {
     this._id = json['id'],
     this._createdAt = json['created'].toDate(),
     this._updatedAt = json['last_updated'].toDate(),
-    this._registered = json['is_registered'],
+    this._institution = json['institution'],
     this._firstName = json['first_name'],
     this._lastName = json['last_name'],
     this._signInMethod = json['sign_in_method'],
-    this._institution = json['institution'],
     this._graduationYear = json['grad_year'],
+    this._registered = json['is_registered'],
     this._phoneNumber = json['phone_number'],
     this._emailAddress = json['email_address'] {
-    if (json['driver_data'] == Map) {
-      _driverData = Driver.fromJson(json['driver_data']);
-  }
-
+    if (json['driver_data'] != null) {
+      this.driverData = Driver.fromJson(json['driver_data']);
+    }
   }
 
 
@@ -81,20 +83,14 @@ class TagAlongUser {
     _phoneNumber = phoneNumber;
     _emailAddress = emailAddress;
     _registered = true;
-    _driverData = null;
-    _verified = false;
+    driverData = null;
 
     // TODO: Probably don't want to rely on system time like this...
     _updatedAt = DateTime.now();
   }
 
-  /// Flag indicating whether a user is registered or not.
-  bool isRegistered() {
-    return _registered;
-  }
-
   /// Convert a User object to a map that respects its values' types.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': _id,
       'created': _createdAt,
@@ -106,9 +102,25 @@ class TagAlongUser {
       'institution': _institution,
       'grad_year': _graduationYear,
       'phone_number': _phoneNumber,
-      'email_address': _emailAddress
+      'email_address': _emailAddress,
+      'driver_data': driverData?.toJson()
     };
   }
 
+  /// Updates this instance's [TagAlongUser] in-memory only
+  void updateTagAlongUser(Map<String, dynamic> data) {
+    _id = data['id'] ?? _id;
+    _createdAt = data['created']?.toDate() ?? _createdAt;
+    _updatedAt = data['last_updated']?.toDate() ?? _updatedAt;
+    _signInMethod = data['sign_in_method'] ?? _signInMethod;
+    _registered = data['is_registered'] ?? _registered;
+    _firstName = data['first_name'] ?? _firstName;
+    _lastName = data['last_name'] ?? _lastName;
+    _institution = data['institution'] ?? _institution;
+    _graduationYear = data['grad_year'] ?? _graduationYear;
+    _phoneNumber = data['phone_number'] ?? _phoneNumber;
+    _emailAddress = data['email_address'] ?? _emailAddress;
+    driverData = data['driver_data'] ?? driverData;
+  }
 
 }

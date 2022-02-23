@@ -20,13 +20,12 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   final phoneController = TextEditingController();
 
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'US');
-  String? gradValue = 'N/A';
+  String? gradValue;
   String? universityValue = Institution.VIRGINIA_TECH;
   String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
   List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
   List<String> gradYears = [
-    'N/A',
     '2022',
     '2023',
     '2024',
@@ -53,7 +52,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
     // Keep TextFormFields on top, DropdownMenus below
     List<Widget> childrenList = [
-      // First Name
+      // 1. First Name
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
@@ -75,7 +74,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             }),
       ),
 
-      // Last Name
+      // 2. Last Name
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
@@ -97,7 +96,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             }),
       ),
 
-      // School Email
+      // 3. School Email
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
@@ -116,7 +115,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid .edu email';
               }
-              if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@vt.edu")
+              if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu).edu")
                   .hasMatch(value)) {
                 return 'Please enter a valid @vt.edu email address';
               }
@@ -124,7 +123,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             }),
       ),
 
-      // Phone Number
+      // 4. Phone Number
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: InternationalPhoneNumberInput(
@@ -134,8 +133,17 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           initialValue: phoneNumber,
           textFieldController: phoneController,
           keyboardType: TextInputType.phone,
+          keyboardAction: TextInputAction.next,
           autoValidateMode: AutovalidateMode.onUserInteraction,
           ignoreBlank: true,
+          validator: (String? phoneNumber) {
+            if (phoneNumber == null || phoneNumber.isEmpty) {
+              return 'Please enter a phone number';
+            }
+            else if (phoneNumber.length != 12) {
+              return 'Please enter a valid phone number';
+            }
+          },
           inputDecoration: const InputDecoration(
             icon: Icon(Icons.phone),
             border: UnderlineInputBorder(),
@@ -145,7 +153,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
         ),
       ),
 
-      // College/University
+      // 5. College/University
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
@@ -169,6 +177,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             },
           )),
 
+      // Graduation Year (Optional)
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
@@ -208,39 +217,36 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: Center(
             child: ElevatedButton(
               onPressed: () async {
-                logger.log.fine('onPressed on Register Button');
+                logger.log.fine('UserRegistrationForm - onPressed() Register Button');
                 final form = _formKey.currentState;
                 if (form != null) {
                   if (form.validate()) {
-                    logger.log.fine('User registration was valid');
-                    logger.log
-                        .fine('Attempting to write the following user data');
-                    // TODO: Need better way of doing this + _updatedAt
+                    logger.log.fine('UserRegistrationForm - User registration was valid');
+                    logger.log.fine('UserRegistrationForm -Attempting to write the following user data');
                     Map<String, dynamic> registrationData = {
                       'first_name': firstName.text,
                       'last_name': lastName.text,
-                      'institution': universityValue,
-                      'affiliation': affiliationValue,
-                      'grad_year': gradValue,
                       'email_address': emailController.text,
                       'phone_number': phoneController.text,
+                      'institution': universityValue,
+                      'grad_year': gradValue,
                       'is_registered': true
                     };
-                    logger.log.fine(registrationData.toString());
+                    // 1. Update our [TagAlongUser] in-memory
+                    tagAlongUserViewModel.updateTagAlongUserInternal(registrationData);
 
-                    // Update the Unregistered TagAlongUser in database
-                    await tagAlongUserViewModel
-                        .updateTagAlongUser(registrationData);
-                    logger.log
-                        .fine('Updated user with registration information!');
+                    // 2. Update the Registered TagAlongUser in Firestore
+                    await tagAlongUserViewModel.updateTagAlongUserFirestore();
+                    logger.log.fine('UserRegistrationForm - Updated user with registration information!');
 
-                    // Send an email verification to `email_address`.
+                    // 3. Send an email verification to `email_address`.
                     await tagAlongUserViewModel.sendEmailVerificationToUser();
 
-                    // TODO: Move to "RegistrationComplete" Screen?
-                    await Navigator.pushReplacementNamed(
-                        context, '/ride_board');
-                  } else {
+                    // 4. Navigate to `WelcomeScreen`
+                    Navigator.pushReplacementNamed(context, '/welcome_screen');
+
+                  }
+                  else {
                     logger.log.fine('User registration was NOT valid.');
                   }
                 }
