@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/widgets/rideboard.dart';
 import 'package:tagalong/widgets/account.dart';
 import '../viewmodels/tagalong_user_view_model.dart';
@@ -21,9 +22,11 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
   @override
   Widget build(BuildContext context) {
     AuthService authService = Provider.of<AuthService>(context, listen: false);
-    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    RideBoardViewModel rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
+    // TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     logger.log.fine('RideboardScreen - In Ride Board!');
-    logger.log.fine('RideboardScreen - ${tagAlongUserViewModel.tagAlongUser?.toJson()}');
+    // logger.log.fine('RideboardScreen - ${tagAlongUserViewModel.tagAlongUser?.toJson()}');
+
 
     return Scaffold(
       appBar: AppBar(
@@ -76,9 +79,43 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
         }
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {  },
+        onPressed: () async {
+          bool isActiveDriver = await rideBoardViewModel.isActiveDriver();
+          logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
+          // If Active Driver, go to `Offer Ride Page`
+          if (isActiveDriver) {
+            logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
+          }
+          // If NOT Active Driver, offer option to register as such
+          else {
+            showDialog<String>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Not a Driver'),
+                  content: const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel')
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).popUntil((route) =>
+                        route.isFirst);
+                        Navigator.pushReplacementNamed(
+                            context, '/register_driver');
+                      },
+                      child: const Text('OK')
+                    ),
+                  ]
+                );
+              }
+            );
+          }
+        },
         child: const Icon(Icons.add)
-      ),
+      )
     );
   }
 }
