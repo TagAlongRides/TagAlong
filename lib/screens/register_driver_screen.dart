@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/widgets/driver_registration_form.dart';
 
-import '../widgets/driver_registration_form.dart';
-
 class RegisterDriverScreen extends StatefulWidget {
   const RegisterDriverScreen({Key? key}) : super(key: key);
 
