@@ -11,7 +11,9 @@ class TADataModel {
   /// Returns a Map representing the given data model
   Map<String, dynamic> toJson() => {};
 
-  /// Constructs an instance using the given model's constructor from a Map
+  /// Constructs an instance using the given model's constructor from a Map.
+  /// It should also validate the data to make sure if null if returned for
+  /// non-nullable types, then an [UnsupportedError] should occur.
   factory TADataModel.fromJson(Map<String, dynamic> json) => TADataModel();
 
   /// Returns a stringified version of the data model
