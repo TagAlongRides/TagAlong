@@ -37,11 +37,12 @@ class TagAlongUserViewModel {
   /// updates the [TagAlongUser] `email`
   Future<void> sendEmailVerificationToUser() async {
     if (userExists()) {
-      String? studentEmail = tagAlongUser?.email;
+      String? studentEmail = tagAlongUser?.emailAddress;
       User? user = getUser();
       if (studentEmail != null && user != null) {
         // TODO: Need to reauthenticate our Firebase `User` again because updating - Firebase security sensitive.
-        // TODO: For now, just always sign-in AND register
+        // TODO: For now, just always sign-in AND register..
+        await user.reload();
         await user.updateEmail(studentEmail);
         await user.sendEmailVerification();
         logger.log.fine('sendEmailVerificationToUser() - Sent verification email to $studentEmail');
@@ -55,7 +56,7 @@ class TagAlongUserViewModel {
   /// Returns a bool? on whether our [tagAlongUser] instance is registered.
   bool? isRegistered() {
     if (userExists()) {
-      return tagAlongUser!.isRegistered();
+      return tagAlongUser!.registered;
     }
     else {
       return null;
@@ -124,7 +125,6 @@ class TagAlongUserViewModel {
         Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
         logger.log.fine('setUpUser() - User exists! Looks like:');
         logger.log.fine('setUpUser() - ${userData.toString()}');
-        print('DRIVER DATA TYPE: ${userData['driver_data'].runtimeType}');
         tagAlongUser = TagAlongUser.fromJson(userData);
         return;
       }
@@ -132,13 +132,15 @@ class TagAlongUserViewModel {
       // as an "Unregistered TagAlongUser"
       else {
         logger.log.fine('setUpUser() - User did not exist!');
-        tagAlongUser = TagAlongUser.unregisteredUser(
-            id: uid,
-            createdAt: DateTime.now(),
-            signinMethod: signInMethod);
+        final time = DateTime.now();
+        tagAlongUser = TagAlongUser(
+          id: uid,
+          createdAt: time,
+          updatedAt: time,
+        );
       }
       logger.log.fine('setUpUser() - TagAlongUser was initialized.');
-      logger.log.fine('setUpUser() - The TagAlongUser is: ${tagAlongUser?.toJson().toString()}');
+      logger.log.fine('setUpUser() - The TagAlongUser is: $tagAlongUser}');
       await addTagAlongUserToFirestore(uid);
     }
   }
@@ -168,10 +170,12 @@ class TagAlongUserViewModel {
   void updateTagAlongUserInternal(Map<String, dynamic> data) {
     tagAlongUser?.updateTagAlongUser(data);
     logger.log.fine('updateTagAlongUserInternal() - TagAlongUser after update:\n'
-        '${tagAlongUser?.toJson().toString()}');
+        '$tagAlongUser');
   }
 
-  /// Updates a [TagAlongUser] with `jsonData` - does not replace.
+  /// Updates the Firebase with this ViewModel's current instance of [user]
+  ///
+  /// Does not replace existing values
   Future<void> updateTagAlongUserFirestore() async {
     Map<String, dynamic> tagAlongUserData = tagAlongUser!.toJson();
     await _databaseService.users.doc(getUid()).update(tagAlongUserData);

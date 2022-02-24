@@ -88,7 +88,7 @@ class TagAlongUser implements TADataModel {
       throw UnsupportedError('Invalid - emailAddress is $emailAddress');
     }
     var graduationYear = json['graduation_year'] as String?;
-    final registered = json['registered'] ?? false;
+    final registered = json['is_registered'] ?? false;
     var driverData = json['driver_data'];
     if (driverData != null) {
       driverData = Driver.fromJson(driverData);
@@ -152,8 +152,9 @@ class TagAlongUser implements TADataModel {
   //   updatedAt = DateTime.now();
   // }
 
-  /// Updates this instance's [TagAlongUser] in-memory only.
-  /// It should be assumed that `created
+  /// Updates this instance's [TagAlongUser] only if that data field
+  /// exists within [data], and only updates the TagAlongUserViewModel's user instance.
+  /// It should be assumed that `created_at` and `updated_at` are Timestamps
   void updateTagAlongUser(Map<String, dynamic> data) {
     id = data['id'] ?? id;
     createdAt = data['created_at']?.toDate() ?? createdAt;
