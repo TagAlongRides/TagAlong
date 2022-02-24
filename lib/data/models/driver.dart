@@ -1,8 +1,9 @@
+import 'package:tagalong/data/models/ta_data_model.dart';
 import 'package:tagalong/data/models/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// [Driver] Data model.
-class Driver {
+class Driver implements TADataModel {
   final DateTime createdAt;
   Vehicle vehicle;
   bool isActive;
@@ -42,6 +43,7 @@ class Driver {
   }
 
   /// A [Driver] instance into a Map<String, dynamic>
+  @override
   Map<String, dynamic> toJson() {
     return {
       'created_at': createdAt,
@@ -52,6 +54,6 @@ class Driver {
 
   @override
   String toString() {
-    return 'Driver with vehicle ${vehicle.toString()}';
+    return toJson().toString();
   }
 }
