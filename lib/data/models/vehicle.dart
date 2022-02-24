@@ -1,4 +1,5 @@
 import 'package:tagalong/data/models/ta_data_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// [Vehicle] Data model.
 class Vehicle implements TADataModel {
@@ -20,10 +21,17 @@ class Vehicle implements TADataModel {
   });
 
   /// A Map<String, dynamic> into a [Vehicle] instance
+  ///
+  /// Assumes that [json] data is always from Firebase, therefore
+  /// `created_at` may be a [Timestamp] or [Datetime],
+  /// since Firebase stores [DateTime] as [TimeStamp]
   factory Vehicle.fromJson(Map<String, dynamic> json){
-    final createdAt = json['created_at']?.toDate() as DateTime?;
+    var createdAt = json['created_at'];
     if (createdAt == null) {
       throw UnsupportedError('Invalid - createdAt is $createdAt');
+    }
+    else if (createdAt is Timestamp) {
+      createdAt = createdAt.toDate();
     }
     final make = json['make'] as String?;
     if (make == null) {
@@ -73,5 +81,4 @@ class Vehicle implements TADataModel {
   String toString() {
     return toJson().toString();
   }
-
 }

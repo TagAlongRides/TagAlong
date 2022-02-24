@@ -1,9 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/data/models/vehicle.dart';
-import 'package:tagalong/util/user_data.dart';
+
 
 void main() {
   test('Vehicle should be created from Map', () {
