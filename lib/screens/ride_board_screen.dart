@@ -61,10 +61,6 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
             label: 'My Rides',
             icon: Icon(Icons.directions_car_outlined),
           ),
-          // BottomNavigationBarItem(
-          //   label: 'Messages',
-          //   icon: Icon(Icons.message_outlined),
-          // ),
           BottomNavigationBarItem(
             label: 'Account',
             icon: Icon(Icons.account_circle_outlined),
@@ -85,6 +81,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
           // If Active Driver, go to `Offer Ride Page`
           if (isActiveDriver) {
             logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
+            Navigator.pushNamed(context, '/offer_ride_campus');
           }
           // If NOT Active Driver, offer option to register as such
           else {
@@ -101,8 +98,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).popUntil((route) =>
-                        route.isFirst);
+                        Navigator.of(context).popUntil((route) => route.isFirst);
                         Navigator.pushReplacementNamed(
                             context, '/register_driver');
                       },

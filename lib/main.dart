@@ -6,8 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/driver_registration_prompt_screen.dart';
 import 'package:tagalong/screens/login_screen.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_departure.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_dropoff.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
+import 'screens/offer_ride/offer_ride_pickup.dart';
 import 'themes/tagalong_theme.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
@@ -16,6 +20,8 @@ import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+
+import 'viewmodels/offer_ride_view_model.dart';
 
 
 
@@ -48,7 +54,8 @@ class _TagAlongAppState extends State<TagAlongApp> {
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
         Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
         ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
-        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel())
+        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
+        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,
@@ -63,6 +70,10 @@ class _TagAlongAppState extends State<TagAlongApp> {
           '/login_screen': (BuildContext context) => const LoginScreen(),
           '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
           '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
+          '/offer_ride_campus': (BuildContext context) => const OfferRideCampus(),
+          '/offer_ride_pickup': (BuildContext context) => const OfferRidePickup(),
+          '/offer_ride_dropoff': (BuildContext context) => const OfferRideDropoff(),
+          '/offer_ride_departure': (BuildContext context) => const OfferRideDeparture(),
         }
       ),
     );
