@@ -31,6 +31,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
       body: Form(
         key: _formKey,
         child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Question
               const QuestionWidget(
@@ -40,7 +41,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
               // 2. TextFormField OR DropdownButtonFormField
               if (!offerRideViewModel.toCampus)
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(12),
                   child: TextFormField(
                     initialValue: offerRideViewModel.dropoffLocation,
                     decoration: const InputDecoration(
@@ -57,7 +58,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(12),
                   child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
                       icon: Icon(Icons.edit_location_outlined),

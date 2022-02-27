@@ -31,8 +31,11 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
       ),
       body: Column(
         children: [
-          const QuestionWidget(
-              question: 'Date & Time of Departure?'
+          const Align(
+            alignment: Alignment.topLeft,
+            child: QuestionWidget(
+                question: 'Date & time of departure?'
+            ),
           ),
           ElevatedButton(
             onPressed: () async {

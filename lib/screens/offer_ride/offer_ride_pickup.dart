@@ -32,6 +32,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
       body: Form(
         key: _formKey,
         child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 1. Question
               const QuestionWidget(
@@ -41,7 +42,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
               // 2. TextFormField OR DropdownButtonFormField
               if (offerRideViewModel.toCampus)
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(12),
                   child: TextFormField(
                     initialValue: offerRideViewModel.pickupLocation,
                     decoration: const InputDecoration(
@@ -59,7 +60,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                 )
               else
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(12),
                   child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(
                       icon: Icon(Icons.edit_location_outlined),

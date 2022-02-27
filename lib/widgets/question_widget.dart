@@ -7,8 +7,11 @@ class QuestionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      question,
-      style: Theme.of(context).textTheme.headline1);
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Text(
+        question,
+        style: Theme.of(context).textTheme.headline1),
+    );
   }
 }

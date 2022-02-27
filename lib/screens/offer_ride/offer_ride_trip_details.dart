@@ -24,16 +24,14 @@ class OfferRideTripDetails extends StatelessWidget {
         title: const Text('Offer a Ride'),
       ),
       body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Question
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: QuestionWidget(
-                  question: 'How many passengers?'
-              ),
+            const QuestionWidget(
+                question: 'How many passengers?'
             ),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(12),
               child: DropdownButtonFormField<int>(
                 decoration: const InputDecoration(
                   icon: Icon(Icons.people),
@@ -51,14 +49,11 @@ class OfferRideTripDetails extends StatelessWidget {
                 ).toList(),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: QuestionWidget(
-                  question: 'How many bags per passenger?'
-              ),
+            const QuestionWidget(
+                question: 'How many bags per passenger?'
             ),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(12),
               child: DropdownButtonFormField<int>(
                 decoration: const InputDecoration(
                   icon: Icon(Icons.backpack),

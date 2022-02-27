@@ -23,16 +23,13 @@ class OfferRideCampus extends StatelessWidget {
         title: const Text('Offer a Ride'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. Question
-          const Flexible(
-            flex: 1,
-            child: QuestionWidget(
-              question: 'Where are you heading?'
-            )
+          const QuestionWidget(
+            question: 'Where are you heading?'
           ),
-          Flexible(
-            flex: 5,
+          Center(
             child: Column(
               children: [
                 ChoiceChip(
@@ -56,7 +53,7 @@ class OfferRideCampus extends StatelessWidget {
                   },
                 )
               ],
-            )
+            ),
           )
         ]
       ),

@@ -15,6 +15,8 @@ class OfferRideViewModel extends ChangeNotifier {
   int noPassengers = 2;         // Default
   int noBags = 2;               // Default
   int price = 20;               // Default
+  bool vaccinationCard = true;  // Default
+  String notes = '';
 
   // TODO: Update
   void toCampusChoice() {
@@ -58,15 +60,27 @@ class OfferRideViewModel extends ChangeNotifier {
   }
 
   void incrementPrice() {
-    price += 1;
-    notifyListeners();
+    if (price < 500) {
+      price += 1;
+      notifyListeners();
+    }
   }
 
   void decrementPrice() {
-    if (price > 0){
+    if (price > 5){
       price -= 1;
       notifyListeners();
     }
+  }
+
+  void updateVaccinationCard() {
+    vaccinationCard = !vaccinationCard;
+    notifyListeners();
+  }
+
+  void updateNotes(String notes) {
+    this.notes = notes;
+    notifyListeners();
   }
 
   void resetCampusChoice() {
@@ -101,6 +115,10 @@ class OfferRideViewModel extends ChangeNotifier {
     price = 20;
   }
 
+  void resetVaccinationCard() {
+    vaccinationCard = true;
+  }
+
   @override
   String toString() {
     Map<String, dynamic> map = {
@@ -111,7 +129,9 @@ class OfferRideViewModel extends ChangeNotifier {
       'departureTimeOfDay': departureTimeOfDay,
       'noPassengers': noPassengers,
       'noBags': noBags,
-      'price': price
+      'price': price,
+      'vaccinationCard': vaccinationCard,
+      'notes': notes
     };
     return map.toString();
   }
