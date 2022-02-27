@@ -16,7 +16,8 @@ class OfferRideTripDetails extends StatelessWidget {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
-              offerRideViewModel.resetCampusChoice();
+              offerRideViewModel.resetNoPassengers();
+              offerRideViewModel.resetNoBags();
               Navigator.of(context).pop();
             }
         ),
@@ -48,16 +49,40 @@ class OfferRideTripDetails extends StatelessWidget {
                     value: passengerOption
                   )
                 ).toList(),
-
               ),
-            )
+            ),
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: QuestionWidget(
+                  question: 'How many bags per passenger?'
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: DropdownButtonFormField<int>(
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.backpack),
+                  labelText: 'Bag Count',
+                ),
+                value: offerRideViewModel.noBags,
+                onChanged: (int? noBags) {
+                  offerRideViewModel.updateNoBags(noBags!);
+                },
+                items: offerRideViewModel.BAGS.map((bagOption) =>
+                    DropdownMenuItem<int>(
+                        child: Text('$bagOption'),
+                        value: bagOption
+                    )
+                ).toList(),
+              ),
+            ),
           ]
       ),
       floatingActionButton: FloatingActionButton.small(
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
           logger.log.fine('OfferRideCampus - $offerRideViewModel');
-          Navigator.pushNamed(context, '/offer_ride_pickup');
+          Navigator.pushNamed(context, '/offer_ride_price_prefs');
         },
       ),
     );
