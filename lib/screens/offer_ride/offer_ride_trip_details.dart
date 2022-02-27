@@ -9,7 +9,57 @@ class OfferRideTripDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen: true);
 
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              offerRideViewModel.resetCampusChoice();
+              Navigator.of(context).pop();
+            }
+        ),
+        title: const Text('Offer a Ride'),
+      ),
+      body: Column(
+          children: [
+            // 1. Question
+            const Padding(
+              padding: EdgeInsets.all(12),
+              child: QuestionWidget(
+                  question: 'How many passengers?'
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: DropdownButtonFormField<int>(
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.people),
+                  labelText: 'Passenger Count',
+                ),
+                value: offerRideViewModel.noPassengers,
+                onChanged: (int? noPassengers) {
+                  offerRideViewModel.updateNoPassengers(noPassengers!);
+                },
+                items: offerRideViewModel.PASSENGERS.map((passengerOption) =>
+                  DropdownMenuItem<int>(
+                    child: Text('$passengerOption'),
+                    value: passengerOption
+                  )
+                ).toList(),
+
+              ),
+            )
+          ]
+      ),
+      floatingActionButton: FloatingActionButton.small(
+        child: const Icon(Icons.arrow_forward_ios),
+        onPressed: () {
+          logger.log.fine('OfferRideCampus - $offerRideViewModel');
+          Navigator.pushNamed(context, '/offer_ride_pickup');
+        },
+      ),
+    );
   }
 }

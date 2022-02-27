@@ -9,6 +9,7 @@ import 'package:tagalong/screens/login_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_departure.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_dropoff.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_trip_details.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'screens/offer_ride/offer_ride_pickup.dart';
@@ -74,6 +75,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
           '/offer_ride_pickup': (BuildContext context) => const OfferRidePickup(),
           '/offer_ride_dropoff': (BuildContext context) => const OfferRideDropoff(),
           '/offer_ride_departure': (BuildContext context) => const OfferRideDeparture(),
+          '/offer_ride_trip_details': (BuildContext context) => const OfferRideTripDetails(),
         }
       ),
     );

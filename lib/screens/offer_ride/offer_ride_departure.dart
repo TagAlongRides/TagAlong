@@ -94,7 +94,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             );
             return;
           }
-          Navigator.pushNamed(context, '/offer_ride_departure');
+          Navigator.pushNamed(context, '/offer_ride_trip_details');
         },
       ),
     );

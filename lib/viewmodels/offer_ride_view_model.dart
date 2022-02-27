@@ -3,11 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class OfferRideViewModel extends ChangeNotifier {
+
+  List<int> PASSENGERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
   bool toCampus = true;
   String? pickupLocation;
   String? dropoffLocation;
   DateTime? departureDateTime;
   TimeOfDay? departureTimeOfDay;
+  int noPassengers = 2;
 
   // TODO: Update
   void toCampusChoice() {
@@ -37,6 +41,11 @@ class OfferRideViewModel extends ChangeNotifier {
 
   void updateDepartureTimeOfDay(TimeOfDay? departureTimeOfDay) {
     this.departureTimeOfDay = departureTimeOfDay;
+    notifyListeners();
+  }
+
+  void updateNoPassengers(int noPassengers) {
+    this.noPassengers = noPassengers;
     notifyListeners();
   }
 

@@ -25,13 +25,13 @@ class OfferRideCampus extends StatelessWidget {
       body: Column(
         children: [
           // 1. Question
-          const Expanded(
+          const Flexible(
             flex: 1,
             child: QuestionWidget(
-              question: 'Where are you going?'
+              question: 'Where are you heading?'
             )
           ),
-          Expanded(
+          Flexible(
             flex: 5,
             child: Column(
               children: [
