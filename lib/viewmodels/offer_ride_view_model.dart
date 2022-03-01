@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class OfferRideViewModel extends ChangeNotifier {
+/// A ViewModel that maintains the state of the "Offer Ride" user flow.
+class OfferRideViewModel with ChangeNotifier {
 
   List<int> PASSENGERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   List<int> BAGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -16,9 +17,8 @@ class OfferRideViewModel extends ChangeNotifier {
   int noBags = 2;               // Default
   int price = 20;               // Default
   bool vaccinationCard = true;  // Default
-  String notes = '';
+  String notes = '';            // Default
 
-  // TODO: Update
   void toCampusChoice() {
     toCampus = true;
     notifyListeners();

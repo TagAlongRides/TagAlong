@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
-import 'package:tagalong/widgets/question_widget.dart';
+import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 class OfferRideDropoff extends StatefulWidget {
@@ -22,7 +22,8 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
-              offerRideViewModel.resetDropoffLocation();
+              var vm = Provider.of<OfferRideViewModel>(context, listen: false);
+              vm.resetDropoffLocation();
               Navigator.of(context).pop();
             }
         ),
@@ -30,68 +31,73 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
       ),
       body: Form(
         key: _formKey,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 1. Question
-              const QuestionWidget(
-                  question: 'Drop off Location?'
-              ),
+        child: Consumer<OfferRideViewModel>(
+          builder: (context, offerRideViewModel, child) {
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Question
+                  const QuestionWidget(
+                      question: 'Drop off Location?'
+                  ),
 
-              // 2. TextFormField OR DropdownButtonFormField
-              if (!offerRideViewModel.toCampus)
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: TextFormField(
-                    initialValue: offerRideViewModel.dropoffLocation,
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.edit_location_outlined),
-                      labelText: 'Drop off Location',
-                    ),
-                    validator: (text) {
-                      if (text == null || text.isEmpty) {
-                        return 'Please enter a valid address';
-                      }
-                      return null;
-                    },
-                  ),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.edit_location_outlined),
-                      labelText: 'Drop off Location',
-                    ),
-                    value: offerRideViewModel.dropoffLocation,
-                    validator: (text) {
-                      if (text == null || text.isEmpty) {
-                        return 'Please choose a valid drop off location';
-                      }
-                      return null;
-                    },
-                    onChanged: (String? dropoffLocation) {
-                      offerRideViewModel.updateDropoffLocation(dropoffLocation!);
-                    },
-                    items: const [
-                      DropdownMenuItem<String>(
-                          child: Text('VT Location 1'),
-                          value: 'VT Location 1'
+                  // 2. TextFormField OR DropdownButtonFormField
+                  if (!offerRideViewModel.toCampus)
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: TextFormField(
+                        initialValue: offerRideViewModel.dropoffLocation,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.edit_location_outlined),
+                          labelText: 'Drop off Location',
+                        ),
+                        validator: (dropoff) {
+                          if (dropoff == null || dropoff.isEmpty) {
+                            return 'Please enter a valid address';
+                          }
+                          offerRideViewModel.updateDropoffLocation(dropoff);
+                          return null;
+                        },
                       ),
-                      DropdownMenuItem<String>(
-                          child: Text('VT Location 2'),
-                          value: 'VT Location 2'
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.edit_location_outlined),
+                          labelText: 'Drop off Location',
+                        ),
+                        value: offerRideViewModel.dropoffLocation,
+                        validator: (text) {
+                          if (text == null || text.isEmpty) {
+                            return 'Please choose a valid drop off location';
+                          }
+                          return null;
+                        },
+                        onChanged: (String? dropoffLocation) {
+                          offerRideViewModel.updateDropoffLocation(dropoffLocation!);
+                        },
+                        items: const [
+                          DropdownMenuItem<String>(
+                              child: Text('VT Location 1'),
+                              value: 'VT Location 1'
+                          ),
+                          DropdownMenuItem<String>(
+                              child: Text('VT Location 2'),
+                              value: 'VT Location 2'
+                          ),
+                          DropdownMenuItem<String>(
+                              child: Text('VT Location 3'),
+                              value: 'VT Location 3'
+                          )
+                        ],
                       ),
-                      DropdownMenuItem<String>(
-                          child: Text('VT Location 3'),
-                          value: 'VT Location 3'
-                      )
-                    ],
-                  ),
-                )
-            ]
-        ),
+                    )
+                ]
+            );
+          }
+        )
       ),
       floatingActionButton: FloatingActionButton.small(
         child: const Icon(Icons.arrow_forward_ios),
