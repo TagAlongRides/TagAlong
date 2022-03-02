@@ -34,45 +34,47 @@ class OfferRideTripDetails extends StatelessWidget {
                       question: 'How many passengers?'
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: DropdownButtonFormField<int>(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.people),
-                        labelText: 'Passenger Count',
-                      ),
-                      value: offerRideViewModel.noPassengers,
-                      onChanged: (int? noPassengers) {
-                        offerRideViewModel.updateNoPassengers(noPassengers!);
-                      },
-                      items: offerRideViewModel.PASSENGERS.map((passengerOption) =>
-                          DropdownMenuItem<int>(
-                              child: Text('$passengerOption'),
-                              value: passengerOption
-                          )
-                      ).toList(),
-                    ),
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () => offerRideViewModel.decrementNoPassengers()
+                            ),
+                            Text(
+                                '${offerRideViewModel.noPassengers}',
+                                style: Theme.of(context).textTheme.headline1
+                            ),
+                            IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () => offerRideViewModel.incrementNoPassengers()
+                            ),
+                          ]
+                      )
                   ),
                   const QuestionWidget(
                       question: 'How many bags per passenger?'
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: DropdownButtonFormField<int>(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.backpack),
-                        labelText: 'Bag Count',
-                      ),
-                      value: offerRideViewModel.noBags,
-                      onChanged: (int? noBags) {
-                        offerRideViewModel.updateNoBags(noBags!);
-                      },
-                      items: offerRideViewModel.BAGS.map((bagOption) =>
-                          DropdownMenuItem<int>(
-                              child: Text('$bagOption'),
-                              value: bagOption
-                          )
-                      ).toList(),
-                    ),
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () => offerRideViewModel.decrementNoBags()
+                            ),
+                            Text(
+                                '${offerRideViewModel.noBags}',
+                                style: Theme.of(context).textTheme.headline1
+                            ),
+                            IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () => offerRideViewModel.incrementNoBags()
+                            ),
+                          ]
+                      )
                   ),
                 ]
             ),

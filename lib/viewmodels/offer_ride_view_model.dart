@@ -49,14 +49,32 @@ class OfferRideViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateNoPassengers(int noPassengers) {
-    this.noPassengers = noPassengers;
-    notifyListeners();
+  void incrementNoPassengers() {
+    if (noPassengers < 10) {
+      noPassengers += 1;
+      notifyListeners();
+    }
   }
 
-  void updateNoBags(int noBags) {
-    this.noBags = noBags;
-    notifyListeners();
+  void decrementNoPassengers() {
+    if (noPassengers > 1) {
+      noPassengers -= 1;
+      notifyListeners();
+    }
+  }
+
+  void incrementNoBags() {
+    if (noBags < 10) {
+      noBags += 1;
+      notifyListeners();
+    }
+  }
+
+  void decrementNoBags() {
+    if (noBags > 1) {
+      noBags -= 1;
+      notifyListeners();
+    }
   }
 
   void incrementPrice() {
