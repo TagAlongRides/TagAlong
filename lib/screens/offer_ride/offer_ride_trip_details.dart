@@ -25,55 +25,57 @@ class OfferRideTripDetails extends StatelessWidget {
       ),
       body: Consumer<OfferRideViewModel>(
         builder: (context, offerRideViewModel, child) {
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Question
-                const QuestionWidget(
-                    question: 'How many passengers?'
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.people),
-                      labelText: 'Passenger Count',
-                    ),
-                    value: offerRideViewModel.noPassengers,
-                    onChanged: (int? noPassengers) {
-                      offerRideViewModel.updateNoPassengers(noPassengers!);
-                    },
-                    items: offerRideViewModel.PASSENGERS.map((passengerOption) =>
-                        DropdownMenuItem<int>(
-                            child: Text('$passengerOption'),
-                            value: passengerOption
-                        )
-                    ).toList(),
+          return SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Question
+                  const QuestionWidget(
+                      question: 'How many passengers?'
                   ),
-                ),
-                const QuestionWidget(
-                    question: 'How many bags per passenger?'
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: DropdownButtonFormField<int>(
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.backpack),
-                      labelText: 'Bag Count',
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: DropdownButtonFormField<int>(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.people),
+                        labelText: 'Passenger Count',
+                      ),
+                      value: offerRideViewModel.noPassengers,
+                      onChanged: (int? noPassengers) {
+                        offerRideViewModel.updateNoPassengers(noPassengers!);
+                      },
+                      items: offerRideViewModel.PASSENGERS.map((passengerOption) =>
+                          DropdownMenuItem<int>(
+                              child: Text('$passengerOption'),
+                              value: passengerOption
+                          )
+                      ).toList(),
                     ),
-                    value: offerRideViewModel.noBags,
-                    onChanged: (int? noBags) {
-                      offerRideViewModel.updateNoBags(noBags!);
-                    },
-                    items: offerRideViewModel.BAGS.map((bagOption) =>
-                        DropdownMenuItem<int>(
-                            child: Text('$bagOption'),
-                            value: bagOption
-                        )
-                    ).toList(),
                   ),
-                ),
-              ]
+                  const QuestionWidget(
+                      question: 'How many bags per passenger?'
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: DropdownButtonFormField<int>(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.backpack),
+                        labelText: 'Bag Count',
+                      ),
+                      value: offerRideViewModel.noBags,
+                      onChanged: (int? noBags) {
+                        offerRideViewModel.updateNoBags(noBags!);
+                      },
+                      items: offerRideViewModel.BAGS.map((bagOption) =>
+                          DropdownMenuItem<int>(
+                              child: Text('$bagOption'),
+                              value: bagOption
+                          )
+                      ).toList(),
+                    ),
+                  ),
+                ]
+            ),
           );
         }
       ),

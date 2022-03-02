@@ -119,6 +119,19 @@ class OfferRideViewModel with ChangeNotifier {
     vaccinationCard = true;
   }
 
+  void resetAll() {
+    toCampus = true;          // Default
+    pickupLocation = null;
+    dropoffLocation = null;
+    departureDateTime = null;
+    departureTimeOfDay = null;
+    noPassengers = 2;         // Default
+    noBags = 2;               // Default
+    price = 20;               // Default
+    vaccinationCard = true;   // Default
+    notes = '';               // Default
+  }
+
   @override
   String toString() {
     Map<String, dynamic> map = {

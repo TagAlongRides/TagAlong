@@ -81,7 +81,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                       question: 'Any notes?'
                   ),
                   Padding(
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       child: TextField(
                         controller: notesController,
                         decoration: const InputDecoration(
@@ -95,7 +95,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                       )
                   ),
                   Padding(
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.only(bottom: 24),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -103,9 +103,33 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                               width: 100,
                               height: 50,
                               child: ElevatedButton(
-                                  child: Text('Cancel'),
-                                  onPressed: () {
-
+                                  child: const Text('Cancel'),
+                                  onPressed: () async {
+                                    return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text('Cancel Ride'),
+                                          content: const Text('Are you sure you want to cancel your ride posting?'
+                                              '\nThis will reset your progress and take you back to the Rideboard.'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Back')
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                offerRideViewModel.resetAll();
+                                                Navigator.popUntil(context, ModalRoute.withName('/ride_board'));
+                                              },
+                                              child: const Text('Cancel')
+                                            )
+                                          ]
+                                        );
+                                      }
+                                    );
                                   }
                               ),
                             ),
@@ -113,7 +137,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                               width: 100,
                               height: 50,
                               child: ElevatedButton(
-                                  child: Text('Post Ride'),
+                                  child: const Text('Post Ride'),
                                   onPressed: () {
                                     offerRideViewModel.updateNotes(notesController.text.toString());
                                     logger.log.fine('OfferRidePricePrefs - $offerRideViewModel');
