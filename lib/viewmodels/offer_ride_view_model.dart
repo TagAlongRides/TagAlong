@@ -42,12 +42,12 @@ class OfferRideViewModel with ChangeNotifier {
   }
 
   void updateLocationCity(String? locationCity) {
-    this.locationCity = locationCity;
+    this.locationCity = locationCity!;
     notifyListeners();
   }
 
   void updateLocationZip(String? locationZip) {
-    this.locationZip = locationZip;
+    this.locationZip = locationZip!;
     notifyListeners();
   }
 
