@@ -83,6 +83,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                   Padding(
                       padding: const EdgeInsets.all(24),
                       child: TextField(
+                        maxLength: 280,
                         controller: notesController,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
