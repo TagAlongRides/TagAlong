@@ -6,10 +6,12 @@ import 'package:tagalong/util/user_data.dart';
 /// [Ride] data model.
 class Ride implements TADataModel {
 
-  final String rideId;        // UUID
+  final String rideId;          // UUID
   final String driverId;
   final String schoolId;
-  final String
+
   final DateTime createdAt;
+
+}
 
 }

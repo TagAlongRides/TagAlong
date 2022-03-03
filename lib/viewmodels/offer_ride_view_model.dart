@@ -11,6 +11,8 @@ class OfferRideViewModel with ChangeNotifier {
   bool toCampus = true;         // Default
   String? pickupLocation;
   String? dropoffLocation;
+  String? locationCity;
+  String? locationZip;
   DateTime? departureDateTime;
   TimeOfDay? departureTimeOfDay;
   int noPassengers = 2;         // Default
@@ -36,6 +38,16 @@ class OfferRideViewModel with ChangeNotifier {
 
   void updateDropoffLocation(String? dropOffLocation) {
     dropoffLocation = dropOffLocation!;
+    notifyListeners();
+  }
+
+  void updateLocationCity(String? locationCity) {
+    this.locationCity = locationCity;
+    notifyListeners();
+  }
+
+  void updateLocationZip(String? locationZip) {
+    this.locationZip = locationZip;
     notifyListeners();
   }
 
@@ -113,6 +125,11 @@ class OfferRideViewModel with ChangeNotifier {
     dropoffLocation = null;
   }
 
+  void resetCityAndZip() {
+    locationCity = null;
+    locationZip = null;
+  }
+
   void resetDepartureDateTime() {
     departureDateTime = null;
   }
@@ -156,6 +173,8 @@ class OfferRideViewModel with ChangeNotifier {
       'toCampus': toCampus,
       'pickupLocation': pickupLocation,
       'dropoffLocation': dropoffLocation,
+      'locationCity': locationCity,
+      'locationZip': locationZip,
       'departureDateTime': departureDateTime,
       'departureTimeOfDay': departureTimeOfDay,
       'noPassengers': noPassengers,

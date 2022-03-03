@@ -24,6 +24,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
             onPressed: () {
               var vm = Provider.of<OfferRideViewModel>(context, listen: false);
               vm.resetPickupLocation();
+              vm.resetCityAndZip();
               Navigator.of(context).pop();
             }
         ),
@@ -33,68 +34,111 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
         key: _formKey,
         child: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {
-            return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Question
-                  const QuestionWidget(
-                      question: 'Pickup location?'
-                  ),
+            return SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1. Question
+                    const QuestionWidget(
+                        question: 'Pickup location?'
+                    ),
 
-                  // 2. TextFormField OR DropdownButtonFormField
-                  if (offerRideViewModel.toCampus)
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: TextFormField(
-                        initialValue: offerRideViewModel.pickupLocation,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.edit_location_outlined),
-                          labelText: 'Pickup Location',
-                        ),
-                        validator: (pickup) {
-                          if (pickup == null || pickup.isEmpty) {
-                            return 'Please enter a valid address';
-                          }
-                          offerRideViewModel.updatePickupLocation(pickup);
-                          return null;
-                        },
-                      ),
-                    )
-                  else
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.edit_location_outlined),
-                          labelText: 'Pickup Location',
-                        ),
-                        value: offerRideViewModel.pickupLocation,
-                        validator: (text) {
-                          if (text == null || text.isEmpty) {
-                            return 'Please choose a valid pickup location';
-                          }
-                          return null;
-                        },
-                        onChanged: (String? pickUpLocation) {
-                          offerRideViewModel.updatePickupLocation(pickUpLocation!);
-                        },
-                        items: const [
-                          DropdownMenuItem<String>(
-                              child: Text('VT Location 1'),
-                              value: 'VT Location 1'
+                    // 2. TextFormField OR DropdownButtonFormField
+                    if (offerRideViewModel.toCampus)
+                      Column(
+                        children:[
+                          Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: TextFormField(
+                              initialValue: offerRideViewModel.pickupLocation,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.edit_location_outlined),
+                                labelText: 'Address*',
+                              ),
+                              validator: (pickup) {
+                                if (pickup == null || pickup.isEmpty) {
+                                  return 'Address is required';
+                                }
+                                offerRideViewModel.updatePickupLocation(pickup);
+                                return null;
+                              },
+                            ),
                           ),
-                          DropdownMenuItem<String>(
-                              child: Text('VT Location 2'),
-                              value: 'VT Location 2'
+                          Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: TextFormField(
+                              initialValue: offerRideViewModel.locationCity,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.location_city),
+                                labelText: 'City*',
+                              ),
+                              validator: (city) {
+                                if (city == null || city.isEmpty) {
+                                  return 'City is required';
+                                }
+                                offerRideViewModel.updateLocationCity(city);
+                                return null;
+                              },
+                            ),
                           ),
-                          DropdownMenuItem<String>(
-                              child: Text('VT Location 3'),
-                              value: 'VT Location 3'
-                          )
-                        ],
-                      ),
-                    )
-                ]
+                          Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: TextFormField(
+                              initialValue: offerRideViewModel.locationZip,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.code),
+                                labelText: 'Zip Code*',
+                              ),
+                              validator: (city) {
+                                if (city == null || city.isEmpty) {
+                                  return 'Zip is required';
+                                }
+                                else if (int.tryParse(city) == null) {
+                                  return 'Please enter a numeric zip code';
+                                }
+                                offerRideViewModel.updateLocationZip(city);
+                                return null;
+                              },
+                            ),
+                          ),
+                        ]
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: DropdownButtonFormField<String>(
+                          decoration: const InputDecoration(
+                            icon: Icon(Icons.edit_location_outlined),
+                            labelText: 'Pickup Location',
+                          ),
+                          value: offerRideViewModel.pickupLocation,
+                          validator: (text) {
+                            if (text == null || text.isEmpty) {
+                              return 'Please choose a valid pickup location';
+                            }
+                            return null;
+                          },
+                          onChanged: (String? pickUpLocation) {
+                            offerRideViewModel.updatePickupLocation(pickUpLocation!);
+                          },
+                          items: const [
+                            DropdownMenuItem<String>(
+                                child: Text('VT Location 1'),
+                                value: 'VT Location 1'
+                            ),
+                            DropdownMenuItem<String>(
+                                child: Text('VT Location 2'),
+                                value: 'VT Location 2'
+                            ),
+                            DropdownMenuItem<String>(
+                                child: Text('VT Location 3'),
+                                value: 'VT Location 3'
+                            )
+                          ],
+                        ),
+                      )
+                  ]
+              ),
             );
           }
         )
