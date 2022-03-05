@@ -181,7 +181,7 @@ class OfferRideViewModel with ChangeNotifier {
       'noBags': noBags,
       'price': price,
       'vaccinationCard': vaccinationCard,
-      'notes': notes
+      'notes': notes,
     };
     return map.toString();
   }

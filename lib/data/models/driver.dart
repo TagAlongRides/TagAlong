@@ -17,7 +17,7 @@ class Driver implements TADataModel {
   /// A Map<String, dynamic> into a [Driver] instance.
   ///
   /// Assumes that [json] data is always from Firebase, therefore
-  /// `created_at` may be a [Timestamp] or [Datetime],
+  /// `created_at` may be a [Timestamp] or [DateTime],
   /// since Firebase stores [DateTime] as [TimeStamp]
   factory Driver.fromJson(Map<String, dynamic> json) {
     var createdAt = json['created_at'];
