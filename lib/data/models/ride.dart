@@ -85,7 +85,7 @@ class Ride implements TADataModel {
     if (dropoffLocation == null) {
       throw UnsupportedError('Invalid - dropoffLocation is $dropoffLocation');
     }
-    var locationCity = json['locationCity'] as String?;
+    var locationCity = json['location_city'] as String?;
     if (locationCity == null) {
       throw UnsupportedError('Invalid - locationCity is $locationCity');
     }
@@ -164,7 +164,7 @@ class Ride implements TADataModel {
       'university': university,
       'status': status,
       'pickup_location': pickupLocation,
-      'dropoffLocation': dropoffLocation,
+      'dropoff_location': dropoffLocation,
       'location_city': locationCity,
       'location_zip': locationZip,
       'notes': notes,
