@@ -73,7 +73,8 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                               offerRideViewModel.updateVaccinationCard();
                             },
                           ),
-                          const Text('Require proof of vaccination card on arrival.')
+                          const Flexible(
+                              child: Text('Require proof of vaccination card on arrival.'))
                         ]
                     ),
                   ),
