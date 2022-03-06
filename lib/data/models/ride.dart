@@ -24,7 +24,7 @@ class Ride implements TADataModel {
   bool toCampus;
   // May be able to combine these in the future for "efficiency", but
   // this allows a quick way for us to disable "TimeOfDay" button with
-  // deliberate "Date" to leave chosen
+  // deliberate intent of ensuring "Date" is chosen
   DateTime departureDateTime;
   TimeOfDay departureTimeOfDay;
 
@@ -128,8 +128,8 @@ class Ride implements TADataModel {
     if (departureTimeOfDay == null) {
       throw UnsupportedError('Invalid - departureTimeOfDay is $departureTimeOfDay');
     }
-    else if (departureTimeOfDay is Timestamp) {
-      departureTimeOfDay = TimeOfDay.fromDateTime(departureTimeOfDay.toDate());
+    else if (departureTimeOfDay is String) {
+      departureTimeOfDay = timeOfDayFromString(departureTimeOfDay);
     }
 
     return Ride(
@@ -154,11 +154,12 @@ class Ride implements TADataModel {
 
   }
 
-  /// A [Ride] instance into a Map<String, dynamic>
+  /// A [Ride] instance into a Map<String, dynamic>, typically used
+  /// for preparing data to push up to Firebase.
   @override
   Map<String, dynamic> toJson() {
     return {
-      'created_at': createdAt,
+      'created_at': createdAt,    // DateTime -> Timestamp
       'ride_id': rideId,
       'driver_id': driverId,
       'university': university,
@@ -173,14 +174,22 @@ class Ride implements TADataModel {
       'price': price,
       'vaccination_card': vaccinationCard,
       'to_campus': toCampus,
-      'departure_date_time': departureDateTime,
-      'departure_time_of_day': departureTimeOfDay
+      'departure_date_time': departureDateTime,   // DateTime -> Timestamp
+      'departure_time_of_day': departureTimeOfDay.toString()  // TimeOfDay -> String
     };
   }
 
   @override
   String toString() {
     return toJson().toString();
+  }
+
+  /// Returns a [TimeOfDay] instance given a stringified TimeOfDay
+  static TimeOfDay timeOfDayFromString(String str) {
+    return TimeOfDay(
+        hour: int.parse(str.split(':')[0]),
+        minute: int.parse(str.split(':')[1])
+    );
   }
 
 

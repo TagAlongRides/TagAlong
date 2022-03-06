@@ -101,6 +101,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             );
             return;
           }
+          logger.log.fine('Leaving OfferRideDeparture');
           Navigator.pushNamed(context, '/offer_ride_trip_details');
         },
       ),

@@ -1,13 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tagalong/data/models/ride.dart';
+import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/data/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:tagalong/util/user_data.dart';
+import 'package:tagalong/util/ride_status.dart';
 
 /// A ViewModel that maintains the state of the "Offer Ride" user flow.
 class OfferRideViewModel with ChangeNotifier {
 
+  // Firebase Services
+  AuthService authService = AuthService();
+  DatabaseService databaseService = DatabaseService();
+
+  // Constants for range of passengers and bags
   List<int> PASSENGERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   List<int> BAGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+  // User-inputted [Ride] attributes
   bool toCampus = true;         // Default
   String? pickupLocation;
   String? dropoffLocation;
@@ -167,6 +178,44 @@ class OfferRideViewModel with ChangeNotifier {
     notes = '';               // Default
   }
 
+  /// Will create a new [Ride] instance and upload the [Ride]
+  /// to the "rides" collection in Firestore.
+  /// TODO: Find solution to nested ViewModels so we can get TagAlongUser
+  /// info, such as university W/O another read!
+  Future<bool> createNewRide() async {
+    // Create a [Ride] instance
+    final String ride_id = uuid.v4();
+    Ride ride = Ride(
+      createdAt: DateTime.now(),
+      rideId: ride_id,
+      driverId: authService.getUid()!,
+      university: Institution.VIRGINIA_TECH,
+      status: RideStatus.SCHEDULED,
+      toCampus: toCampus,
+      pickupLocation: pickupLocation!,
+      dropoffLocation: dropoffLocation!,
+      locationCity: locationCity!,
+      locationZip: locationZip!,
+      departureDateTime: departureDateTime!,
+      departureTimeOfDay: departureTimeOfDay!,
+      noPassengers: noPassengers,
+      noBags: noBags,
+      price: price,
+      vaccinationCard: vaccinationCard,
+      notes: notes
+    );
+
+    // Get corresponding [Map] data from [Ride]
+    Map<String, dynamic> map = ride.toJson();
+
+    // Push to Firebase with our specific RideID, [ride_id]
+    await databaseService.rides.doc(ride_id).set(map);
+
+    // Reset the [OfferRideViewModel]
+    resetAll();
+    return true;
+  }
+
   @override
   String toString() {
     Map<String, dynamic> map = {
@@ -183,6 +232,7 @@ class OfferRideViewModel with ChangeNotifier {
       'vaccinationCard': vaccinationCard,
       'notes': notes,
     };
+    // print('TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser}');
     return map.toString();
   }
 

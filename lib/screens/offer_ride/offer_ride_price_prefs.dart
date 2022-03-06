@@ -16,6 +16,8 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
 
   @override
   Widget build(BuildContext context) {
+    var vm = Provider.of<OfferRideViewModel>(context, listen: false);
+    print('HERE: ${vm.runtimeType}');
 
     return Scaffold(
       appBar: AppBar(
@@ -124,6 +126,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                                             TextButton(
                                               onPressed: () {
                                                 offerRideViewModel.resetAll();
+                                                logger.log.fine('Canceling OfferRidePricePrefs');
                                                 Navigator.popUntil(context, ModalRoute.withName('/ride_board'));
                                               },
                                               child: const Text('Cancel')
@@ -140,9 +143,34 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                               height: 50,
                               child: ElevatedButton(
                                   child: const Text('Post Ride'),
-                                  onPressed: () {
-                                    offerRideViewModel.updateNotes(notesController.text.toString());
-                                    logger.log.fine('OfferRidePricePrefs - $offerRideViewModel');
+                                  onPressed: () async {
+                                    return showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                            title: const Text('Post Ride'),
+                                            content: const Text(
+                                                'Are you sure you want to post your ride?'
+                                                    '\nThis ride will available on the Rideboard as soon as you post!'),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text('Back')
+                                              ),
+                                              TextButton(
+                                                  onPressed: () async {
+                                                    await offerRideViewModel.createNewRide();
+                                                    logger.log.fine('Posting OfferRidePricePrefs');
+                                                    Navigator.popUntil(context, ModalRoute.withName('/ride_board'));
+                                                  },
+                                                  child: const Text('Post')
+                                              )
+                                            ]
+                                        );
+                                      }
+                                    );
                                   }
                               ),
                             ),

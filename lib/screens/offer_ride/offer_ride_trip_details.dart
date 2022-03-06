@@ -84,6 +84,7 @@ class OfferRideTripDetails extends StatelessWidget {
       floatingActionButton: FloatingActionButton.small(
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
+          logger.log.fine('Leaving OfferRideTripDetails');
           Navigator.pushNamed(context, '/offer_ride_price_prefs');
         },
       ),

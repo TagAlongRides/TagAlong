@@ -147,7 +147,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
           if (_formKey.currentState!.validate()) {
-            logger.log.fine('OfferRidePickUp');
+            logger.log.fine('Leaving OfferRidePickUp');
             Navigator.pushNamed(context, '/offer_ride_dropoff');
           }
         },

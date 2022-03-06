@@ -146,6 +146,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
           if (_formKey.currentState!.validate()) {
+            logger.log.fine('Leaving OfferRideDropOff');
             Navigator.pushNamed(context, '/offer_ride_departure');
           }
         },
