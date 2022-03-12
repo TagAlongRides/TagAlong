@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/util/ride_status.dart';
 
-/// A ViewModel that maintains the state of the "Offer Ride" user flow.
+/// A ViewModel that maintains the state and functionality
+/// of the "Offer Ride" user flow.
 class OfferRideViewModel with ChangeNotifier {
 
   // Firebase Services
@@ -169,6 +170,8 @@ class OfferRideViewModel with ChangeNotifier {
     toCampus = true;          // Default
     pickupLocation = null;
     dropoffLocation = null;
+    locationCity = null;
+    locationZip = null;
     departureDateTime = null;
     departureTimeOfDay = null;
     noPassengers = 2;         // Default
@@ -176,6 +179,7 @@ class OfferRideViewModel with ChangeNotifier {
     price = 20;               // Default
     vaccinationCard = true;   // Default
     notes = '';               // Default
+
   }
 
   /// Will create a new [Ride] instance and upload the [Ride]
@@ -213,6 +217,7 @@ class OfferRideViewModel with ChangeNotifier {
 
     // Reset the [OfferRideViewModel]
     resetAll();
+    notifyListeners();
     return true;
   }
 

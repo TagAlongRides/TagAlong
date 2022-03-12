@@ -14,6 +14,7 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
+    logger.log.fine('Account Build');
     return const Text('Account');
   }
 }

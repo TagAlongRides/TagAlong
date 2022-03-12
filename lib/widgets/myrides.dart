@@ -14,6 +14,7 @@ class MyRides extends StatefulWidget {
 class _MyRidesState extends State<MyRides> {
   @override
   Widget build(BuildContext context) {
+    logger.log.fine('MyRides Build');
     return const Text('My Rides');
   }
 }

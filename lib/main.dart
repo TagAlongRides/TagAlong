@@ -12,6 +12,7 @@ import 'package:tagalong/screens/offer_ride/offer_ride_dropoff.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_price_prefs.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_trip_details.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
+import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'screens/offer_ride/offer_ride_pickup.dart';
 import 'themes/tagalong_theme.dart';
@@ -57,7 +58,8 @@ class _TagAlongAppState extends State<TagAlongApp> {
         Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
         ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
         ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
-        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel())
+        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel()),
+        ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,

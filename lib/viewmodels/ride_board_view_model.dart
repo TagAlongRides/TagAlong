@@ -18,7 +18,7 @@ import 'package:tagalong/util/log.dart' as logger;
 class RideBoardViewModel extends ChangeNotifier {
 
   final AuthService authService = AuthService();
-  final DatabaseService firebaseService = DatabaseService();
+  final DatabaseService databaseService = DatabaseService();
 
 
   // TODO: Currently checks Firebase, not best solution!!
@@ -26,7 +26,7 @@ class RideBoardViewModel extends ChangeNotifier {
   Future<bool> isActiveDriver() async {
     User? user = authService.getUser();
     if (user != null) {
-      DocumentSnapshot data = await firebaseService.users.doc(user.uid).get();
+      DocumentSnapshot data = await databaseService.users.doc(user.uid).get();
       Map<String, dynamic>? driverDataJson = data.get('driver_data');
       if (driverDataJson != null) {
         if (driverDataJson['is_active'] == true) {
@@ -35,6 +35,16 @@ class RideBoardViewModel extends ChangeNotifier {
       }
     }
     return false;
+  }
+
+  /// Returns a Future<QuerySnapshot<Map<String, dynamic>>> of ALL rides
+  /// ordered by the `departure_date_time` field, from `rides` collection.
+  Future<QuerySnapshot<Object?>> getAllRidesData() {
+    return databaseService
+        .rides
+        .orderBy('departure_date_time')
+        .get();
+    notifyListeners();
   }
 
 
