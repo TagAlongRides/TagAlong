@@ -23,7 +23,7 @@ void main() {
       'vaccination_card': true,
       'to_campus': true,
       'departure_date_time': Timestamp(1, 1),
-      'departure_time_of_day': "12:30"
+      'departure_time_of_day': "12:30 PM"
     };
     final ride = Ride.fromJson(map);
   });
@@ -46,7 +46,7 @@ void main() {
       'vaccination_card': true,
       'to_campus': true,
       'departure_date_time': Timestamp(1, 1),
-      'departure_time_of_day': Timestamp(1, 1)
+      'departure_time_of_day': "12:00 PM"
     };
     expect(() => Ride.fromJson(map), throwsUnsupportedError);
   });

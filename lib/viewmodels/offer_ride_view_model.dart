@@ -26,7 +26,7 @@ class OfferRideViewModel with ChangeNotifier {
   String? locationCity;
   String? locationZip;
   DateTime? departureDateTime;
-  TimeOfDay? departureTimeOfDay;
+  String? departureTimeOfDay;
   int noPassengers = 2;         // Default
   int noBags = 2;               // Default
   int price = 20;               // Default
@@ -68,7 +68,7 @@ class OfferRideViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateDepartureTimeOfDay(TimeOfDay? departureTimeOfDay) {
+  void updateDepartureTimeOfDay(String? departureTimeOfDay) {
     this.departureTimeOfDay = departureTimeOfDay;
     notifyListeners();
   }
@@ -237,7 +237,6 @@ class OfferRideViewModel with ChangeNotifier {
       'vaccinationCard': vaccinationCard,
       'notes': notes,
     };
-    // print('TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser}');
     return map.toString();
   }
 

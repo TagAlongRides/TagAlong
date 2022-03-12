@@ -26,7 +26,7 @@ class Ride implements TADataModel {
   // this allows a quick way for us to disable "TimeOfDay" button with
   // deliberate intent of ensuring "Date" is chosen
   DateTime departureDateTime;
-  TimeOfDay departureTimeOfDay;
+  String departureTimeOfDay;
 
   Ride({
     required this.createdAt,
@@ -128,9 +128,6 @@ class Ride implements TADataModel {
     if (departureTimeOfDay == null) {
       throw UnsupportedError('Invalid - departureTimeOfDay is $departureTimeOfDay');
     }
-    else if (departureTimeOfDay is String) {
-      departureTimeOfDay = timeOfDayFromString(departureTimeOfDay);
-    }
 
     return Ride(
       createdAt: createdAt,
@@ -188,7 +185,7 @@ class Ride implements TADataModel {
   static TimeOfDay timeOfDayFromString(String str) {
     return TimeOfDay(
         hour: int.parse(str.split(':')[0]),
-        minute: int.parse(str.split(':')[1])
+        minute: int.parse(str.split(':')[1].substring(0, 2))
     );
   }
 

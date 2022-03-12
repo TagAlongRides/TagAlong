@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -62,12 +63,22 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                 if (offerRideViewModel.departureDateTime != null)
                   ElevatedButton(
                     onPressed: () async {
-                      TimeOfDay chosenTime = offerRideViewModel.departureTimeOfDay ?? TimeOfDay.now();
+                      late TimeOfDay chosenTime;
+
+                      // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
+                      if (offerRideViewModel.departureTimeOfDay != null) {
+                        chosenTime = Ride.timeOfDayFromString(offerRideViewModel.departureTimeOfDay!);
+                      }
+                      // User HAS NOT chosen a TimeOfDay to leave - default to current time
+                      else {
+                        chosenTime = const TimeOfDay(hour: 12, minute: 00);
+                      }
+
                       final TimeOfDay? newTime = await showTimePicker(
                           context: context,
                           initialTime: chosenTime
                       );
-                      offerRideViewModel.updateDepartureTimeOfDay(newTime);
+                      offerRideViewModel.updateDepartureTimeOfDay(newTime?.format(context));
                     }
                     ,
                     child: const Text('Select departure time'),

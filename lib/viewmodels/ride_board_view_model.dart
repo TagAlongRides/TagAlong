@@ -44,7 +44,6 @@ class RideBoardViewModel extends ChangeNotifier {
         .rides
         .orderBy('departure_date_time')
         .get();
-    notifyListeners();
   }
 
 

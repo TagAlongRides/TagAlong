@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
-class RideBoardList extends StatefulWidget {
+class RideBoardList extends StatelessWidget {
 
   const RideBoardList({Key? key}) : super(key: key);
 
   @override
-  _RideBoardListState createState() => _RideBoardListState();
-}
-
-class _RideBoardListState extends State<RideBoardList> {
-  @override
   Widget build(BuildContext context) {
+    logger.log.fine('RideBoardList Build');
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen:true);
 
     // Listening to OfferRideViewModel
     var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
 
-    logger.log.fine('RideBoardWidget Build');
-    // TODO: Make List<Ride>
+    // Compute "getAllRidesData()" by default on regular build, showing
+    // a [CircularProgressIndicator] while user waits for completion.
     return FutureBuilder<QuerySnapshot<Object?>>(
       future: rideBoardViewModel.getAllRidesData(),
       builder: (
@@ -66,7 +63,8 @@ class _RideBoardListState extends State<RideBoardList> {
             title: Text(querySnapshot.docs[i]['ride_id']),
             trailing: Text('\$${querySnapshot.docs[i]["price"]}'),
             onTap: () {
-
+              Ride ride = Ride.fromJson(querySnapshot.docs[i].data() as Map<String, dynamic>);
+              logger.log.fine(ride.toString());
             },
             onLongPress: () {
 

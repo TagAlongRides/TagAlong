@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
@@ -22,17 +20,20 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
 
   // Index for the IndexedStack. The initial Widget will be the RideBoard.
   // Note: The [IndexedStack] maintains state, therefore the build for the
-  // IndexedStack children only occur once, and they all happen at the start!
+  // IndexedStack children only occurs once, and they all happen at the start.
+  // Therefore if you want to [RideBoardList, MyRides, Account] UI to show
+  // new state, you must rebuild the specific Widget.
   int _selectedItem = 0;
 
   @override
   Widget build(BuildContext context) {
     AuthService authService = Provider.of<AuthService>(context, listen: false);
     RideBoardViewModel rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
-    logger.log.fine('RideboardScreen - In Ride Board!');
+    logger.log.fine('RideboardScreen Build');
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Rideboard'),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
@@ -44,7 +45,6 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
             );
           },
         ),
-        title: const Text('Rideboard'),
         actions: [
           ElevatedButton(
               onPressed: () {
@@ -54,15 +54,13 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
           )
         ]
       ),
-      body: Center(
-        child: IndexedStack(
-          index: _selectedItem,
-          children: const [
-            RideBoardList(),
-            MyRides(),
-            Account()
-          ]
-        ),
+      body: IndexedStack(
+        index: _selectedItem,
+        children: const [
+          RideBoardList(),
+          MyRides(),
+          Account()
+        ]
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -81,13 +79,16 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
           ),
         ],
         currentIndex: _selectedItem,
-        // OnTap, update our current index into `items` and rebuild
+        // OnTap, update our current index into `items` and rebuild ONLY this
+        // specific widget. DOES NOT REBUILD Children!
+        // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
         onTap: (int index) {
           setState(() {
             _selectedItem = index;
           });
         }
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           bool isActiveDriver = await rideBoardViewModel.isActiveDriver();
