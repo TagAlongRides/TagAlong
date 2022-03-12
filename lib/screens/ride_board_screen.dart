@@ -137,8 +137,6 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
   /// 3. Departure Date [TextFormField] + DatePicker
   /// 4. Row of filter buttons
   Widget _getFilterModalBottomSheet(BuildContext context) {
-    var filterRideViewModel = Provider.of<FilterRideViewModel>(context, listen: true);
-    
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
