@@ -6,22 +6,26 @@ import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
-class RideBoardList extends StatelessWidget {
+class RideBoard extends StatelessWidget {
 
-  const RideBoardList({Key? key}) : super(key: key);
+  const RideBoard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     logger.log.fine('RideBoardList Build');
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen:true);
 
-    // Listening to OfferRideViewModel
+    // Listening to OfferRideViewModel for the case when a Driver posts a ride -
+    // The rideboard should refresh to show that ride.
     var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
 
     // Compute "getAllRidesData()" by default on regular build, showing
     // a [CircularProgressIndicator] while user waits for completion.
     return FutureBuilder<QuerySnapshot<Object?>>(
-      future: rideBoardViewModel.getAllRidesData(),
+      // future: rideBoardViewModel.getAllRidesData(),
+      future: rideBoardViewModel.getRidesBasedOnFilters(
+          filters: rideBoardViewModel.filters
+      ),
       builder: (
           BuildContext context,
           AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
@@ -59,7 +63,7 @@ class RideBoardList extends StatelessWidget {
       itemBuilder: (context, i) {
         return Card(
           child: ListTile(
-            leading: Icon(Icons.directions_car_rounded),
+            leading: const Icon(Icons.directions_car_rounded),
             title: Text(querySnapshot.docs[i]['ride_id']),
             trailing: Text('\$${querySnapshot.docs[i]["price"]}'),
             onTap: () {

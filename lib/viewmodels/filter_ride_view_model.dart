@@ -10,6 +10,7 @@ class FilterRideViewModel with ChangeNotifier {
 
   /// Return a formatted string date to allow the user to know
   /// when they want to depart.
+  /// ex: "2022-03-29"
   String getFormattedDepartureDate() {
     String formattedDate = departureDate != null
         ? departureDate!.toIso8601String().split('T').first

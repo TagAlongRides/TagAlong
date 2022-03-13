@@ -20,6 +20,18 @@ class RideBoardViewModel extends ChangeNotifier {
   final AuthService authService = AuthService();
   final DatabaseService databaseService = DatabaseService();
 
+  /// The filters that will be used in [getRidesBasedOnFilters]. This is
+  /// updated
+  Map<String, dynamic>? filters;
+
+
+  /// Updates this instance's [filters] and notifies listeners,
+  /// mainly the [RideBoard] so that wh
+  void updateFilters(Map<String, dynamic> filters) {
+    this.filters = filters;
+    notifyListeners();
+  }
+
 
   // TODO: Currently checks Firebase, not best solution!!
   /// Checks whether the current user is an active driver.
@@ -46,5 +58,35 @@ class RideBoardViewModel extends ChangeNotifier {
         .get();
   }
 
+  Future<QuerySnapshot<Object?>> getRidesBasedOnFilters({Map<String, dynamic>? filters}) {
+    Query rides = databaseService.rides;
+
+    // Default Query is when `filters` is null
+    if (filters == null) {
+      Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
+      return databaseService
+          .rides
+          .where('status', isEqualTo: 'Scheduled')  // Query only "open" rides
+          .where('departure_date_time',
+            isGreaterThan: currentTimestamp)         // Query only rides in the future
+          .orderBy('departure_date_time')           // Order by when ride is leaving
+          .get();
+    }
+
+    // 1. ToCampus
+    if (filters['to_campus'] != null) {
+      rides = rides.where('to_campus', isEqualTo: filters['to_campus']);
+    }
+
+    // 2. Departure Date
+    if (filters['departure_date_time'] != null) {
+      Timestamp departTimeStamp = Timestamp.fromDate(filters['departure_date_time']);
+      Timestamp dayAheadDepartTimeStamp = Timestamp.fromDate(filters['departure_date_time'].add(const Duration(hours: 24)));
+      rides = rides.where('departure_date_time', isGreaterThanOrEqualTo: departTimeStamp)
+                    .where('departure_date_time', isLessThanOrEqualTo: dayAheadDepartTimeStamp);
+    }
+
+    return rides.get();
+  }
 
 }

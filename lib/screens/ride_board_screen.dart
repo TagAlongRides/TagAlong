@@ -57,7 +57,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
       body: IndexedStack(
         index: _selectedItem,
         children: const [
-          RideBoardList(),
+          RideBoard(),
           MyRides(),
           Account()
         ]
@@ -138,6 +138,9 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
   /// 3. Departure Date [TextFormField] + DatePicker
   /// 4. Row of filter buttons
   Widget _getFilterModalBottomSheet(BuildContext context) {
+    var filterRideViewModel = Provider.of<FilterRideViewModel>(context, listen: false);
+    var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
+
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -241,22 +244,32 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
           ),
 
           // 4. Row of filter buttons
-          Consumer<FilterRideViewModel>(
-            builder: (context, filterRideViewModel, child) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => filterRideViewModel.resetAll(),
-                    child: const Text('Reset Filters')
-                  ),
-                  ElevatedButton(
-                    onPressed: () {  },
-                    child: const Text('Filter')
-                  )
-                ]
-              );
-            }
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () => filterRideViewModel.resetAll(),
+                child: const Text('Reset Filters')
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // 1. Pop the BottomModelSheet
+                  Navigator.pop(context);
+
+                  // 2. Gathers all the filters and updates the
+                  // [RideBoardViewModel]'s filters, which will then notify
+                  // [RideBoard] to Re-query and rebuild the ListView
+                  Map<String, dynamic> filters = {
+                    'to_campus': filterRideViewModel.toCampus,
+                    'departure_date_time': filterRideViewModel.departureDate
+                  };
+                  rideBoardViewModel.updateFilters(filters);
+
+                },
+                child: const Text('Filter')
+              )
+            ]
           )
         ]
     );
