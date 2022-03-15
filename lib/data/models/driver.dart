@@ -1,7 +1,9 @@
+import 'package:tagalong/data/models/ta_data_model.dart';
 import 'package:tagalong/data/models/vehicle.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// [Driver] Data model.
-class Driver {
+class Driver implements TADataModel {
   final DateTime createdAt;
   Vehicle vehicle;
   bool isActive;
@@ -13,12 +15,35 @@ class Driver {
     });
 
   /// A Map<String, dynamic> into a [Driver] instance.
-  Driver.fromJson(Map<String, dynamic> json):
-      createdAt = json['created_at'].toDate() as DateTime,
-      vehicle = Vehicle.fromJson(json['vehicle']),
-      isActive = json['is_active'] as bool;
+  ///
+  /// Assumes that [json] data is always from Firebase, therefore
+  /// `created_at` may be a [Timestamp] or [Datetime],
+  /// since Firebase stores [DateTime] as [TimeStamp]
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    var createdAt = json['created_at'];
+    if (createdAt == null) {
+      throw UnsupportedError('Invalid - createdAt is $createdAt');
+    }
+    else if (createdAt is Timestamp) {
+      createdAt = createdAt.toDate();
+    }
+    var vehicle = json['vehicle'];
+    if (vehicle == null) {
+      throw UnsupportedError('Invalid - vehicle is $vehicle');
+    }
+    else {
+      vehicle = Vehicle.fromJson(json['vehicle']);
+    }
+    final isActive = json['is_active'] ?? false;
+    return Driver(
+      createdAt: createdAt,
+      vehicle: vehicle,
+      isActive: isActive
+    );
+  }
 
   /// A [Driver] instance into a Map<String, dynamic>
+  @override
   Map<String, dynamic> toJson() {
     return {
       'created_at': createdAt,
@@ -29,8 +54,6 @@ class Driver {
 
   @override
   String toString() {
-    return 'Driver with vehicle ${vehicle.toString()}';
+    return toJson().toString();
   }
-
-
 }

@@ -10,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
-    String email = tagAlongUserViewModel.tagAlongUser!.email;
+    String email = tagAlongUserViewModel.tagAlongUser!.emailAddress;
     return Scaffold(
       appBar: AppBar(
         title: const Text('TagAlong')

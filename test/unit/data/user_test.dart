@@ -1,40 +1,92 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/data/models/vehicle.dart';
 import 'package:tagalong/util/user_data.dart';
 
+
 void main() {
-  test('Initialization does not mark as registered', () {
-    final user = TagAlongUser("ABC123", DateTime.now(), SignInMethod.facebook);
-    expect(user.isRegistered(), false);
+  test('Creation of unregistered user (successfully logging in with Facebook)', () {
+    final time = DateTime.now();
+    final user = TagAlongUser(
+      id: "RANDOMID",
+      createdAt: time,
+      updatedAt: time
+    );
   });
 
-  test('Registering does mark as registered', () {
-    final user = TagAlongUser("ABC123", DateTime.now(), SignInMethod.facebook);
-    user.registerUser("John", "Doe", Institution.virginiaTech,
-        Affiliation.other, DateTime(2024), "1112223333", "johndoe@email.com");
-    expect(user.isRegistered(), true);
+  test('Creation of unregistered user from Map', () {
+    final time = DateTime.now();
+    Map<String, dynamic> map = {
+      "id": "RANDOMID",
+      "created_at": time,
+      "updated_at": time,
+      "sign_in_method": SignInMethod.FACEBOOK,
+      "is_registered": false,
+      "first_name": "",
+      "last_name": "",
+      "institution": "",
+      "graduation_year": null,
+      "phone_number": "",
+      "email_address": "",
+      "driver_data": null
+    };
+    final user = TagAlongUser.fromJson(map);
   });
 
-  test('toMap returns expected values', () {
-    final user = TagAlongUser("ABC123", DateTime.now(), SignInMethod.facebook);
-    user.registerUser("John", "Doe", Institution.virginiaTech,
-        Affiliation.other, DateTime(2024), "1112223333", "johndoe@email.com");
-
-    final Map<String, String?> userMap = user.toMap();
-    // TODO: Figure out a way to check values of creation and update times
-    expect(userMap["id"], "ABC123");
-    expect(userMap["sign_in_method"], "facebook");
-    expect(userMap["is_registered"], "true");
-    expect(userMap["first_name"], "John");
-    expect(userMap["last_name"], "Doe");
-    expect(userMap["institution"], "virginia_tech");
-    expect(userMap["affiliation"], "other");
-    expect(userMap["grad_year"], "2024");
-    expect(userMap["phone_number"], "1112223333");
-    expect(userMap["email_address"], "johndoe@email.com");
+  test('Creation of unregistered user from Map, but non-nullable data', () {
+    final time = DateTime.now();
+    Map<String, dynamic> map = {
+      "id": "RANDOMID",
+      "created_at": time,
+      "updated_at": null,
+      "sign_in_method": SignInMethod.FACEBOOK,
+      "is_registered": false,
+      "first_name": "",
+      "last_name": "",
+      "institution": "",
+      "graduation_year": null,
+      "phone_number": "",
+      "email_address": "",
+      "driver_data": null
+    };
+    expect(() => TagAlongUser.fromJson(map), throwsUnsupportedError);
   });
 
-  // TODO: Figure out how to test the user_data utils in an automated way
-  //  i.e. if a new value is added to enum, check that the name extension
-  //  supports it automatically
+  test('Creation of unregistered user from Map with Driver data', () {
+    final time = DateTime.now();
+    final vehicle_map = {
+      'created_at': Timestamp(1, 1),
+      'make': 'Hyundai',
+      'model': 'Genesis',
+      'year': '2015',
+      'color': 'Red',
+      'vehicle_id': '9758c7ea-7a69-4b69-8181-3877b6c0b8fc'
+    };
+    final vehicle = Vehicle.fromJson(vehicle_map);
+
+    final driver_map = {
+      'created_at': Timestamp(1,1),
+      'vehicle': vehicle.toJson(),
+      'is_active': true
+    };
+    final driver = Driver.fromJson(driver_map);
+    Map<String, dynamic> map = {
+      "id": "RANDOMID",
+      "created_at": time,
+      "updated_at": time,
+      "sign_in_method": SignInMethod.FACEBOOK,
+      "is_registered": false,
+      "first_name": "",
+      "last_name": "",
+      "institution": "",
+      "graduation_year": null,
+      "phone_number": "",
+      "email_address": "",
+      "driver_data": driver.toJson()
+    };
+    final user = TagAlongUser.fromJson(map);
+  });
+
 }

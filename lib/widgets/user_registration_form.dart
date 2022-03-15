@@ -115,7 +115,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid .edu email';
               }
-              if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu).edu")
+              if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu")
                   .hasMatch(value)) {
                 return 'Please enter a valid @vt.edu email address';
               }
@@ -229,7 +229,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                       'email_address': emailController.text,
                       'phone_number': phoneController.text,
                       'institution': universityValue,
-                      'grad_year': gradValue,
+                      'graduation_year': gradValue,
                       'is_registered': true
                     };
                     // 1. Update our [TagAlongUser] in-memory
