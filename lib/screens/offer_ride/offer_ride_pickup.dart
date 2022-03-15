@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/util/university_locations.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -121,20 +122,12 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                           onChanged: (String? pickUpLocation) {
                             offerRideViewModel.updatePickupLocation(pickUpLocation!);
                           },
-                          items: const [
-                            DropdownMenuItem<String>(
-                                child: Text('VT Location 1'),
-                                value: 'VT Location 1'
-                            ),
-                            DropdownMenuItem<String>(
-                                child: Text('VT Location 2'),
-                                value: 'VT Location 2'
-                            ),
-                            DropdownMenuItem<String>(
-                                child: Text('VT Location 3'),
-                                value: 'VT Location 3'
-                            )
-                          ],
+                          items: VirginiaTechLocation.values.map<DropdownMenuItem<String>>((String location) {
+                            return DropdownMenuItem<String>(
+                                child: Text(location),
+                                value: location
+                            );
+                          }).toList()
                         ),
                       )
                   ]

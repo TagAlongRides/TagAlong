@@ -56,10 +56,11 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
       ),
       body: IndexedStack(
         index: _selectedItem,
-        children: const [
-          RideBoard(),
-          MyRides(),
-          Account()
+        children:  [
+          const RideBoard(),
+          Container(),
+          const MyRides(),
+          const Account()
         ]
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -68,6 +69,10 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
           BottomNavigationBarItem(
             label: 'Ride Board',
             icon: Icon(Icons.home_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: 'Post Ride',
+            icon: Icon(Icons.add),
           ),
           BottomNavigationBarItem(
             label: 'My Rides',
@@ -82,51 +87,50 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
         // OnTap, update our current index into `items` and rebuild ONLY this
         // specific widget. DOES NOT REBUILD Children!
         // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
-        onTap: (int index) {
-          setState(() {
-            _selectedItem = index;
-          });
+        onTap: (int index) async {
+          if ([0, 2, 3].contains(index)) {
+            setState((){
+              _selectedItem = index;
+            });
+          }
+          else {
+            bool isActiveDriver = await rideBoardViewModel.isActiveDriver();
+            logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
+            // If Active Driver, go to `Offer Ride Page`
+            if (isActiveDriver) {
+              logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
+              Navigator.pushNamed(context, '/offer_ride_campus');
+            }
+            // If NOT Active Driver, offer option to register as such
+            else {
+              showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: const Text('Not a Driver'),
+                        content: const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel')
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).popUntil((route) => route.isFirst);
+                                Navigator.pushReplacementNamed(
+                                    context, '/register_driver');
+                              },
+                              child: const Text('OK')
+                          ),
+                        ]
+                    );
+                  }
+              );
+            }
+          }
         }
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          bool isActiveDriver = await rideBoardViewModel.isActiveDriver();
-          logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
-          // If Active Driver, go to `Offer Ride Page`
-          if (isActiveDriver) {
-            logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
-            Navigator.pushNamed(context, '/offer_ride_campus');
-          }
-          // If NOT Active Driver, offer option to register as such
-          else {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Not a Driver'),
-                  content: const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel')
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).popUntil((route) => route.isFirst);
-                        Navigator.pushReplacementNamed(
-                            context, '/register_driver');
-                      },
-                      child: const Text('OK')
-                    ),
-                  ]
-                );
-              }
-            );
-          }
-        },
-        child: const Icon(Icons.add)
-      )
     );
   }
 
@@ -224,7 +228,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
                       final DateTime? newDate = await showDatePicker(
                         context: context,
                         initialDate: filterRideViewModel.departureDate ?? DateTime.now(),
-                        firstDate: filterRideViewModel.departureDate ?? DateTime.now(),
+                        firstDate: DateTime.now(),
                         lastDate: DateTime(2022, 12),
                         helpText: 'Select a date to leave',
                       );

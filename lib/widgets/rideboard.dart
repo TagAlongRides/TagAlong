@@ -48,7 +48,6 @@ class RideBoard extends StatelessWidget {
                 return const Text('adfasdf');
               }
             }
-
             else {
               return const Text('adfasdf');
             }

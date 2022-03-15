@@ -75,7 +75,12 @@ class RideBoardViewModel extends ChangeNotifier {
 
     // 1. ToCampus
     if (filters['to_campus'] != null) {
-      rides = rides.where('to_campus', isEqualTo: filters['to_campus']);
+      Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
+      rides = rides
+          .where('to_campus', isEqualTo: filters['to_campus'])
+          .where('departure_date_time',
+              isGreaterThan: currentTimestamp)
+          .orderBy('departure_date_time');
     }
 
     // 2. Departure Date
