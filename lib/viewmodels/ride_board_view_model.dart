@@ -18,7 +18,19 @@ import 'package:tagalong/util/log.dart' as logger;
 class RideBoardViewModel extends ChangeNotifier {
 
   final AuthService authService = AuthService();
-  final DatabaseService firebaseService = DatabaseService();
+  final DatabaseService databaseService = DatabaseService();
+
+  /// The filters that will be used in [getRidesBasedOnFilters]. This is
+  /// updated
+  Map<String, dynamic>? filters;
+
+
+  /// Updates this instance's [filters] and notifies listeners,
+  /// mainly the [RideBoard] so that wh
+  void updateFilters(Map<String, dynamic> filters) {
+    this.filters = filters;
+    notifyListeners();
+  }
 
 
   // TODO: Currently checks Firebase, not best solution!!
@@ -26,7 +38,7 @@ class RideBoardViewModel extends ChangeNotifier {
   Future<bool> isActiveDriver() async {
     User? user = authService.getUser();
     if (user != null) {
-      DocumentSnapshot data = await firebaseService.users.doc(user.uid).get();
+      DocumentSnapshot data = await databaseService.users.doc(user.uid).get();
       Map<String, dynamic>? driverDataJson = data.get('driver_data');
       if (driverDataJson != null) {
         if (driverDataJson['is_active'] == true) {
@@ -37,5 +49,49 @@ class RideBoardViewModel extends ChangeNotifier {
     return false;
   }
 
+  /// Returns a Future<QuerySnapshot<Map<String, dynamic>>> of ALL rides
+  /// ordered by the `departure_date_time` field, from `rides` collection.
+  Future<QuerySnapshot<Object?>> getAllRidesData() {
+    return databaseService
+        .rides
+        .orderBy('departure_date_time')
+        .get();
+  }
+
+  Future<QuerySnapshot<Object?>> getRidesBasedOnFilters({Map<String, dynamic>? filters}) {
+    Query rides = databaseService.rides;
+
+    // Default Query is when `filters` is null
+    if (filters == null) {
+      Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
+      return databaseService
+          .rides
+          .where('status', isEqualTo: 'Scheduled')  // Query only "open" rides
+          .where('departure_date_time',
+            isGreaterThan: currentTimestamp)         // Query only rides in the future
+          .orderBy('departure_date_time')           // Order by when ride is leaving
+          .get();
+    }
+
+    // 1. ToCampus
+    if (filters['to_campus'] != null) {
+      Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
+      rides = rides
+          .where('to_campus', isEqualTo: filters['to_campus'])
+          .where('departure_date_time',
+              isGreaterThan: currentTimestamp)
+          .orderBy('departure_date_time');
+    }
+
+    // 2. Departure Date
+    if (filters['departure_date_time'] != null) {
+      Timestamp departTimeStamp = Timestamp.fromDate(filters['departure_date_time']);
+      Timestamp dayAheadDepartTimeStamp = Timestamp.fromDate(filters['departure_date_time'].add(const Duration(hours: 24)));
+      rides = rides.where('departure_date_time', isGreaterThanOrEqualTo: departTimeStamp)
+                    .where('departure_date_time', isLessThanOrEqualTo: dayAheadDepartTimeStamp);
+    }
+
+    return rides.get();
+  }
 
 }
