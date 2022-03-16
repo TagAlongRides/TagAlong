@@ -16,42 +16,45 @@ class RideBoard extends StatelessWidget {
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen:true);
 
     // Listening to OfferRideViewModel for the case when a Driver posts a ride -
-    // The rideboard should refresh to show that ride.
+    // The RideBoard should rebuild to show that ride.
     var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
 
     // Compute "getAllRidesData()" by default on regular build, showing
     // a [CircularProgressIndicator] while user waits for completion.
-    return FutureBuilder<QuerySnapshot<Object?>>(
-      // future: rideBoardViewModel.getAllRidesData(),
-      future: rideBoardViewModel.getRidesBasedOnFilters(
-          filters: rideBoardViewModel.filters
-      ),
-      builder: (
-          BuildContext context,
-          AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
-            // Case 1: Future has NOT completed
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-
-            // Case 2: Future has completed
-            else if (snapshot.connectionState == ConnectionState.done) {
-              // Case 2a: Error
-              if (snapshot.hasError) {
-                return const Text('Error has occur');
+    return RefreshIndicator(
+      onRefresh: rideBoardViewModel.getRidesBasedOnFilters ,
+      child: FutureBuilder<void>(
+        // future: rideBoardViewModel.getAllRidesData(),
+        future: rideBoardViewModel.getRidesBasedOnFilters(),
+        builder: (
+            BuildContext context,
+            AsyncSnapshot snapshot) {
+              // Case 1: Future has NOT completed
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator()
+                );
               }
-              // Case 2b: Data exists
-              else if (snapshot.hasData) {
-                return getListViewOfRides(snapshot.data!);
+
+              // Case 2: Future has completed
+              else if (snapshot.connectionState == ConnectionState.done) {
+                // Case 2a: Error
+                if (snapshot.hasError) {
+                  return const Text('Error has occur');
+                }
+                // Case 2b: Data exists
+                else if (snapshot.hasData) {
+                  return getListViewOfRides(rideBoardViewModel.querySnapshot!);
+                }
+                else {
+                  return getListViewOfRides(rideBoardViewModel.querySnapshot!);
+                }
               }
               else {
-                return const Text('adfasdf');
+                return const Text('af');
               }
-            }
-            else {
-              return const Text('adfasdf');
-            }
-          },
+            },
+      ),
     );
   }
 

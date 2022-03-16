@@ -18,10 +18,11 @@ class RideBoardScreen extends StatefulWidget {
 
 class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerProviderStateMixin {
 
-  // Index for the IndexedStack. The initial Widget will be the RideBoard.
+  // Index for the IndexedStack, representing which Widget to show on the screen
+  // based on the BottomNavBar. The initial Widget will be the [RideBoard].
   // Note: The [IndexedStack] maintains state, therefore the build for the
   // IndexedStack children only occurs once, and they all happen at the start.
-  // Therefore if you want to [RideBoardList, MyRides, Account] UI to show
+  // Therefore if you want to [RideBoard, MyRides, Account] UI to show
   // new state, you must rebuild the specific Widget.
   int _selectedItem = 0;
 
@@ -36,6 +37,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
         title: const Text('Rideboard'),
         leading: IconButton(
           icon: const Icon(Icons.menu),
+          // Filtering Button
           onPressed: () {
             showModalBottomSheet(
                 context: context,
@@ -56,11 +58,11 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
       ),
       body: IndexedStack(
         index: _selectedItem,
-        children:  [
-          const RideBoard(),
-          Container(),
-          const MyRides(),
-          const Account()
+        children: const [
+          RideBoard(),
+          Text(''),     // This should never be shown - represents "Post Ride"
+          MyRides(),
+          Account()
         ]
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -88,11 +90,14 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
         // specific widget. DOES NOT REBUILD Children!
         // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
         onTap: (int index) async {
+          // 1. User tapped a valid BottomNavBar Page (RideBoard, MyRides, Account)
           if ([0, 2, 3].contains(index)) {
             setState((){
               _selectedItem = index;
             });
           }
+
+          // 2. User tapped on "Post Ride"
           else {
             bool isActiveDriver = await rideBoardViewModel.isActiveDriver();
             logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
