@@ -40,6 +40,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
           // Filtering Button
           onPressed: () {
             showModalBottomSheet(
+                isScrollControlled: true,
                 context: context,
                 builder: (BuildContext context) {
                   return _getFilterModalBottomSheet(context);
@@ -150,137 +151,145 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
     var filterRideViewModel = Provider.of<FilterRideViewModel>(context, listen: false);
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
 
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. AppBar
-          AppBar(
-            title: const Text('Filter Rides', style: TextStyle(color: Colors.black)),
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            leading: IconButton(
-              icon: const Icon(Icons.close),
-              color: Colors.black,
-              // Exit out of the Modal bottom sheet; can also exit by pressing
-              // on the scrim or scrolling down.
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-
-          // 2. To/From Campus ChoiceChips
-          const Padding(
-              padding: EdgeInsets.all(8),
-              child: Text('Which way are you heading?')
-          ),
-          Padding(
-              padding: const EdgeInsets.all(8),
-              child: Consumer<FilterRideViewModel>(
-                builder: (context, filterRideViewModel, child) {
-                  return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ChoiceChip(
-                            label: const SizedBox(
-                                width: 120,
-                                child: Text('To Campus')
-                            ),
-                            selected: filterRideViewModel.toCampus,
-                            onSelected: (bool selected) =>
-                              filterRideViewModel.toCampusChoice(),
-                        ),
-                        ChoiceChip(
-                            label: const SizedBox(
-                                width: 120,
-                                child: Text('From Campus')
-                            ),
-                            selected: !filterRideViewModel.toCampus,
-                            onSelected: (bool selected) =>
-                                filterRideViewModel.fromCampusChoice()
-                        )
-                    ]
-                  );
-                }
-              )
-          ),
-
-          const Divider(
-            indent: 16,
-            endIndent: 16,
-          ),
-
-          // 3. Departure Date [TextFormField] + DatePicker
-          const Padding(
-              padding: EdgeInsets.all(8),
-              child: Text('When are you leaving?')
-          ),
-          Padding(
-              padding: const EdgeInsets.all(8),
-              child: Consumer<FilterRideViewModel>(
-                builder: (context, filterRideViewModel, child) {
-                  return TextFormField(
-                    enableInteractiveSelection: false,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                        hintText: filterRideViewModel.getFormattedDepartureDate(),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0)
-                        ),
-                        suffixIcon:  const Icon(Icons.date_range)
-                    ),
-                    onTap: () async {
-                      final DateTime? newDate = await showDatePicker(
-                        context: context,
-                        initialDate: filterRideViewModel.departureDate ?? DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2022, 12),
-                        helpText: 'Select a date to leave',
-                      );
-                      filterRideViewModel.updateDepartureDate(newDate);
-                    }
-                  );
-                }
-              ),
-          ),
-
-          const Padding(
-            padding: EdgeInsets.all(8),
-            child: Divider(
-              indent: 16,
-              endIndent: 16,
-            ),
-          ),
-
-          // 4. Row of filter buttons
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return DraggableScrollableSheet(
+      expand: false,
+      builder: (BuildContext context, ScrollController scrollController) {
+        return ListView(
+            controller: scrollController,
             children: [
-              ElevatedButton(
-                onPressed: () => filterRideViewModel.resetAll(),
-                child: const Text('Reset Filters')
+              // 1. AppBar
+              AppBar(
+                title: const Text(
+                    'Filter Rides', style: TextStyle(color: Colors.black)),
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                leading: IconButton(
+                  icon: const Icon(Icons.close),
+                  color: Colors.black,
+                  // Exit out of the Modal bottom sheet; can also exit by pressing
+                  // on the scrim or scrolling down.
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  // 1. Pop the BottomModelSheet
-                  Navigator.pop(context);
 
-                  // 2. Gathers all the filters and updates the
-                  // [RideBoardViewModel]'s filters, which will then notify
-                  // [RideBoard] to Re-query and rebuild the ListView
-                  Map<String, dynamic> filters = {
-                    'to_campus': filterRideViewModel.toCampus,
-                    'departure_date_time': filterRideViewModel.departureDate
-                  };
-                  rideBoardViewModel.updateFilters(filters);
+              // 2. To/From Campus ChoiceChips
+              const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Which way are you heading?')
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Consumer<FilterRideViewModel>(
+                      builder: (context, filterRideViewModel, child) {
+                        return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ChoiceChip(
+                                label: const SizedBox(
+                                    width: 120,
+                                    child: Text('To Campus')
+                                ),
+                                selected: filterRideViewModel.toCampus,
+                                onSelected: (bool selected) =>
+                                    filterRideViewModel.toCampusChoice(),
+                              ),
+                              ChoiceChip(
+                                  label: const SizedBox(
+                                      width: 120,
+                                      child: Text('From Campus')
+                                  ),
+                                  selected: !filterRideViewModel.toCampus,
+                                  onSelected: (bool selected) =>
+                                      filterRideViewModel.fromCampusChoice()
+                              )
+                            ]
+                        );
+                      }
+                  )
+              ),
 
-                },
-                child: const Text('Filter')
+              const Divider(
+                indent: 16,
+                endIndent: 16,
+              ),
+
+              // 3. Departure Date [TextFormField] + DatePicker
+              const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('When are you leaving?')
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Consumer<FilterRideViewModel>(
+                    builder: (context, filterRideViewModel, child) {
+                      return TextFormField(
+                          enableInteractiveSelection: false,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              hintText: filterRideViewModel
+                                  .getFormattedDepartureDate(),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30.0)
+                              ),
+                              suffixIcon: const Icon(Icons.date_range)
+                          ),
+                          onTap: () async {
+                            final DateTime? newDate = await showDatePicker(
+                              context: context,
+                              initialDate: filterRideViewModel
+                                  .departureDate ?? DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2022, 12),
+                              helpText: 'Select a date to leave',
+                            );
+                            filterRideViewModel.updateDepartureDate(newDate);
+                          }
+                      );
+                    }
+                ),
+              ),
+
+              const Padding(
+                padding: EdgeInsets.all(8),
+                child: Divider(
+                  indent: 16,
+                  endIndent: 16,
+                ),
+              ),
+
+              // 4. Row of filter buttons
+
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () => filterRideViewModel.resetAll(),
+                        child: const Text('Reset Filters')
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          // 1. Pop the BottomModelSheet
+                          Navigator.pop(context);
+
+                          // 2. Gathers all the filters and updates the
+                          // [RideBoardViewModel]'s filters, which will then notify
+                          // [RideBoard] to Re-query and rebuild the ListView
+                          Map<String, dynamic> filters = {
+                            'to_campus': filterRideViewModel.toCampus,
+                            'departure_date_time': filterRideViewModel
+                                .departureDate
+                          };
+                          rideBoardViewModel.updateFilters(filters);
+                        },
+                        child: const Text('Filter')
+                    )
+                  ]
               )
             ]
-          )
-        ]
+        );
+      }
     );
   }
 }

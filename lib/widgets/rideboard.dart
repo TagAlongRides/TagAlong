@@ -22,30 +22,36 @@ class RideBoard extends StatelessWidget {
     // Compute "getAllRidesData()" by default on regular build, showing
     // a [CircularProgressIndicator] while user waits for completion.
     return RefreshIndicator(
-      onRefresh: rideBoardViewModel.getRidesBasedOnFilters ,
+      onRefresh: rideBoardViewModel.getRidesBasedOnFilters,
       child: FutureBuilder<void>(
         // future: rideBoardViewModel.getAllRidesData(),
         future: rideBoardViewModel.getRidesBasedOnFilters(),
         builder: (
             BuildContext context,
             AsyncSnapshot snapshot) {
-              // Case 1: Future has NOT completed
+              // Case 1: Future has NOT completed yet and asynchronous
+              // computation has begun
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                     child: CircularProgressIndicator()
                 );
               }
 
-              // Case 2: Future has completed
+              // Case 2: Future has completed and is no longer computing
               else if (snapshot.connectionState == ConnectionState.done) {
+
                 // Case 2a: Error
                 if (snapshot.hasError) {
                   return const Text('Error has occur');
                 }
-                // Case 2b: Data exists
+                // Case 2b: Data has returned - cannot occur because Future
+                // does not return data, but updates ViewModel
                 else if (snapshot.hasData) {
+                  logger.log.fine('RideBoard - Data has return but how!');
                   return getListViewOfRides(rideBoardViewModel.querySnapshot!);
                 }
+                // Case 2c: Future has completed, and ViewModel has hopefully
+                // been updated with updated data
                 else {
                   return getListViewOfRides(rideBoardViewModel.querySnapshot!);
                 }
@@ -59,6 +65,9 @@ class RideBoard extends StatelessWidget {
   }
 
   /// returns a ListView of ALL rides ordered by the `departure_date_time`.
+  ///
+  /// [querySnapshot] is the QuerySnapshot from RideBoardViewModel, most likely
+  ///   calling [getRidesBasedOnFilters] method.
   ListView getListViewOfRides(QuerySnapshot<Object?> querySnapshot) {
     return ListView.builder(
       itemCount: querySnapshot.docs.length,

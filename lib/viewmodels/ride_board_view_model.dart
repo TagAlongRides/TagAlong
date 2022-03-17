@@ -21,7 +21,7 @@ class RideBoardViewModel extends ChangeNotifier {
   final DatabaseService databaseService = DatabaseService();
 
   /// The filters that will be used in [getRidesBasedOnFilters]. This is
-  /// updated
+  /// updated via the Modal Bottom Sheet for filtering
   Map<String, dynamic>? filters;
 
   /// Data from a query to the [rides] collection
