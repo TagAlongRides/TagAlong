@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 
 /// A ViewModel that maintains the state and functionality
-/// of the "Filter Ride" flow (ModalBottomSheet)
+/// of the "Filter Ride" flow (ModalBottomSheet).
+/// Note: the actual filters Map exists in RideBoardViewModel
 class FilterRideViewModel with ChangeNotifier {
   bool toCampus = true;     // Defaults to true on Modal sheet
   DateTime? departureDate;

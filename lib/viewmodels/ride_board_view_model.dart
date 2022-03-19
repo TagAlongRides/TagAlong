@@ -11,10 +11,9 @@ import 'package:tagalong/util/log.dart' as logger;
 
 /// The ViewModel for the RideBoard page.
 ///
-/// Will manage state for 3 main things:
-/// 1. FAB
-/// 2. Rides ListView
-/// 3. Top Nav Bar
+/// Will manage state for:
+/// - Rides ListView
+/// - Top Nav Bar
 class RideBoardViewModel extends ChangeNotifier {
 
   final AuthService authService = AuthService();
@@ -29,7 +28,8 @@ class RideBoardViewModel extends ChangeNotifier {
 
 
   /// Updates this instance's [filters] and notifies listeners,
-  /// mainly the [RideBoard] so that wh
+  /// mainly for the [RideBoard] so that it will re-update with new Rides
+  /// once a user clicks "Filter" button
   void updateFilters(Map<String, dynamic> filters) {
     this.filters = filters;
     notifyListeners();
@@ -61,12 +61,15 @@ class RideBoardViewModel extends ChangeNotifier {
         .get();
   }
 
-  // Future<QuerySnapshot<Object?>> getRidesBasedOnFilters({Map<String, dynamic>? filters}) async {
+
+  /// Asynchronously updates our current QuerySnapshot, which contains the result of the last
+  /// query we had, based on the user's filters.
   Future<void> getRidesBasedOnFilters() async {
     Query rides = databaseService.rides;
 
     // Default Query is when `filters` is null
     if (filters == null) {
+      logger.log.fine('RideBoardViewModel Querying - Filters is NULL');
       Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
       querySnapshot = await databaseService
           .rides
@@ -81,6 +84,7 @@ class RideBoardViewModel extends ChangeNotifier {
     // 1. ToCampus
     if (filters != null) {
       if (filters!['to_campus'] != null) {
+        logger.log.fine('RideBoardViewModel Querying - Filters has to_campus: ${filters!['to_campus']}');
         Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
         rides = rides
             .where('to_campus', isEqualTo: filters!['to_campus'])
@@ -91,6 +95,7 @@ class RideBoardViewModel extends ChangeNotifier {
 
       // 2. Departure Date
       if (filters!['departure_date_time'] != null) {
+        logger.log.fine('RideBoardViewModel Querying - Filters has departure_date_time: ${filters!['departure_date_time']}');
         Timestamp departTimeStamp = Timestamp.fromDate(
             filters!['departure_date_time']);
         Timestamp dayAheadDepartTimeStamp = Timestamp.fromDate(

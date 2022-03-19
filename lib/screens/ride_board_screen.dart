@@ -142,7 +142,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
 
   /// UI for the filter Modal Bottom Sheet and its corresponding functionality.
   ///
-  /// The UI is built out of 5 main pieces:
+  /// The UI is built out of 4 main pieces:
   /// 1. The [AppBar]
   /// 2. To/From Campus [ChoiceChips]
   /// 3. Departure Date [TextFormField] + DatePicker
@@ -152,10 +152,11 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
 
     return DraggableScrollableSheet(
+      maxChildSize: 0.75,
       expand: false,
       builder: (BuildContext context, ScrollController scrollController) {
         return ListView(
-            controller: scrollController,
+            controller: scrollController,     // Must use controller for draggability
             children: [
               // 1. AppBar
               AppBar(
@@ -222,6 +223,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
               ),
               Padding(
                 padding: const EdgeInsets.all(8),
+                // "Consumer" listening for FilterRide updates
                 child: Consumer<FilterRideViewModel>(
                     builder: (context, filterRideViewModel, child) {
                       return TextFormField(
@@ -235,6 +237,8 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
                               ),
                               suffixIcon: const Icon(Icons.date_range)
                           ),
+
+                          // Show the DatePicker
                           onTap: () async {
                             final DateTime? newDate = await showDatePicker(
                               context: context,
@@ -260,14 +264,17 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
               ),
 
               // 4. Row of filter buttons
-
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // Button to reset ALL filters to default
                     ElevatedButton(
                         onPressed: () => filterRideViewModel.resetAll(),
                         child: const Text('Reset Filters')
                     ),
+
+                    // Button to update the user's Ride filters and requery data
+                    // updating the Rideboard
                     ElevatedButton(
                         onPressed: () {
                           // 1. Pop the BottomModelSheet
@@ -278,8 +285,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
                           // [RideBoard] to Re-query and rebuild the ListView
                           Map<String, dynamic> filters = {
                             'to_campus': filterRideViewModel.toCampus,
-                            'departure_date_time': filterRideViewModel
-                                .departureDate
+                            'departure_date_time': filterRideViewModel.departureDate
                           };
                           rideBoardViewModel.updateFilters(filters);
                         },

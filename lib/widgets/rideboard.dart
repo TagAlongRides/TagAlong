@@ -13,18 +13,19 @@ class RideBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logger.log.fine('RideBoardList Build');
+    // Listening to RideBoardViewModel so when user "updates filters", we
+    // rebuild this RideBoard Widget, hence re-querying data with filters
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen:true);
 
     // Listening to OfferRideViewModel for the case when a Driver posts a ride -
     // The RideBoard should rebuild to show that ride.
     var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
 
-    // Compute "getAllRidesData()" by default on regular build, showing
-    // a [CircularProgressIndicator] while user waits for completion.
+    // The "RefreshIndicator" will allow us to refresh the Rideboard to get the
+    // most up-to-date Rides based on set filters within RideBoardViewModel
     return RefreshIndicator(
       onRefresh: rideBoardViewModel.getRidesBasedOnFilters,
       child: FutureBuilder<void>(
-        // future: rideBoardViewModel.getAllRidesData(),
         future: rideBoardViewModel.getRidesBasedOnFilters(),
         builder: (
             BuildContext context,
