@@ -6,6 +6,7 @@ import 'package:tagalong/util/user_data.dart';
 /// A user model containing pertinent data
 class TagAlongUser implements TADataModel {
   String id;
+  String profilePictureUrl;
   DateTime createdAt;
   DateTime updatedAt;
   String institution;
@@ -26,6 +27,7 @@ class TagAlongUser implements TADataModel {
   /// Facebook, but never completes user registration.
   TagAlongUser({
     required this.id,
+    required this.profilePictureUrl,
     required this.createdAt,
     required this.updatedAt,
     this.signInMethod=SignInMethod.FACEBOOK,
@@ -45,6 +47,10 @@ class TagAlongUser implements TADataModel {
   /// `created_at` may be a [Timestamp] or [Datetime],
   /// since Firebase stores [DateTime] as [TimeStamp]
   factory TagAlongUser.fromJson(Map<String, dynamic> json) {
+    var profilePictureUrl = json['profile_picture_url'];
+    if (profilePictureUrl == null) {
+      throw UnsupportedError('Invalid - profilePictureUrl is $profilePictureUrl');
+    }
     var createdAt = json['created_at'];
     if (createdAt == null) {
       throw UnsupportedError('Invalid - createdAt is $createdAt');
@@ -96,6 +102,7 @@ class TagAlongUser implements TADataModel {
 
     return TagAlongUser(
       id: id,
+      profilePictureUrl: profilePictureUrl,
       createdAt: createdAt,
       updatedAt: updatedAt,
       signInMethod: signInMethod,
@@ -157,6 +164,7 @@ class TagAlongUser implements TADataModel {
   /// It should be assumed that `created_at` and `updated_at` are Timestamps
   void updateTagAlongUser(Map<String, dynamic> data) {
     id = data['id'] ?? id;
+    profilePictureUrl = data['profile_picture_url'] ?? profilePictureUrl;
     createdAt = data['created_at']?.toDate() ?? createdAt;
     updatedAt = data['updated_at']?.toDate() ?? updatedAt;
     signInMethod = data['sign_in_method'] ?? signInMethod;
@@ -175,6 +183,7 @@ class TagAlongUser implements TADataModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'profile_picture_url': profilePictureUrl,
       'created_at': createdAt,
       'updated_at': updatedAt,
       'sign_in_method': signInMethod,

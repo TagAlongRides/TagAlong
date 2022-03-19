@@ -62,6 +62,18 @@ class AuthService {
   }
 
 
+  /// Queries for the User's Facebook Profile picture and returns
+  /// the JSON GraphAPI result.
+  Future<Map<String, dynamic>> getFacebookProfilePicture() async {
+    logger.log.fine('Querying for user\'s Profile picture');
+    Map<String, dynamic> json = await _fb.getUserData(
+      fields: "picture.width(200)"
+    );
+    return json;
+  }
+
+
+
   /// Sign-out of TagAlong.
   Future<void> signOut() => _auth.signOut();
 }

@@ -129,12 +129,17 @@ class TagAlongUserViewModel {
         return;
       }
       // User does not exist - create an unregisteredUser and add to Firestore
-      // as an "Unregistered TagAlongUser"
+      // as an "Unregistered TagAlongUser".
       else {
         logger.log.fine('setUpUser() - User did not exist!');
         final time = DateTime.now();
+
+        // Get the User's Facebook profile picture
+        Map<String, dynamic> json = await authService.getFacebookProfilePicture();
+        String url = json['picture']?['data']?['url'];   // Should always exist?
         tagAlongUser = TagAlongUser(
           id: uid,
+          profilePictureUrl: url,
           createdAt: time,
           updatedAt: time,
         );

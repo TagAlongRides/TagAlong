@@ -14,7 +14,16 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
+    var tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     logger.log.fine('Account Build');
-    return const Text('Account');
+    // TODO: Solely for debugging the profile picture
+    return Center(
+      child: CircleAvatar(
+        maxRadius: 100,
+        backgroundImage: NetworkImage(
+          tagAlongUserViewModel.tagAlongUser!.profilePictureUrl
+        ),
+      )
+    );
   }
 }
