@@ -11,6 +11,7 @@ void main() {
     final time = DateTime.now();
     final user = TagAlongUser(
       id: "RANDOMID",
+      profilePictureUrl: 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       createdAt: time,
       updatedAt: time
     );
@@ -20,6 +21,7 @@ void main() {
     final time = DateTime.now();
     Map<String, dynamic> map = {
       "id": "RANDOMID",
+      "profile_picture_url": 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       "created_at": time,
       "updated_at": time,
       "sign_in_method": SignInMethod.FACEBOOK,
@@ -39,6 +41,7 @@ void main() {
     final time = DateTime.now();
     Map<String, dynamic> map = {
       "id": "RANDOMID",
+      "profile_picture_url": 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       "created_at": time,
       "updated_at": null,
       "sign_in_method": SignInMethod.FACEBOOK,
@@ -74,6 +77,7 @@ void main() {
     final driver = Driver.fromJson(driver_map);
     Map<String, dynamic> map = {
       "id": "RANDOMID",
+      "profile_picture_url": 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       "created_at": time,
       "updated_at": time,
       "sign_in_method": SignInMethod.FACEBOOK,
