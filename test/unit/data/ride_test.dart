@@ -6,16 +6,17 @@ import 'package:flutter/material.dart';
 
 void main() {
   test('Firebase query to Ride instance', () {
+    final location = {
+      'city': 'Washington DC',
+      'dropoff_address': 'Johnston Student Center'
+    }
     final map = {
       'created_at': Timestamp(1, 1),
       'ride_id': 'SOMEID',
       'driver_id': 'SOMEID',
       'university': 'university',
       'status': 'status',
-      'pickup_location': 'pickupLocation',
-      'dropoff_location': 'dropoffLocation',
-      'location_city': 'locationCity',
-      'location_zip': 'locationZip',
+
       'notes': 'notes',
       'no_passengers': 2,
       'no_bags': 2,
