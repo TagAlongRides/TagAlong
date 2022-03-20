@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tagalong/data/models/location.dart';
 import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/services/auth_service.dart';
@@ -20,6 +21,8 @@ class OfferRideViewModel with ChangeNotifier {
   List<int> BAGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   // User-inputted [Ride] attributes
+  // Note: We don't actually hold an instance of [Location], but
+  // rather create it at the end in "createRide"
   bool toCampus = true;         // Default
   String? pickupLocation;
   String? dropoffLocation;
@@ -187,6 +190,16 @@ class OfferRideViewModel with ChangeNotifier {
   /// TODO: Find solution to nested ViewModels so we can get TagAlongUser
   /// info, such as university W/O another read!
   Future<bool> createNewRide() async {
+    // Create a [Location] instance to be a field of [Ride]
+    Location location = Location(
+      pickupAddress: pickupLocation!,
+      dropoffAddress: dropoffLocation!,
+      city: locationCity!,
+      zip: locationZip!,
+      toCampus: toCampus,
+      locationImageUrl: null
+    );
+
     // Create a [Ride] instance
     final String ride_id = uuid.v4();
     Ride ride = Ride(
@@ -196,10 +209,11 @@ class OfferRideViewModel with ChangeNotifier {
       university: Institution.VIRGINIA_TECH,
       status: RideStatus.SCHEDULED,
       toCampus: toCampus,
-      pickupLocation: pickupLocation!,
-      dropoffLocation: dropoffLocation!,
-      locationCity: locationCity!,
-      locationZip: locationZip!,
+      location: location,
+      // pickupLocation: pickupLocation!,
+      // dropoffLocation: dropoffLocation!,
+      // locationCity: locationCity!,
+      // locationZip: locationZip!,
       departureDateTime: departureDateTime!,
       departureTimeOfDay: departureTimeOfDay!,
       noPassengers: noPassengers,

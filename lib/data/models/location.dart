@@ -4,9 +4,10 @@ import 'package:tagalong/data/models/ta_data_model.dart';
 /// [Location] data model
 class Location implements TADataModel {
   String pickupAddress;
-  String dropoffAddress;
+  String dropoffAddress;        // Will be used for University addresses
   String city;
   String zip;
+  bool? toCampus;               // null `toCampus` will denote a University Location, rather than a Driver Location
   String? locationImageUrl;
 
   // Constructor
@@ -15,6 +16,7 @@ class Location implements TADataModel {
     required this.dropoffAddress,
     required this.city,
     required this.zip,
+    this.toCampus=null,
     this.locationImageUrl=null
   });
 
@@ -37,6 +39,7 @@ class Location implements TADataModel {
     if (zip == null) {
       throw UnsupportedError('Invalid - zip is $zip');
     }
+    var toCampus = json['to_campus'] as bool?;
     var locationImageUrl = json['location_image_url'] as String?;
 
     return Location(
@@ -44,6 +47,7 @@ class Location implements TADataModel {
       dropoffAddress: dropoffAddress,
       city: city,
       zip: zip,
+      toCampus: toCampus,
       locationImageUrl: locationImageUrl
     );
   }
@@ -52,10 +56,11 @@ class Location implements TADataModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'pickp_address': pickupAddress,
+      'pickup_address': pickupAddress,
       'dropoff_address': dropoffAddress,
       'city': city,
       'zip': zip,
+      'to_campus': toCampus,
       'location_image_url': locationImageUrl
     };
   }

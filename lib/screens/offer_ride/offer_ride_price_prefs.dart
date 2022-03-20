@@ -161,6 +161,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                                               ),
                                               TextButton(
                                                   onPressed: () async {
+                                                    offerRideViewModel.updateNotes(notesController.text);
                                                     await offerRideViewModel.createNewRide();
                                                     logger.log.fine('Posting OfferRidePricePrefs');
                                                     Navigator.popUntil(context, ModalRoute.withName('/ride_board'));
