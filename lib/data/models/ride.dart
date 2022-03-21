@@ -12,7 +12,8 @@ class Ride implements TADataModel {
   final String driverId;
   final String university;
   String status;
-  Location location;
+  Location pickupLocation;
+  Location dropoffLocation;
   // String pickupLocation;
   // String dropoffLocation;
   // String locationCity;
@@ -35,7 +36,8 @@ class Ride implements TADataModel {
     required this.driverId,
     required this.university,
     required this.status,
-    required this.location,
+    required this.pickupLocation,
+    required this.dropoffLocation,
     // required this.pickupLocation,
     // required this.dropoffLocation,
     // required this.locationCity,
@@ -130,12 +132,19 @@ class Ride implements TADataModel {
     if (departureTimeOfDay == null) {
       throw UnsupportedError('Invalid - departureTimeOfDay is $departureTimeOfDay');
     }
-    var location = json['location'];
-    if (location == null) {
-      throw UnsupportedError('Invalid - location is $location');
+    var pickupLocation = json['pickup_location'];
+    if (pickupLocation == null) {
+      throw UnsupportedError('Invalid - pickupLocation is ${pickupLocation.toString()}');
     }
     else {
-      location = Location.fromJson(json['location']);
+      pickupLocation = Location.fromJson(json['pickup_location']);
+    }
+    var dropoffLocation = json['dropoff_location'];
+    if (dropoffLocation == null) {
+      throw UnsupportedError('Invalid - dropoffLocation is ${dropoffLocation.toString()}');
+    }
+    else {
+      dropoffLocation = Location.fromJson(json['dropoff_location']);
     }
 
     return Ride(
@@ -144,7 +153,8 @@ class Ride implements TADataModel {
       driverId: driverId,
       university: university,
       status: status,
-      location: location,
+      pickupLocation: pickupLocation,
+      dropoffLocation: dropoffLocation,
       // pickupLocation: pickupLocation,
       // dropoffLocation: dropoffLocation,
       // locationCity: locationCity,
@@ -171,7 +181,8 @@ class Ride implements TADataModel {
       'driver_id': driverId,
       'university': university,
       'status': status,
-      'location': location.toJson(),
+      'pickup_location': pickupLocation.toJson(),
+      'dropoff_location': dropoffLocation.toJson(),
       // 'pickup_location': pickupLocation,
       // 'dropoff_location': dropoffLocation,
       // 'location_city': locationCity,

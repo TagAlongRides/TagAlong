@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/util/ride_status.dart';
 
+import '../util/university_locations.dart';
+
 /// A ViewModel that maintains the state and functionality
 /// of the "Offer Ride" user flow.
 class OfferRideViewModel with ChangeNotifier {
@@ -190,37 +192,55 @@ class OfferRideViewModel with ChangeNotifier {
   /// TODO: Find solution to nested ViewModels so we can get TagAlongUser
   /// info, such as university W/O another read!
   Future<bool> createNewRide() async {
-    // Create a [Location] instance to be a field of [Ride]
-    Location location = Location(
-      pickupAddress: pickupLocation!,
-      dropoffAddress: dropoffLocation!,
-      city: locationCity!,
-      zip: locationZip!,
-      toCampus: toCampus,
-      locationImageUrl: null
-    );
+    late Ride ride;
+    late Location pickupLocation;
+    late Location dropoffLocation;
+
+    if (toCampus) {
+      // 1. Create first [Location] - direction depends on `toCampus`
+      pickupLocation = Location(
+          address: this.pickupLocation!,
+          city: this.locationCity!,
+          zip: this.locationZip!,
+          locationImageUrl: null
+      );
+
+      // 2. Create second [Location] - direction depends on `toCampus`
+      String dropoffFullAddress = VirginiaTechLocation.mappings[this.dropoffLocation!]!;
+      dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(dropoffFullAddress);
+    }
+    else {
+      // 1. Create first [Location] - direction depends on `toCampus`
+      dropoffLocation = Location(
+          address: this.dropoffLocation!,
+          city: this.locationCity!,
+          zip: this.locationZip!,
+          locationImageUrl: null
+      );
+
+      // 2. Create second [Location] - direction depends on `toCampus`
+      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
+      pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(pickupFullAddress);
+    }
 
     // Create a [Ride] instance
     final String ride_id = uuid.v4();
-    Ride ride = Ride(
-      createdAt: DateTime.now(),
-      rideId: ride_id,
-      driverId: authService.getUid()!,
-      university: Institution.VIRGINIA_TECH,
-      status: RideStatus.SCHEDULED,
-      toCampus: toCampus,
-      location: location,
-      // pickupLocation: pickupLocation!,
-      // dropoffLocation: dropoffLocation!,
-      // locationCity: locationCity!,
-      // locationZip: locationZip!,
-      departureDateTime: departureDateTime!,
-      departureTimeOfDay: departureTimeOfDay!,
-      noPassengers: noPassengers,
-      noBags: noBags,
-      price: price,
-      vaccinationCard: vaccinationCard,
-      notes: notes
+    ride = Ride(
+        createdAt: DateTime.now(),
+        rideId: ride_id,
+        driverId: authService.getUid()!,
+        university: Institution.VIRGINIA_TECH,
+        status: RideStatus.SCHEDULED,
+        toCampus: toCampus,
+        pickupLocation: pickupLocation,
+        dropoffLocation: dropoffLocation,
+        departureDateTime: departureDateTime!,
+        departureTimeOfDay: departureTimeOfDay!,
+        noPassengers: noPassengers,
+        noBags: noBags,
+        price: price,
+        vaccinationCard: vaccinationCard,
+        notes: notes
     );
 
     // Get corresponding [Map] data from [Ride]
