@@ -1,6 +1,9 @@
 import 'package:tagalong/data/models/location.dart';
 
-/// String Enums for university locations
+/// String Enums for university locations.
+/// Note: This will most likely change in the future because if we wanted to
+///       update this list, user would need to update the app; perhaps
+///       better to make this available via an RESTful API in future.
 class VirginiaTechLocation {
   static const String BURRUSS_HALL = 'Burruss Hall';
   static const String NEWMAN_LIBRARY = 'Newman Library';
@@ -19,6 +22,7 @@ class VirginiaTechLocation {
   static const String EAST_AJ = 'East AJ';
 
 
+  /// A mapping of the location "label" to the full address, in U.S specific format
   static const Map<String, String> mappings = {
     BURRUSS_HALL: '800 Drillfield Dr, Blacksburg, VA 24061',
     NEWMAN_LIBRARY: '560 Drillfield Dr, Blacksburg, VA 24061',
@@ -46,7 +50,7 @@ class VirginiaTechLocation {
     List<String> elements = address.split(",");
     Location loc = Location(
       address: elements[0],
-      city: elements[1],
+      city: elements[1].trim(),
       zip: elements[2].split(" ")[2],
       locationImageUrl: null
     );

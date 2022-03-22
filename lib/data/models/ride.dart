@@ -14,10 +14,6 @@ class Ride implements TADataModel {
   String status;
   Location pickupLocation;
   Location dropoffLocation;
-  // String pickupLocation;
-  // String dropoffLocation;
-  // String locationCity;
-  // String locationZip;
   String notes;
   int noPassengers;
   int noBags;
@@ -38,10 +34,6 @@ class Ride implements TADataModel {
     required this.status,
     required this.pickupLocation,
     required this.dropoffLocation,
-    // required this.pickupLocation,
-    // required this.dropoffLocation,
-    // required this.locationCity,
-    // required this.locationZip,
     required this.notes,
     required this.noPassengers,
     required this.noBags,
@@ -81,22 +73,6 @@ class Ride implements TADataModel {
     if (status == null) {
       throw UnsupportedError('Invalid - status is $status');
     }
-    // var pickupLocation = json['pickup_location'] as String?;
-    // if (pickupLocation == null) {
-    //   throw UnsupportedError('Invalid - pickupLocation is $pickupLocation');
-    // }
-    // var dropoffLocation = json['dropoff_location'] as String?;
-    // if (dropoffLocation == null) {
-    //   throw UnsupportedError('Invalid - dropoffLocation is $dropoffLocation');
-    // }
-    // var locationCity = json['location_city'] as String?;
-    // if (locationCity == null) {
-    //   throw UnsupportedError('Invalid - locationCity is $locationCity');
-    // }
-    // var locationZip = json['location_zip'] as String?;
-    // if (locationZip == null) {
-    //   throw UnsupportedError('Invalid - locationZip is $locationZip');
-    // }
     var notes = json['notes'] as String?;
     if (notes == null) {
       throw UnsupportedError('Invalid - notes is $notes');
@@ -155,10 +131,6 @@ class Ride implements TADataModel {
       status: status,
       pickupLocation: pickupLocation,
       dropoffLocation: dropoffLocation,
-      // pickupLocation: pickupLocation,
-      // dropoffLocation: dropoffLocation,
-      // locationCity: locationCity,
-      // locationZip: locationZip,
       notes: notes,
       noPassengers: noPassengers,
       noBags: noBags,
@@ -172,7 +144,7 @@ class Ride implements TADataModel {
   }
 
   /// A [Ride] instance into a Map<String, dynamic>, typically used
-  /// for preparing data to push up to Firebase.
+  /// for preparing data to push up to Firebase Firestore.
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -183,10 +155,6 @@ class Ride implements TADataModel {
       'status': status,
       'pickup_location': pickupLocation.toJson(),
       'dropoff_location': dropoffLocation.toJson(),
-      // 'pickup_location': pickupLocation,
-      // 'dropoff_location': dropoffLocation,
-      // 'location_city': locationCity,
-      // 'location_zip': locationZip,
       'notes': notes,
       'no_passengers': noPassengers,
       'no_bags': noBags,
