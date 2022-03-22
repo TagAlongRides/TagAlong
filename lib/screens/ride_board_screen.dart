@@ -273,7 +273,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>  with SingleTickerPro
                         child: const Text('Reset Filters')
                     ),
 
-                    // Button to update the user's Ride filters and requery data
+                    // Button to update the user's Ride filters and re-query data,
                     // updating the Rideboard
                     ElevatedButton(
                         onPressed: () {

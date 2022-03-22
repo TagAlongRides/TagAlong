@@ -122,7 +122,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                           onChanged: (String? dropoffLocation) {
                             offerRideViewModel.updateDropoffLocation(dropoffLocation!);
                           },
-                          items: VirginiaTechLocation.values.map<DropdownMenuItem<String>>((String location) {
+                          items: VirginiaTechLocation.locationNames.map<DropdownMenuItem<String>>((String location) {
                             return DropdownMenuItem<String>(
                               child: Text(location),
                               value: location

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tagalong/data/models/location.dart';
 import 'package:tagalong/data/models/ta_data_model.dart';
-import 'package:tagalong/util/user_data.dart';
 
 
 /// [Ride] data model.
@@ -12,10 +12,8 @@ class Ride implements TADataModel {
   final String driverId;
   final String university;
   String status;
-  String pickupLocation;
-  String dropoffLocation;
-  String locationCity;
-  String locationZip;
+  Location pickupLocation;
+  Location dropoffLocation;
   String notes;
   int noPassengers;
   int noBags;
@@ -36,8 +34,6 @@ class Ride implements TADataModel {
     required this.status,
     required this.pickupLocation,
     required this.dropoffLocation,
-    required this.locationCity,
-    required this.locationZip,
     required this.notes,
     required this.noPassengers,
     required this.noBags,
@@ -77,22 +73,6 @@ class Ride implements TADataModel {
     if (status == null) {
       throw UnsupportedError('Invalid - status is $status');
     }
-    var pickupLocation = json['pickup_location'] as String?;
-    if (pickupLocation == null) {
-      throw UnsupportedError('Invalid - pickupLocation is $pickupLocation');
-    }
-    var dropoffLocation = json['dropoff_location'] as String?;
-    if (dropoffLocation == null) {
-      throw UnsupportedError('Invalid - dropoffLocation is $dropoffLocation');
-    }
-    var locationCity = json['location_city'] as String?;
-    if (locationCity == null) {
-      throw UnsupportedError('Invalid - locationCity is $locationCity');
-    }
-    var locationZip = json['location_zip'] as String?;
-    if (locationZip == null) {
-      throw UnsupportedError('Invalid - locationZip is $locationZip');
-    }
     var notes = json['notes'] as String?;
     if (notes == null) {
       throw UnsupportedError('Invalid - notes is $notes');
@@ -128,6 +108,20 @@ class Ride implements TADataModel {
     if (departureTimeOfDay == null) {
       throw UnsupportedError('Invalid - departureTimeOfDay is $departureTimeOfDay');
     }
+    var pickupLocation = json['pickup_location'];
+    if (pickupLocation == null) {
+      throw UnsupportedError('Invalid - pickupLocation is ${pickupLocation.toString()}');
+    }
+    else {
+      pickupLocation = Location.fromJson(json['pickup_location']);
+    }
+    var dropoffLocation = json['dropoff_location'];
+    if (dropoffLocation == null) {
+      throw UnsupportedError('Invalid - dropoffLocation is ${dropoffLocation.toString()}');
+    }
+    else {
+      dropoffLocation = Location.fromJson(json['dropoff_location']);
+    }
 
     return Ride(
       createdAt: createdAt,
@@ -137,8 +131,6 @@ class Ride implements TADataModel {
       status: status,
       pickupLocation: pickupLocation,
       dropoffLocation: dropoffLocation,
-      locationCity: locationCity,
-      locationZip: locationZip,
       notes: notes,
       noPassengers: noPassengers,
       noBags: noBags,
@@ -152,7 +144,7 @@ class Ride implements TADataModel {
   }
 
   /// A [Ride] instance into a Map<String, dynamic>, typically used
-  /// for preparing data to push up to Firebase.
+  /// for preparing data to push up to Firebase Firestore.
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -161,10 +153,8 @@ class Ride implements TADataModel {
       'driver_id': driverId,
       'university': university,
       'status': status,
-      'pickup_location': pickupLocation,
-      'dropoff_location': dropoffLocation,
-      'location_city': locationCity,
-      'location_zip': locationZip,
+      'pickup_location': pickupLocation.toJson(),
+      'dropoff_location': dropoffLocation.toJson(),
       'notes': notes,
       'no_passengers': noPassengers,
       'no_bags': noBags,

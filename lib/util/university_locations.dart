@@ -1,4 +1,9 @@
-/// String Enums for university locations
+import 'package:tagalong/data/models/location.dart';
+
+/// String Enums for university locations.
+/// Note: This will most likely change in the future because if we wanted to
+///       update this list, user would need to update the app; perhaps
+///       better to make this available via an RESTful API in future.
 class VirginiaTechLocation {
   static const String BURRUSS_HALL = 'Burruss Hall';
   static const String NEWMAN_LIBRARY = 'Newman Library';
@@ -16,22 +21,40 @@ class VirginiaTechLocation {
   static const String WEST_AJ = 'West AJ';
   static const String EAST_AJ = 'East AJ';
 
-  static const List<String> values = [
-    BURRUSS_HALL,
-    NEWMAN_LIBRARY,
-    SQUIRES_CENTER,
-    JOHNSTON_CENTER,
-    TORGERSEN_BRIDGE,
-    GRADUATE_CENTER,
-    OWENS_DINING_HALL,
-    D2_DINING_HALL,
-    TURNER_PLACE_DINING_HALL,
-    WEST_END_DINING_HALL,
-    PRITCHARD_HALL,
-    HOGE_HALL,
-    SLUSHER_HALL,
-    WEST_AJ,
-    EAST_AJ
-  ];
+
+  /// A mapping of the location "label" to the full address, in U.S specific format
+  static const Map<String, String> mappings = {
+    BURRUSS_HALL: '800 Drillfield Dr, Blacksburg, VA 24061',
+    NEWMAN_LIBRARY: '560 Drillfield Dr, Blacksburg, VA 24061',
+    SQUIRES_CENTER: '290 College Ave, Blacksburg, VA 24060',
+    JOHNSTON_CENTER: '920 W Campus Dr, Blacksburg, VA 24060',
+    TORGERSEN_BRIDGE: '620 Drillfield Dr, Blacksburg, VA 24061',
+    GRADUATE_CENTER: '155 Otey St, Blacksburg, VA 24060',
+    OWENS_DINING_HALL: 'Owens Hall Kent St, Blacksburg, VA 24061',
+    D2_DINING_HALL: '285 Ag-Quad Ln, Blacksburg, VA 24060',
+    TURNER_PLACE_DINING_HALL: '409 Old Turner St, Blacksburg, VA 24060',
+    WEST_END_DINING_HALL: '770 Washington St SW, Blacksburg, VA 24060',
+    PRITCHARD_HALL: 'Washington St SW, Blacksburg, VA 24060',
+    HOGE_HALL: '570 Washington St SW, Blacksburg, VA 24061',
+    SLUSHER_HALL: '201 Ag-Quad Ln, Blacksburg, VA 24060',
+    WEST_AJ: '720 Washington St SW, Blacksburg, VA 24061',
+    EAST_AJ: '700 Washington St SW, Blacksburg, VA 24060'
+  };
+
+  static List<String> locationNames = mappings.keys.toList();
+
+
+  /// Will transform a U.S Postal formatted address into a [Location] instance.
+  /// "<deliv_addr>, <city>, <State> <Zip>"
+  static Location transformAddressIntoLocation(String address) {
+    List<String> elements = address.split(",");
+    Location loc = Location(
+      address: elements[0],
+      city: elements[1].trim(),
+      zip: elements[2].split(" ")[2],
+      locationImageUrl: null
+    );
+    return loc;
+  }
 
 }
