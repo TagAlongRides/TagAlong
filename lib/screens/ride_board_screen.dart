@@ -7,7 +7,7 @@ import 'package:tagalong/widgets/rideboard.dart';
 import 'package:tagalong/widgets/account.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
-import '../widgets/myrides.dart';
+import '../widgets/rideboard/myrides.dart';
 
 class RideBoardScreen extends StatefulWidget {
   const RideBoardScreen({Key? key}) : super(key: key);
