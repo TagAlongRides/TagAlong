@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
-import 'package:tagalong/widgets/rideboard.dart';
-import 'package:tagalong/widgets/account.dart';
+import 'package:tagalong/widgets/rideboard/rideboard.dart';
+import 'package:tagalong/widgets/rideboard/account.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 import '../widgets/rideboard/myrides.dart';
