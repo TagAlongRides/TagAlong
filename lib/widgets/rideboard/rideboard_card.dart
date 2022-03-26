@@ -78,10 +78,10 @@ class RideBoardCard extends StatelessWidget {
                 size: 24,
               ),
               const SizedBox(width: 6),
+              // PICKUP / ORIGIN
               Expanded(
                 child: Text(
-                  // TODO: pickup / origin
-                  ride.pickupLocation.city,
+                  ride.pickupLocation.label ?? ride.pickupLocation.city,
                   style: TagAlongTheme.lightTextTheme.headline6,
                 ),
               ),
@@ -98,10 +98,10 @@ class RideBoardCard extends StatelessWidget {
                 size: 24,
               ),
               const SizedBox(width: 6),
+              // DROPOFF / DESTINATION
               Expanded(
                 child: Text(
-                  // TODO: destination,
-                  ride.dropoffLocation.city,
+                  ride.dropoffLocation.label ?? ride.dropoffLocation.city,
                   style: TagAlongTheme.lightTextTheme.headline6,
                 )
               ),

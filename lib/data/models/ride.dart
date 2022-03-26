@@ -25,6 +25,9 @@ class Ride implements TADataModel {
   // deliberate intent of ensuring "Date" is chosen
   DateTime departureDateTime;
   String departureTimeOfDay;
+  String driverFullName;
+  String driverProfilePictureUrl;
+  List<String> riderIds;
 
   Ride({
     required this.createdAt,
@@ -41,7 +44,10 @@ class Ride implements TADataModel {
     required this.vaccinationCard,
     required this.toCampus,
     required this.departureDateTime,
-    required this.departureTimeOfDay
+    required this.departureTimeOfDay,
+    required this.driverFullName,
+    required this.driverProfilePictureUrl,
+    required this.riderIds
   });
 
   /// A Map<String, dynamic> into a [Ride] instance.
@@ -122,6 +128,18 @@ class Ride implements TADataModel {
     else {
       dropoffLocation = Location.fromJson(json['dropoff_location']);
     }
+    var driverFullName = json['driver_full_name'] as String?;
+    if (driverFullName == null) {
+      throw UnsupportedError('Invalid - driverFullName is: $driverFullName');
+    }
+    var driverProfilePictureUrl = json['driver_profile_picture_url'] as String?;
+    if (driverProfilePictureUrl == null) {
+      throw UnsupportedError('Invalid - driverProfilePictureUrl is $driverProfilePictureUrl');
+    }
+    var riderIds = json['rider_ids'] as List<String>?;
+    if (riderIds == null) {
+      throw UnsupportedError('Invalid - riderIds is $riderIds');
+    }
 
     return Ride(
       createdAt: createdAt,
@@ -138,7 +156,10 @@ class Ride implements TADataModel {
       vaccinationCard: vaccinationCard,
       toCampus: toCampus,
       departureDateTime: departureDateTime,
-      departureTimeOfDay: departureTimeOfDay
+      departureTimeOfDay: departureTimeOfDay,
+      driverFullName: driverFullName,
+      driverProfilePictureUrl: driverProfilePictureUrl,
+      riderIds: riderIds
     );
 
   }
@@ -162,7 +183,10 @@ class Ride implements TADataModel {
       'vaccination_card': vaccinationCard,
       'to_campus': toCampus,
       'departure_date_time': departureDateTime,   // DateTime -> Timestamp
-      'departure_time_of_day': departureTimeOfDay.toString()  // TimeOfDay -> String
+      'departure_time_of_day': departureTimeOfDay.toString(), // TimeOfDay -> String,
+      'driverFullName': driverFullName,
+      'driverProfilePictureUrl': driverProfilePictureUrl,
+      'riderIds': riderIds
     };
   }
 
