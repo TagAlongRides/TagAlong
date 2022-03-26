@@ -46,12 +46,13 @@ class VirginiaTechLocation {
 
   /// Will transform a U.S Postal formatted address into a [Location] instance.
   /// "<deliv_addr>, <city>, <State> <Zip>"
-  static Location transformAddressIntoLocation(String address) {
+  static Location transformAddressIntoLocation({required String address, String? label}) {
     List<String> elements = address.split(",");
     Location loc = Location(
       address: elements[0],
       city: elements[1].trim(),
       zip: elements[2].split(" ")[2],
+      label: label ?? elements[1].trim(),
       locationImageUrl: null
     );
     return loc;

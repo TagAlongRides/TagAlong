@@ -196,20 +196,31 @@ class OfferRideViewModel with ChangeNotifier {
     late Location pickupLocation;
     late Location dropoffLocation;
 
+    // 1. Driver is going TO campus
     if (toCampus) {
-      // 1. Create first [Location] - direction depends on `toCampus`
+      // Pickup Location - no Label needed
       pickupLocation = Location(
           address: this.pickupLocation!,
           city: this.locationCity!,
           zip: this.locationZip!,
           locationImageUrl: null
       );
-
-      // 2. Create second [Location] - direction depends on `toCampus`
+      // Dropoff Location - Label needed
       String dropoffFullAddress = VirginiaTechLocation.mappings[this.dropoffLocation!]!;
-      dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(dropoffFullAddress);
+      dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(
+          address: dropoffFullAddress,
+          label: this.dropoffLocation
+      );
     }
+
+    // 2. Driver is going FROM campus
     else {
+      // Pickup Location - Label NEEDED
+      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
+      pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(
+          address:pickupFullAddress,
+          label: this.pickupLocation
+      );
       // 1. Create first [Location] - direction depends on `toCampus`
       dropoffLocation = Location(
           address: this.dropoffLocation!,
@@ -217,10 +228,6 @@ class OfferRideViewModel with ChangeNotifier {
           zip: this.locationZip!,
           locationImageUrl: null
       );
-
-      // 2. Create second [Location] - direction depends on `toCampus`
-      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
-      pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(pickupFullAddress);
     }
 
     // Create a [Ride] instance
