@@ -83,8 +83,9 @@ class RideBoardCard extends StatelessWidget {
                     //     ),
                     //   ),
                     // ),
-                    Container(
-                      alignment: Alignment.centerLeft,
+                    Expanded(
+                      flex: 1,
+                      //alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
                           CircleAvatar(
@@ -196,9 +197,16 @@ class RideBoardCard extends StatelessWidget {
     );
   }
 
+
+  /// Returns an Expanded Column widget which details the "To-From" Locations
+  /// of a given [Ride]. This Widget MUST be used within a Row/Column.
+  /// The [Ride] fields this utilizes is:
+  /// 1. Pickup Location
+  /// 2. Dropoff Location
   Widget _getLocations(Ride ride) {
     // Column parent
     return Expanded(
+      flex: 2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,13 +215,15 @@ class RideBoardCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.circle_outlined,
-                size: 16,
+                size: 24,
               ),
               const SizedBox(width: 6),
-              Text(
-                // TODO: pickup / origin
-                ride.pickupLocation.city,
-                style: TagAlongTheme.lightTextTheme.headline6,
+              Expanded(
+                child: Text(
+                  // TODO: pickup / origin
+                  ride.pickupLocation.city,
+                  style: TagAlongTheme.lightTextTheme.headline6,
+                ),
               ),
             ]
           ),
@@ -225,13 +235,15 @@ class RideBoardCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.circle_rounded,
-                size: 16,
+                size: 24,
               ),
               const SizedBox(width: 6),
-              Text(
-                // TODO: destination,
-                ride.dropoffLocation.city,
-                style: TagAlongTheme.lightTextTheme.headline6,
+              Expanded(
+                child: Text(
+                  // TODO: destination,
+                  ride.dropoffLocation.city,
+                  style: TagAlongTheme.lightTextTheme.headline6,
+                )
               ),
             ],
           ),
