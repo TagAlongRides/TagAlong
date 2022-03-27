@@ -62,6 +62,9 @@ dependencies:
   # 2/15/22 - UUID
   uuid: 3.0.5
 
+  # 3/25/22 - intl
+  intl: ^0.17.0
+
 
 dev_dependencies:
   flutter_test:

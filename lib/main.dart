@@ -55,10 +55,11 @@ class _TagAlongAppState extends State<TagAlongApp> {
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
+        // TODO: May need `lazy: false`
         Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
         ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
         ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
-        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel()),
+        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
         ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel())
       ],
       child: MaterialApp(

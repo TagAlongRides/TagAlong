@@ -10,6 +10,7 @@ class Location implements TADataModel {
   String address;
   String city;
   String zip;
+  String? label;
   String? locationImageUrl;
 
   // Constructor
@@ -17,6 +18,7 @@ class Location implements TADataModel {
     required this.address,
     required this.city,
     required this.zip,
+    this.label=null,
     this.locationImageUrl=null
   });
 
@@ -35,12 +37,14 @@ class Location implements TADataModel {
     if (zip == null) {
       throw UnsupportedError('Invalid - zip is $zip');
     }
+    var label = json['label'] as String?;
     var locationImageUrl = json['location_image_url'] as String?;
 
     return Location(
       address: address,
       city: city,
       zip: zip,
+      label: label,
       locationImageUrl: locationImageUrl
     );
   }
@@ -52,6 +56,7 @@ class Location implements TADataModel {
       'address': address,
       'city': city,
       'zip': zip,
+      'label': label,
       'location_image_url': locationImageUrl
     };
   }

@@ -5,6 +5,7 @@ import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/widgets/rideboard/rideboard_card.dart';
 
 class RideBoard extends StatelessWidget {
 
@@ -68,25 +69,13 @@ class RideBoard extends StatelessWidget {
   /// returns a ListView of ALL rides ordered by the `departure_date_time`.
   ///
   /// [querySnapshot] is the QuerySnapshot from RideBoardViewModel, most likely
-  ///   calling [getRidesBasedOnFilters] method.
+  /// calling [getRidesBasedOnFilters] method.
   ListView getListViewOfRides(QuerySnapshot<Object?> querySnapshot) {
     return ListView.builder(
       itemCount: querySnapshot.docs.length,
       itemBuilder: (context, i) {
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.directions_car_rounded),
-            title: Text(querySnapshot.docs[i]['ride_id']),
-            trailing: Text('\$${querySnapshot.docs[i]["price"]}'),
-            onTap: () {
-              Ride ride = Ride.fromJson(querySnapshot.docs[i].data() as Map<String, dynamic>);
-              logger.log.fine(ride.toString());
-            },
-            onLongPress: () {
-
-            }
-          ),
-        );
+        Ride ride = Ride.fromJson(querySnapshot.docs[i].data() as Map<String, dynamic>);
+        return RideBoardCard(ride:ride);
       }
     );
   }

@@ -7,12 +7,19 @@ import 'package:tagalong/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/util/ride_status.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 import '../util/university_locations.dart';
 
 /// A ViewModel that maintains the state and functionality
 /// of the "Offer Ride" user flow.
 class OfferRideViewModel with ChangeNotifier {
+
+  OfferRideViewModel({
+    required this.tagAlongUserViewModel
+  });
+
+  TagAlongUserViewModel tagAlongUserViewModel;
 
   // Firebase Services
   AuthService authService = AuthService();
@@ -40,6 +47,7 @@ class OfferRideViewModel with ChangeNotifier {
 
   void toCampusChoice() {
     toCampus = true;
+    print('TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser?.toString()}');
     notifyListeners();
   }
 
@@ -189,27 +197,37 @@ class OfferRideViewModel with ChangeNotifier {
 
   /// Will create a new [Ride] instance and upload the [Ride]
   /// to the "rides" collection in Firestore.
-  /// TODO: Find solution to nested ViewModels so we can get TagAlongUser
   /// info, such as university W/O another read!
   Future<bool> createNewRide() async {
     late Ride ride;
     late Location pickupLocation;
     late Location dropoffLocation;
 
+    // 1. Driver is going TO campus
     if (toCampus) {
-      // 1. Create first [Location] - direction depends on `toCampus`
+      // Pickup Location - no Label needed
       pickupLocation = Location(
           address: this.pickupLocation!,
           city: this.locationCity!,
           zip: this.locationZip!,
           locationImageUrl: null
       );
-
-      // 2. Create second [Location] - direction depends on `toCampus`
+      // Dropoff Location - Label needed
       String dropoffFullAddress = VirginiaTechLocation.mappings[this.dropoffLocation!]!;
-      dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(dropoffFullAddress);
+      dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(
+          address: dropoffFullAddress,
+          label: this.dropoffLocation
+      );
     }
+
+    // 2. Driver is going FROM campus
     else {
+      // Pickup Location - Label NEEDED
+      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
+      pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(
+          address:pickupFullAddress,
+          label: this.pickupLocation
+      );
       // 1. Create first [Location] - direction depends on `toCampus`
       dropoffLocation = Location(
           address: this.dropoffLocation!,
@@ -217,18 +235,18 @@ class OfferRideViewModel with ChangeNotifier {
           zip: this.locationZip!,
           locationImageUrl: null
       );
-
-      // 2. Create second [Location] - direction depends on `toCampus`
-      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
-      pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(pickupFullAddress);
     }
 
     // Create a [Ride] instance
     final String ride_id = uuid.v4();
+    final driverFullName =
+      tagAlongUserViewModel.tagAlongUser!.firstName
+      + " "
+      + tagAlongUserViewModel.tagAlongUser!.lastName;
     ride = Ride(
         createdAt: DateTime.now(),
         rideId: ride_id,
-        driverId: authService.getUid()!,
+        driverId: tagAlongUserViewModel.tagAlongUser!.id,
         university: Institution.VIRGINIA_TECH,
         status: RideStatus.SCHEDULED,
         toCampus: toCampus,
@@ -240,7 +258,10 @@ class OfferRideViewModel with ChangeNotifier {
         noBags: noBags,
         price: price,
         vaccinationCard: vaccinationCard,
-        notes: notes
+        notes: notes,
+        driverFullName: driverFullName,
+        driverProfilePictureUrl: tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
+        riderIds: []
     );
 
     // Get corresponding [Map] data from [Ride]
