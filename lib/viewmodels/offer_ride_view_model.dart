@@ -197,7 +197,6 @@ class OfferRideViewModel with ChangeNotifier {
 
   /// Will create a new [Ride] instance and upload the [Ride]
   /// to the "rides" collection in Firestore.
-  /// TODO: Find solution to nested ViewModels so we can get TagAlongUser
   /// info, such as university W/O another read!
   Future<bool> createNewRide() async {
     late Ride ride;
@@ -240,10 +239,14 @@ class OfferRideViewModel with ChangeNotifier {
 
     // Create a [Ride] instance
     final String ride_id = uuid.v4();
+    final driverFullName =
+      tagAlongUserViewModel.tagAlongUser!.firstName
+      + " "
+      + tagAlongUserViewModel.tagAlongUser!.lastName;
     ride = Ride(
         createdAt: DateTime.now(),
         rideId: ride_id,
-        driverId: authService.getUid()!,
+        driverId: tagAlongUserViewModel.tagAlongUser!.id,
         university: Institution.VIRGINIA_TECH,
         status: RideStatus.SCHEDULED,
         toCampus: toCampus,
@@ -256,8 +259,8 @@ class OfferRideViewModel with ChangeNotifier {
         price: price,
         vaccinationCard: vaccinationCard,
         notes: notes,
-        driverFullName: '',
-        driverProfilePictureUrl: '',
+        driverFullName: driverFullName,
+        driverProfilePictureUrl: tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
         riderIds: []
     );
 

@@ -119,23 +119,23 @@ class RideBoardCard extends StatelessWidget {
   /// 2. Facebook Profile Picture
   /// This widget MUST be used within a Column/Row.
   Widget _getDriverData(Ride ride) {
+    var firstNameWithInitial =
+        ride.driverFullName.split(" ")[0]
+        + " "
+        + ride.driverFullName.split(" ")[1][0];
     return Expanded(
       flex: 1,
       //alignment: Alignment.centerLeft,
       child: Row(
         children: [
           CircleAvatar(
-            child: Text(
-              // TODO: driverName[0].toUpperCase(),
-                "S"
-            ),
+            backgroundImage: NetworkImage(ride.driverProfilePictureUrl),
           ),
           SizedBox(
             width: 8,
           ),
           Text(
-            // TODO: driverName,
-            "Steven P",
+            firstNameWithInitial,
             style: TagAlongTheme.lightTextTheme.headline6,
           ),
         ],
@@ -147,8 +147,7 @@ class RideBoardCard extends StatelessWidget {
     return Expanded(
       child: Container(
         child: Text(
-          // TODO: NumberFormat('\$##').format(price),
-          "\$30",
+          "\$${ride.price}",
           style: TagAlongTheme.lightTextTheme.headline1,
           // textAlign: TextAlign.right,
         ),
@@ -199,18 +198,30 @@ class RideBoardCard extends StatelessWidget {
   }
 
   Widget _getRemainingSeats(Ride ride) {
-    return Expanded(
-      child: Container(
-        alignment: Alignment.bottomRight,
-        child: Text(
-          "1 SEAT REMAINING",
-          // seatsRemaining == 1
-          //     ? seatsRemaining.toString() + " SEAT REMAINING"
-          //     : seatsRemaining.toString() +
-          //     " SEATS REMAINING",
-          style: TagAlongTheme.lightTextTheme.overline,
+    var seatsRemaining = ride.noPassengers - ride.riderIds.length;
+    if (seatsRemaining > 1) {
+      return Expanded(
+        child: Container(
+          alignment: Alignment.bottomRight,
+          child:
+            Text(
+              "$seatsRemaining SEATS REMAINING",
+              style: TagAlongTheme.lightTextTheme.overline,
+          ),
         ),
-      ),
-    );
+      );
+    }
+    else {
+      return Expanded(
+        child: Container(
+          alignment: Alignment.bottomRight,
+          child:
+          Text(
+            "$seatsRemaining SEAT REMAINING",
+            style: TagAlongTheme.lightTextTheme.overline,
+          ),
+        ),
+      );
+    }
   }
 }

@@ -136,10 +136,12 @@ class Ride implements TADataModel {
     if (driverProfilePictureUrl == null) {
       throw UnsupportedError('Invalid - driverProfilePictureUrl is $driverProfilePictureUrl');
     }
-    var riderIds = json['rider_ids'] as List<String>?;
-    if (riderIds == null) {
-      throw UnsupportedError('Invalid - riderIds is $riderIds');
+    var riders = json['rider_ids'];
+
+    if (riders == null) {
+      throw UnsupportedError('Invalid - riderIds is $riders');
     }
+    List<String> riderIds = List.from(riders);
 
     return Ride(
       createdAt: createdAt,
@@ -184,9 +186,9 @@ class Ride implements TADataModel {
       'to_campus': toCampus,
       'departure_date_time': departureDateTime,   // DateTime -> Timestamp
       'departure_time_of_day': departureTimeOfDay.toString(), // TimeOfDay -> String,
-      'driverFullName': driverFullName,
-      'driverProfilePictureUrl': driverProfilePictureUrl,
-      'riderIds': riderIds
+      'driver_full_name': driverFullName,
+      'driver_profile_picture_url': driverProfilePictureUrl,
+      'rider_ids': riderIds
     };
   }
 
