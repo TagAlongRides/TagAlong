@@ -7,12 +7,19 @@ import 'package:tagalong/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/util/ride_status.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 import '../util/university_locations.dart';
 
 /// A ViewModel that maintains the state and functionality
 /// of the "Offer Ride" user flow.
 class OfferRideViewModel with ChangeNotifier {
+
+  OfferRideViewModel({
+    required this.tagAlongUserViewModel
+  });
+
+  TagAlongUserViewModel tagAlongUserViewModel;
 
   // Firebase Services
   AuthService authService = AuthService();
@@ -40,6 +47,7 @@ class OfferRideViewModel with ChangeNotifier {
 
   void toCampusChoice() {
     toCampus = true;
+    print('TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser?.toString()}');
     notifyListeners();
   }
 
@@ -247,7 +255,10 @@ class OfferRideViewModel with ChangeNotifier {
         noBags: noBags,
         price: price,
         vaccinationCard: vaccinationCard,
-        notes: notes
+        notes: notes,
+        driverFullName: '',
+        driverProfilePictureUrl: '',
+        riderIds: []
     );
 
     // Get corresponding [Map] data from [Ride]
