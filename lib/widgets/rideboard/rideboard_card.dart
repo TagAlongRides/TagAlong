@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
 class RideBoardCard extends StatelessWidget {
   const RideBoardCard({required this.ride, Key? key}) : super(key: key);
@@ -14,6 +16,8 @@ class RideBoardCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         logger.log.fine("RideBoardCard - Tapped on Card");
+        var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
+        rideDetailsViewModel.instantiateRide(ride: ride);
         Navigator.pushNamed(context, '/ride_details');
       },
       child: Card(
