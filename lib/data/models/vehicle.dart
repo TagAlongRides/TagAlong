@@ -79,6 +79,6 @@ class Vehicle implements TADataModel {
 
   @override
   String toString() {
-    return toJson().toString();
+    return "$year $make $model".toUpperCase();
   }
 }

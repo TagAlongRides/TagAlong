@@ -205,5 +205,16 @@ class Ride implements TADataModel {
     );
   }
 
+  /// Returns a string First Name and last initial for a driver.
+  ///
+  /// eg. Steven P.
+  String getFirstNameAndInitial() {
+    return driverFullName.split(" ")[0]
+        + " "
+        + driverFullName.split(" ")[1][0]
+        + ".";
+  }
+
+
 
 }

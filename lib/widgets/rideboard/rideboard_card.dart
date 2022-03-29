@@ -130,10 +130,7 @@ class RideBoardCard extends StatelessWidget {
   /// 2. Facebook Profile Picture
   /// This widget MUST be used within a Column/Row.
   Widget _getDriverData(Ride ride) {
-    var firstNameWithInitial =
-        ride.driverFullName.split(" ")[0]
-        + " "
-        + ride.driverFullName.split(" ")[1][0];
+    var firstNameWithInitial = ride.getFirstNameAndInitial();
     return Expanded(
       flex: 1,
       //alignment: Alignment.centerLeft,
