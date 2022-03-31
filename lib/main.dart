@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/driver_registration_prompt_screen.dart';
 import 'package:tagalong/screens/login_screen.dart';
@@ -28,11 +29,14 @@ import 'package:tagalong/util/log.dart' as logger;
 
 import 'viewmodels/offer_ride_view_model.dart';
 
-
-
 void main() async {
   // Initialize Firebase
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+    ],
+  );
   await Firebase.initializeApp();
 
   // Set up logging
@@ -58,35 +62,53 @@ class _TagAlongAppState extends State<TagAlongApp> {
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
         // TODO: May need `lazy: false`
-        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
-        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
-        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
-        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
-        ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
-        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel())
+        Provider<TagAlongUserViewModel>(
+            create: (BuildContext context) => TagAlongUserViewModel()),
+        ChangeNotifierProvider<RegisterDriverViewModel>(
+            create: (BuildContext context) => RegisterDriverViewModel()),
+        ChangeNotifierProvider<RideBoardViewModel>(
+            create: (BuildContext context) => RideBoardViewModel()),
+        ChangeNotifierProvider<OfferRideViewModel>(
+            create: (BuildContext context) => OfferRideViewModel(
+                tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(
+                    context,
+                    listen: false))),
+        ChangeNotifierProvider<FilterRideViewModel>(
+            create: (BuildContext context) => FilterRideViewModel()),
+        ChangeNotifierProvider<RideDetailsViewModel>(
+            create: (BuildContext context) => RideDetailsViewModel())
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: true,
-        theme: theme,
-        title: 'TagAlong App',
-        home: const AuthWrapper(),
-        routes: <String, WidgetBuilder> {
-          '/register_user': (BuildContext context) => const RegisterUserScreen(),
-          '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
-          '/ride_board': (BuildContext context) => const RideBoardScreen(),
-          '/driver_registration_prompt': (BuildContext context) => const DriverRegistrationPromptScreen(),
-          '/login_screen': (BuildContext context) => const LoginScreen(),
-          '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
-          '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
-          '/offer_ride_campus': (BuildContext context) => const OfferRideCampus(),
-          '/offer_ride_pickup': (BuildContext context) => const OfferRidePickup(),
-          '/offer_ride_dropoff': (BuildContext context) => const OfferRideDropoff(),
-          '/offer_ride_departure': (BuildContext context) => const OfferRideDeparture(),
-          '/offer_ride_trip_details': (BuildContext context) => const OfferRideTripDetails(),
-          '/offer_ride_price_prefs': (BuildContext context) => const OfferRidePricePrefs(),
-          '/ride_details': (BuildContext context) => const RideDetails(),
-        }
-      ),
+          debugShowCheckedModeBanner: true,
+          theme: theme,
+          title: 'TagAlong App',
+          home: const AuthWrapper(),
+          routes: <String, WidgetBuilder>{
+            '/register_user': (BuildContext context) =>
+                const RegisterUserScreen(),
+            '/register_driver': (BuildContext context) =>
+                const RegisterDriverScreen(),
+            '/ride_board': (BuildContext context) => const RideBoardScreen(),
+            '/driver_registration_prompt': (BuildContext context) =>
+                const DriverRegistrationPromptScreen(),
+            '/login_screen': (BuildContext context) => const LoginScreen(),
+            '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
+            '/registration_wrapper': (BuildContext context) =>
+                const RegistrationWrapper(),
+            '/offer_ride_campus': (BuildContext context) =>
+                const OfferRideCampus(),
+            '/offer_ride_pickup': (BuildContext context) =>
+                const OfferRidePickup(),
+            '/offer_ride_dropoff': (BuildContext context) =>
+                const OfferRideDropoff(),
+            '/offer_ride_departure': (BuildContext context) =>
+                const OfferRideDeparture(),
+            '/offer_ride_trip_details': (BuildContext context) =>
+                const OfferRideTripDetails(),
+            '/offer_ride_price_prefs': (BuildContext context) =>
+                const OfferRidePricePrefs(),
+            '/ride_details': (BuildContext context) => const RideDetails(),
+          }),
     );
   }
 }
@@ -110,15 +132,17 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     // Check if the user is signed-in or signed-out
     AuthService authService = Provider.of<AuthService>(context, listen: false);
-    _streamSubscription = authService.userStatus.listen((User? user){
+    _streamSubscription = authService.userStatus.listen((User? user) {
       // 1. User is signed-in; Go to RegistrationWrapper
       if (user != null) {
-        logger.log.fine('User is logged-in in AuthWrapper. - Go to /registration_wrapper');
+        logger.log.fine(
+            'User is logged-in in AuthWrapper. - Go to /registration_wrapper');
         Navigator.pushReplacementNamed(context, '/registration_wrapper');
       }
       // 2. User is signed-out; Go to LoginScreen
       else {
-        logger.log.fine('User is logged-out in AuthWrapper. - Go to /login_screen');
+        logger.log
+            .fine('User is logged-out in AuthWrapper. - Go to /login_screen');
         Navigator.pushReplacementNamed(context, '/login_screen');
       }
     });
@@ -135,13 +159,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: const SafeArea(
-        child: Center(
-          child: CircularProgressIndicator()
-        )
-      )
-    );
+        appBar: AppBar(),
+        body:
+            const SafeArea(child: Center(child: CircularProgressIndicator())));
   }
 }
-
