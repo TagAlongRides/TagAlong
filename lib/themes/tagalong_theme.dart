@@ -3,49 +3,86 @@ import 'package:google_fonts/google_fonts.dart';
 
 class TagAlongTheme {
   // 1
+  static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, 87);
+
   static TextTheme lightTextTheme = TextTheme(
-    bodyText1: GoogleFonts.nunitoSans(
-      fontSize: 16.0,
-      fontWeight: FontWeight.w400,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    // Added italics - may need to change
-    bodyText2: GoogleFonts.nunitoSans(
-      fontSize: 14.0,
-      fontWeight: FontWeight.w400,
-      fontStyle: FontStyle.italic,
-      color: Colors.black,
-    ),
     headline1: GoogleFonts.nunitoSans(
-      fontSize: 32.0,
-      fontWeight: FontWeight.normal,
+      fontSize: 96.0,
+      fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
     headline2: GoogleFonts.nunitoSans(
-      fontSize: 21.0,
-      fontWeight: FontWeight.w700,
+      fontSize: 60.0,
+      fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
     headline3: GoogleFonts.nunitoSans(
+      fontSize: 48.0,
+      fontWeight: FontWeight.w300,
+      fontStyle: FontStyle.normal,
+      color: Colors.black,
+    ),
+    headline4: GoogleFonts.nunitoSans(
+      fontSize: 34.0,
+      fontWeight: FontWeight.w300,
+      fontStyle: FontStyle.normal,
+      color: Colors.black,
+    ),
+    headline5: GoogleFonts.nunitoSans(
+      fontSize: 28.0,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      color: Colors.black,
+    ),
+    headline6: GoogleFonts.nunitoSans(
+      fontSize: 22.0,
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.normal,
+      color: Colors.black,
+    ),
+    subtitle1: GoogleFonts.nunitoSans(
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    headline6: GoogleFonts.nunitoSans(
-      fontSize: 18.0,
-      fontWeight: FontWeight.w600,
+    subtitle2: GoogleFonts.nunitoSans(
+      fontSize: 14.0,
+      fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    overline: GoogleFonts.nunitoSans(
+    bodyText1: GoogleFonts.nunitoSans(
+      fontSize: 16.0,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      color: Colors.black,
+    ),
+    bodyText2: GoogleFonts.nunitoSans(
       fontSize: 14.0,
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.normal,
+      color: Colors.black,
+    ),
+    button: GoogleFonts.nunitoSans(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w300,
+      fontStyle: FontStyle.normal,
+      color: colorHighEmphasis,
+    ),
+    caption: GoogleFonts.nunitoSans(
+      fontSize: 12.0,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
-      color: const Color.fromRGBO(79, 67, 88, 87),
+      color: colorHighEmphasis,
+    ),
+    overline: GoogleFonts.nunitoSans(
+      fontSize: 10.0,
+      fontWeight: FontWeight.bold,
+      fontStyle: FontStyle.normal,
+      color: colorHighEmphasis,
     ),
   );
 
