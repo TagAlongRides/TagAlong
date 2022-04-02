@@ -15,9 +15,10 @@ class RideBoardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        logger.log.fine("RideBoardCard - Tapped on Card");
         var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
         rideDetailsViewModel.instantiateRide(ride: ride);
+        logger.log.fine("RideBoardCard - Tapped on Card");
+        // logger.log.fine("RideBoardCard - ${rideDetailsViewModel.ride.toString()}");
         Navigator.pushNamed(context, '/ride_details');
       },
       child: Card(

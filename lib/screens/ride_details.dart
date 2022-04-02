@@ -194,19 +194,46 @@ class RideDetails extends StatelessWidget {
 
   Widget _getRideDetails(BuildContext context, Ride ride) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(Icons.directions_car_outlined),
+              const Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: Icon(Icons.directions_car_outlined)
+              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(ride.vehicle.toString()),
+                  Text(ride.vehicle.color)
                 ]
-              )
+              ),
             ]
-          )
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(Icons.backpack_outlined)
+              ),
+              Text('${ride.noBags} bags per person'),
+            ]
+          ),
+          const SizedBox(height: 16),
+          if (ride.vaccinationCard)
+            Row(
+                children: const [
+                  Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: Icon(Icons.masks)
+                  ),
+                  Text('COVID safety precautions required'),
+                ]
+            )
         ]
       )
     );
