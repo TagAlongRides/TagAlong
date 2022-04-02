@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
+import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
 class RideBoardCard extends StatelessWidget {
   const RideBoardCard({required this.ride, Key? key}) : super(key: key);
@@ -10,50 +13,59 @@ class RideBoardCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-        side: const BorderSide(
-          color: Color.fromRGBO(145, 127, 159, .6)
-        )
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12
+    return GestureDetector(
+      onTap: () {
+        var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
+        rideDetailsViewModel.instantiateRide(ride: ride);
+        logger.log.fine("RideBoardCard - Tapped on Card");
+        // logger.log.fine("RideBoardCard - ${rideDetailsViewModel.ride.toString()}");
+        Navigator.pushNamed(context, '/ride_details');
+      },
+      child: Card(
+        color: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+          side: const BorderSide(
+            color: Color.fromRGBO(145, 127, 159, .6)
+          )
         ),
-        child: SizedBox(
-          height: 180,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    _getLocations(ride),      // To-From (Locations)
-                    _getDriverData(ride)      // Driver Name, Picture
-                  ]
-                )
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    _getPrice(ride),          // Price of Ride (Expanded)
-                    _getDepartureDate(ride),  // Departure Date (Row)
-                    _getDepartureTime(ride),  // Departure Time (Row)
-                    _getRemainingSeats(ride)
-                  ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12
+          ),
+          child: SizedBox(
+            height: 180,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      _getLocations(ride),      // To-From (Locations)
+                      _getDriverData(ride)      // Driver Name, Picture
+                    ]
+                  )
                 ),
-              )
-            ]
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      _getPrice(ride),          // Price of Ride (Expanded)
+                      _getDepartureDate(ride),  // Departure Date (Row)
+                      _getDepartureTime(ride),  // Departure Time (Row)
+                      _getRemainingSeats(ride)
+                    ],
+                  ),
+                )
+              ]
+            )
           )
         )
-      )
+      ),
     );
   }
 
@@ -119,10 +131,7 @@ class RideBoardCard extends StatelessWidget {
   /// 2. Facebook Profile Picture
   /// This widget MUST be used within a Column/Row.
   Widget _getDriverData(Ride ride) {
-    var firstNameWithInitial =
-        ride.driverFullName.split(" ")[0]
-        + " "
-        + ride.driverFullName.split(" ")[1][0];
+    var firstNameWithInitial = ride.getFirstNameAndInitial();
     return Expanded(
       flex: 1,
       //alignment: Alignment.centerLeft,

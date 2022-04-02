@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tagalong/data/models/location.dart';
 import 'package:tagalong/data/models/ride.dart';
 import 'package:flutter/material.dart';
+import 'package:tagalong/data/models/vehicle.dart';
 
 
 void main() {
@@ -22,6 +23,17 @@ void main() {
     };
     final locationB = Location.fromJson(loc);
 
+    Map<String, dynamic> car_map =
+    {
+      'created_at': DateTime.now(),
+      'make': 'Make',
+      'model': 'model',
+      'year': '2000',
+      'color': 'color',
+      'vehicle_id': 'vehicleId'
+    };
+    Vehicle car = Vehicle.fromJson(car_map);
+
     final map = {
       'created_at': Timestamp(1, 1),
       'ride_id': 'SOMEID',
@@ -37,7 +49,11 @@ void main() {
       'vaccination_card': true,
       'to_campus': true,
       'departure_date_time': Timestamp(1, 1),
-      'departure_time_of_day': "12:30 PM"
+      'departure_time_of_day': "12:30 PM",
+      'driver_full_name': 'fullName',
+      'driver_profile_picture_url': 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
+      'rider_ids': [],
+      'vehicle': car.toJson()
     };
     final ride = Ride.fromJson(map);
   });

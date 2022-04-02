@@ -61,9 +61,10 @@ class Location implements TADataModel {
     };
   }
 
+  /// Returns a U.S Postal formatted version of the Location, without State info.
   @override
   String toString() {
-    return toJson().toString();
+    return "$address $city, $zip";
   }
 
 
