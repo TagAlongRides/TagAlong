@@ -261,7 +261,8 @@ class OfferRideViewModel with ChangeNotifier {
         notes: notes,
         driverFullName: driverFullName,
         driverProfilePictureUrl: tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
-        riderIds: []
+        riderIds: [],
+        vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle
     );
 
     // Get corresponding [Map] data from [Ride]

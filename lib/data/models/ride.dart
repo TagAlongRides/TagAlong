@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tagalong/data/models/location.dart';
 import 'package:tagalong/data/models/ta_data_model.dart';
+import 'package:tagalong/data/models/vehicle.dart';
 
 
 /// [Ride] data model.
@@ -28,6 +29,7 @@ class Ride implements TADataModel {
   String driverFullName;
   String driverProfilePictureUrl;
   List<String> riderIds;
+  Vehicle vehicle;
 
   Ride({
     required this.createdAt,
@@ -47,7 +49,8 @@ class Ride implements TADataModel {
     required this.departureTimeOfDay,
     required this.driverFullName,
     required this.driverProfilePictureUrl,
-    required this.riderIds
+    required this.riderIds,
+    required this.vehicle
   });
 
   /// A Map<String, dynamic> into a [Ride] instance.
@@ -126,7 +129,7 @@ class Ride implements TADataModel {
       throw UnsupportedError('Invalid - dropoffLocation is ${dropoffLocation.toString()}');
     }
     else {
-      dropoffLocation = Location.fromJson(json['dropoff_location']);
+      dropoffLocation = Location.fromJson(dropoffLocation);
     }
     var driverFullName = json['driver_full_name'] as String?;
     if (driverFullName == null) {
@@ -137,11 +140,17 @@ class Ride implements TADataModel {
       throw UnsupportedError('Invalid - driverProfilePictureUrl is $driverProfilePictureUrl');
     }
     var riders = json['rider_ids'];
-
     if (riders == null) {
       throw UnsupportedError('Invalid - riderIds is $riders');
     }
     List<String> riderIds = List.from(riders);
+    var vehicle = json['vehicle'];
+    if (vehicle == null) {
+      throw UnsupportedError('Invalid - vehicle is ${vehicle.toString()}');
+    }
+    else {
+      vehicle = Vehicle.fromJson(vehicle);
+    }
 
     return Ride(
       createdAt: createdAt,
@@ -161,7 +170,8 @@ class Ride implements TADataModel {
       departureTimeOfDay: departureTimeOfDay,
       driverFullName: driverFullName,
       driverProfilePictureUrl: driverProfilePictureUrl,
-      riderIds: riderIds
+      riderIds: riderIds,
+      vehicle: vehicle
     );
 
   }
@@ -188,7 +198,8 @@ class Ride implements TADataModel {
       'departure_time_of_day': departureTimeOfDay.toString(), // TimeOfDay -> String,
       'driver_full_name': driverFullName,
       'driver_profile_picture_url': driverProfilePictureUrl,
-      'rider_ids': riderIds
+      'rider_ids': riderIds,
+      'vehicle': vehicle.toJson()
     };
   }
 

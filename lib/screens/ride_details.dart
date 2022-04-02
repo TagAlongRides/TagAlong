@@ -87,6 +87,7 @@ class RideDetails extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               Expanded(child: Icon(Icons.trip_origin)),
+              // TODO: Perhaps there's a better way to do the dashes..
               Text('  -----------------------------  '),
               Expanded(child: Icon(Icons.sports_score))
             ]
