@@ -258,7 +258,7 @@ class OfferRideViewModel with ChangeNotifier {
         noBags: noBags,
         price: price,
         vaccinationCard: vaccinationCard,
-        notes: notes,
+        notes: notes.trim(),
         driverFullName: driverFullName,
         driverProfilePictureUrl: tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
         riderIds: [],
@@ -277,6 +277,7 @@ class OfferRideViewModel with ChangeNotifier {
     return true;
   }
 
+  // TODO: 4/2/22 Outdated
   @override
   String toString() {
     Map<String, dynamic> map = {

@@ -31,6 +31,7 @@ class RideDetails extends StatelessWidget {
             SizedBox(height: 16.0),
             _getLocationData(context, rideDetailsViewModel),
 
+            // SizedBox + Profile & Notes
             SizedBox(height: 16.0),
             _getProfileAndNotes(context, rideDetailsViewModel.ride, width),
 
@@ -55,13 +56,10 @@ class RideDetails extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline2
                   )
               ),
-              // TODO: Fix! Not appearing...
               const Expanded(
                 flex: 1,
                 child:VerticalDivider(
-                  thickness: 2,
-                  width: 20,
-                  color: Colors.grey,
+                  thickness: 1.75,
                 )
               ),
               Expanded(
@@ -194,7 +192,7 @@ class RideDetails extends StatelessWidget {
 
   Widget _getRideDetails(BuildContext context, Ride ride) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       child: Column(
         children: [
           Row(
