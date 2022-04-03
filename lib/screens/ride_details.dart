@@ -164,9 +164,9 @@ class RideDetails extends StatelessWidget {
           ),
 
           // Ride/Driver Notes
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             width: MediaQuery.of(context).size.width,
             child: Text(ride.notes),
             decoration: BoxDecoration(
@@ -225,14 +225,14 @@ class RideDetails extends StatelessWidget {
           if (ride.vaccinationCard)
             Row(
                 children: [
-                  Padding(
+                  const Padding(
                       padding: EdgeInsets.only(right: 16),
                       child: Icon(Icons.masks)
                   ),
-                  Flexible(child: Text('COVID safety precautions required')),
+                  const Flexible(child: Text('COVID safety precautions required')),
                   IconButton(
-                    padding: EdgeInsets.only(left:16),
-                    constraints: BoxConstraints(),
+                    //padding: const EdgeInsets.only(left:16),
+                    constraints: const BoxConstraints(),
                     icon: const Icon(Icons.info_outline),
                     onPressed: () async {
                       return showDialog(
@@ -243,7 +243,7 @@ class RideDetails extends StatelessWidget {
                             content: const Text('This Driver has indicated proof of vaccination or wearing a mask is required. Please ensure you bring your vaccination card and a mask to wear. Failure to do so, Drivers reserve the right to refuse providing a ride.'),
                             actions: <Widget>[
                               TextButton(
-                                child: Text('OK'),
+                                child: const Text('OK'),
                                 onPressed: () => Navigator.pop(context)
                               )
                             ]
