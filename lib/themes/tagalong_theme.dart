@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TagAlongTheme {
-  // TagAlong color swatch
-  static const MaterialColor tagAlongPrimarySwatch = MaterialColor(
+  // TagAlong primary color swatch (light blue)
+  static const MaterialColor primarySwatch = MaterialColor(
     0xff38b6ff,
     <int, Color>{
       50: Color(0xffADE1FF),
@@ -18,8 +18,8 @@ class TagAlongTheme {
       900: Color(0xff009BF5),
     },
   );
-
-  static const MaterialColor tagAlongSecondarySwatch = MaterialColor(
+  // TagAlong secondary color swatch (teal)
+  static const MaterialColor secondarySwatch = MaterialColor(
     0xff5CE1E6,
     <int, Color>{
       50: Color(0xffB8F2F4),
@@ -36,11 +36,14 @@ class TagAlongTheme {
   );
 
   // Other colors used throughout the app
-  static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, 87);
-  // static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, 87);
-  // static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, 87);
-  // static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, 87);
+  static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, .87);
+  static const Color colorMediumEmphasis = Color.fromRGBO(145, 127, 157, .60);
+  static const Color colorDisabled = Colors.black38;
+  static const Color colorError = Color.fromRGBO(239, 199, 194, 1);
 
+  // Theme to define each text style
+  // Defaulting color to black in most cases, but may use .copyWith() to
+  // contextually override these colors (e.g. displaying error message)
   static TextTheme lightTextTheme = TextTheme(
     headline1: GoogleFonts.nunitoSans(
       fontSize: 96.0,
@@ -107,6 +110,7 @@ class TagAlongTheme {
       fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: colorHighEmphasis,
+      letterSpacing: 1,
     ),
     caption: GoogleFonts.nunitoSans(
       fontSize: 12.0,
@@ -122,13 +126,14 @@ class TagAlongTheme {
     ),
   );
 
+  // Widget theming
   static AppBarTheme appBarTheme = AppBarTheme(
-    backgroundColor: tagAlongPrimarySwatch.shade700,
+    backgroundColor: primarySwatch.shade700,
     titleTextStyle: lightTextTheme.headline6!.copyWith(
-      color: tagAlongSecondarySwatch.shade50,
+      color: secondarySwatch.shade50,
     ),
     iconTheme: IconThemeData(
-      color: tagAlongSecondarySwatch.shade50,
+      color: secondarySwatch.shade50,
     ),
     elevation: 0,
   );
@@ -136,8 +141,8 @@ class TagAlongTheme {
   static BottomNavigationBarThemeData bottomNavigationBarTheme =
       BottomNavigationBarThemeData(
     selectedItemColor: Colors.yellow[200],
-    unselectedItemColor: tagAlongSecondarySwatch.shade50,
-    backgroundColor: tagAlongPrimarySwatch.shade700,
+    unselectedItemColor: secondarySwatch.shade50,
+    backgroundColor: primarySwatch.shade700,
     unselectedLabelStyle: lightTextTheme.caption,
     selectedLabelStyle:
         lightTextTheme.caption!.copyWith(fontWeight: FontWeight.bold),
@@ -146,19 +151,68 @@ class TagAlongTheme {
 
   static FloatingActionButtonThemeData floatingActionButtonTheme =
       FloatingActionButtonThemeData(
-    foregroundColor: tagAlongSecondarySwatch.shade50,
-    backgroundColor: tagAlongPrimarySwatch.shade900,
+    foregroundColor: secondarySwatch.shade50,
+    backgroundColor: primarySwatch.shade900,
   );
 
-  // 3
+  static ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      textStyle: lightTextTheme.button!.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 20,
+      ),
+      onPrimary: secondarySwatch.shade50,
+    ),
+  );
+
+  static TimePickerThemeData timePickerTheme = TimePickerThemeData(
+    backgroundColor: secondarySwatch.shade50,
+  );
+
+  static DialogTheme dialogTheme = const DialogTheme();
+  static BottomSheetThemeData bottomSheetTheme = const BottomSheetThemeData();
+
+  static ChipThemeData chipTheme = ChipThemeData(
+    backgroundColor: secondarySwatch.shade200,
+    disabledColor: colorDisabled,
+    selectedColor: primarySwatch.shade700,
+    secondarySelectedColor: primarySwatch.shade700,
+    padding: const EdgeInsets.symmetric(
+      vertical: 5,
+      horizontal: 10,
+    ),
+    labelStyle: lightTextTheme.subtitle2!,
+    secondaryLabelStyle:
+        lightTextTheme.subtitle2!.copyWith(color: secondarySwatch.shade50),
+    brightness: Brightness.light,
+    showCheckmark: true,
+    checkmarkColor: Colors.white,
+    side: const BorderSide(
+      color: colorMediumEmphasis,
+    ),
+  );
+
+// Form
+// TextFormField
+// DropdownButtonFormField
+// OutlinedButton
+
   static ThemeData light() {
     return ThemeData(
-      primarySwatch: tagAlongPrimarySwatch,
-      appBarTheme: appBarTheme,
-      floatingActionButtonTheme: floatingActionButtonTheme,
-      bottomNavigationBarTheme: bottomNavigationBarTheme,
+      primarySwatch: primarySwatch,
+      canvasColor: secondarySwatch.shade50,
       textTheme: lightTextTheme,
-      canvasColor: tagAlongSecondarySwatch.shade50,
+      appBarTheme: appBarTheme,
+      bottomNavigationBarTheme: bottomNavigationBarTheme,
+      floatingActionButtonTheme: floatingActionButtonTheme,
+      elevatedButtonTheme: elevatedButtonTheme,
+      timePickerTheme: timePickerTheme,
+      dialogTheme: dialogTheme,
+      bottomSheetTheme: bottomSheetTheme,
+      chipTheme: chipTheme,
     );
   }
 }
