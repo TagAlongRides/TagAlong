@@ -19,6 +19,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
   Widget build(BuildContext context) {
     var vm = Provider.of<OfferRideViewModel>(context, listen: false);
     print('HERE: ${vm.runtimeType}');
+    var buttonWidth = MediaQuery.of(context).size.width * .35;
 
     return Scaffold(
       appBar: AppBar(
@@ -90,77 +91,81 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     SizedBox(
-                      width: 100,
+                      width: buttonWidth,
                       height: 50,
                       child: ElevatedButton(
-                          child: const Text('Cancel'),
-                          onPressed: () async {
-                            return showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                      title: const Text('Cancel Ride'),
-                                      content: const Text(
-                                          'Are you sure you want to cancel your ride posting?'
-                                          '\nThis will reset your progress and take you back to the Rideboard.'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Back')),
-                                        TextButton(
-                                            onPressed: () {
-                                              offerRideViewModel.resetAll();
-                                              logger.log.fine(
-                                                  'Canceling OfferRidePricePrefs');
-                                              Navigator.popUntil(
-                                                  context,
-                                                  ModalRoute.withName(
-                                                      '/ride_board'));
-                                            },
-                                            child: const Text('Cancel'))
-                                      ]);
-                                });
-                          }),
+                        child: const Text('Cancel'),
+                        onPressed: () async {
+                          return showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Cancel Ride'),
+                                content: const Text(
+                                    'Are you sure you want to cancel your ride posting?'
+                                    '\nThis will reset your progress and take you back to the Rideboard.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Back')),
+                                  TextButton(
+                                    onPressed: () {
+                                      offerRideViewModel.resetAll();
+                                      logger.log.fine(
+                                          'Canceling OfferRidePricePrefs');
+                                      Navigator.popUntil(context,
+                                          ModalRoute.withName('/ride_board'));
+                                    },
+                                    child: const Text('Cancel'),
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
                     SizedBox(
-                      width: 100,
+                      width: buttonWidth,
                       height: 50,
                       child: ElevatedButton(
-                          child: const Text('Post Ride'),
-                          onPressed: () async {
-                            return showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                      title: const Text('Post Ride'),
-                                      content: const Text(
-                                          'Are you sure you want to post your ride?'
-                                          '\nThis ride will available on the Rideboard as soon as you post!'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Back')),
-                                        TextButton(
-                                            onPressed: () async {
-                                              offerRideViewModel.updateNotes(
-                                                  notesController.text);
-                                              await offerRideViewModel
-                                                  .createNewRide();
-                                              logger.log.fine(
-                                                  'Posting OfferRidePricePrefs');
-                                              Navigator.popUntil(
-                                                  context,
-                                                  ModalRoute.withName(
-                                                      '/ride_board'));
-                                            },
-                                            child: const Text('Post'))
-                                      ]);
-                                });
-                          }),
+                        child: const Text('Post Ride'),
+                        onPressed: () async {
+                          return showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Post Ride'),
+                                content: const Text(
+                                    'Are you sure you want to post your ride?'
+                                    '\nThis ride will available on the Rideboard as soon as you post!'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Back'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      offerRideViewModel
+                                          .updateNotes(notesController.text);
+                                      await offerRideViewModel.createNewRide();
+                                      logger.log
+                                          .fine('Posting OfferRidePricePrefs');
+                                      Navigator.popUntil(context,
+                                          ModalRoute.withName('/ride_board'));
+                                    },
+                                    child: const Text('Post'),
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
                   ]))
         ]);
