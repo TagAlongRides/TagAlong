@@ -29,18 +29,21 @@ class OfferRideCampus extends StatelessWidget {
             children: [
               ChoiceChip(
                 selected: offerRideViewModel.toCampus,
-                label: const SizedBox(width: 120, child: Text('To Campus')),
+                label: Container(
+                  width: 120,
+                  alignment: Alignment.center,
+                  child: const Text('To Campus'),
+                ),
                 onSelected: (bool selected) {
                   offerRideViewModel.toCampusChoice();
                 },
               ),
               ChoiceChip(
                 selected: !offerRideViewModel.toCampus,
-                label: const SizedBox(
+                label: Container(
                   width: 120,
-                  child: Text(
-                    'From Campus',
-                  ),
+                  alignment: Alignment.center,
+                  child: const Text('From Campus'),
                 ),
                 onSelected: (bool selected) {
                   offerRideViewModel.fromCampusChoice();
