@@ -185,15 +185,25 @@ class _RideBoardScreenState extends State<RideBoardScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ChoiceChip(
-                              label: const SizedBox(
-                                  width: 120, child: Text('To Campus')),
+                              label: SizedBox(
+                                width: 120,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: const Text('To Campus'),
+                                ),
+                              ),
                               selected: filterRideViewModel.toCampus,
                               onSelected: (bool selected) =>
                                   filterRideViewModel.toCampusChoice(),
                             ),
                             ChoiceChip(
-                                label: const SizedBox(
-                                    width: 120, child: Text('From Campus')),
+                                label: SizedBox(
+                                  width: 120,
+                                  child: Container(
+                                    child: const Text('From Campus'),
+                                    alignment: Alignment.center,
+                                  ),
+                                ),
                                 selected: !filterRideViewModel.toCampus,
                                 onSelected: (bool selected) =>
                                     filterRideViewModel.fromCampusChoice())
