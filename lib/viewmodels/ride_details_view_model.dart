@@ -12,4 +12,17 @@ class RideDetailsViewModel with ChangeNotifier {
   void instantiateRide({required Ride ride}) {
     this.ride = ride;
   }
+
+
+  /// Returns the service fee on a given ride based on the following algorithm.
+  /// serviceFee = ride.price * .20
+  double getServiceFee() {
+    return ride.price * .20;
+  }
+
+  /// Returns the total ride price based on the following algorithm:
+  /// totalPrice = ride.price + getServiceFee()
+  double getTotalPrice() {
+    return ride.price + getServiceFee();
+  }
 }
