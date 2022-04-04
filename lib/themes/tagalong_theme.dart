@@ -207,10 +207,10 @@ class TagAlongTheme {
     ),
   );
 
-// Form
-// TextFormField
-// DropdownButtonFormField
-// OutlinedButton
+  static InputDecorationTheme inputDecorationTheme = const InputDecorationTheme(
+    border: UnderlineInputBorder(),
+    focusedBorder: OutlineInputBorder(),
+  );
 
   static ThemeData light() {
     return ThemeData(
@@ -221,11 +221,12 @@ class TagAlongTheme {
       bottomNavigationBarTheme: bottomNavigationBarTheme,
       floatingActionButtonTheme: floatingActionButtonTheme,
       elevatedButtonTheme: elevatedButtonTheme,
+      outlinedButtonTheme: outlinedButtonTheme,
       timePickerTheme: timePickerTheme,
       dialogTheme: dialogTheme,
       bottomSheetTheme: bottomSheetTheme,
       chipTheme: chipTheme,
-      outlinedButtonTheme: outlinedButtonTheme,
+      inputDecorationTheme: inputDecorationTheme,
     );
   }
 }
