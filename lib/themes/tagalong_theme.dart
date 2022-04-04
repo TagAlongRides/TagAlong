@@ -168,6 +168,21 @@ class TagAlongTheme {
     ),
   );
 
+  static OutlinedButtonThemeData outlinedButtonTheme = OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      alignment: Alignment.center,
+      textStyle: lightTextTheme.button!.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+      padding: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 20,
+      ),
+      onSurface: secondarySwatch.shade50,
+      side: BorderSide.none,
+    ),
+  );
+
   static TimePickerThemeData timePickerTheme = TimePickerThemeData(
     backgroundColor: secondarySwatch.shade50,
   );
@@ -180,10 +195,7 @@ class TagAlongTheme {
     disabledColor: colorDisabled,
     selectedColor: primarySwatch.shade700,
     secondarySelectedColor: primarySwatch.shade700,
-    padding: const EdgeInsets.symmetric(
-      vertical: 5,
-      horizontal: 10,
-    ),
+    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
     labelStyle: lightTextTheme.subtitle2!,
     secondaryLabelStyle:
         lightTextTheme.subtitle2!.copyWith(color: secondarySwatch.shade50),
@@ -213,6 +225,7 @@ class TagAlongTheme {
       dialogTheme: dialogTheme,
       bottomSheetTheme: bottomSheetTheme,
       chipTheme: chipTheme,
+      outlinedButtonTheme: outlinedButtonTheme,
     );
   }
 }
