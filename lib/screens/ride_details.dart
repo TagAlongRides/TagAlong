@@ -11,7 +11,7 @@ class RideDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
-    double width = MediaQuery.of(context).size.width - 24.0;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Ride Details"),
@@ -24,26 +24,31 @@ class RideDetails extends StatelessWidget {
         child: Column(
           children: [
             // SizedBox + Departure Date/Time
-            SizedBox(height: 16.0),
-            _getDepartureData(context, rideDetailsViewModel),
+            const SizedBox(height: 16.0),
+            _getDepartureData(context, rideDetailsViewModel.ride),
 
             // SizedBox + Locations
-            SizedBox(height: 16.0),
-            _getLocationData(context, rideDetailsViewModel),
+            const SizedBox(height: 16.0),
+            _getLocationData(context, rideDetailsViewModel.ride),
 
             // SizedBox + Profile & Notes
-            SizedBox(height: 16.0),
-            _getProfileAndNotes(context, rideDetailsViewModel.ride, width),
+            const SizedBox(height: 16.0),
+            _getProfileAndNotes(context, rideDetailsViewModel.ride),
 
-            _getRideDetails(context, rideDetailsViewModel.ride)
+            // Ride details (Car + Bags + optional COVID precautions)
+            _getRideDetails(context, rideDetailsViewModel.ride),
+
+            // SizedBox + Pricing
+            const SizedBox(height: 16.0),
+            _getPricing(context, rideDetailsViewModel.ride)
+
           ]
-
         )
       )
     );
   }
   
-  Widget _getDepartureData(BuildContext context, RideDetailsViewModel rideDetailsViewModel) {
+  Widget _getDepartureData(BuildContext context, Ride ride) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: IntrinsicHeight(
@@ -52,20 +57,20 @@ class RideDetails extends StatelessWidget {
               Expanded(
                   flex: 2,
                   child: Text(
-                      DateFormat('EEEE MMM d').format(rideDetailsViewModel.ride.departureDateTime),
+                      DateFormat('EEEE MMM d').format(ride.departureDateTime),
                       style: Theme.of(context).textTheme.headline2
                   )
               ),
               const Expanded(
                 flex: 1,
                 child:VerticalDivider(
-                  thickness: 1.75,
+                  thickness: 1,
                 )
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                    rideDetailsViewModel.ride.departureTimeOfDay,
+                    ride.departureTimeOfDay,
                     style: Theme.of(context).textTheme.headline2
                 )
               )
@@ -76,7 +81,7 @@ class RideDetails extends StatelessWidget {
   }
 
 
-  Widget _getLocationData(BuildContext context, RideDetailsViewModel rideDetailsViewModel) {
+  Widget _getLocationData(BuildContext context, Ride ride) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -94,13 +99,13 @@ class RideDetails extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  rideDetailsViewModel.ride.pickupLocation.label ?? rideDetailsViewModel.ride.pickupLocation.city,
+                  ride.pickupLocation.label ?? ride.pickupLocation.city,
                   style: Theme.of(context).textTheme.headline2
                 )
               ),
               Expanded(
                   child: Text(
-                      rideDetailsViewModel.ride.dropoffLocation.label ?? rideDetailsViewModel.ride.dropoffLocation.city,
+                      ride.dropoffLocation.label ?? ride.dropoffLocation.city,
                       style: Theme.of(context).textTheme.headline2,
                       textAlign: TextAlign.right,
                   )
@@ -111,13 +116,13 @@ class RideDetails extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  rideDetailsViewModel.ride.pickupLocation.toString(),
+                  ride.pickupLocation.toString(),
                   style: Theme.of(context).textTheme.bodyText2,
                 )
               ),
               Expanded(
                 child: Text(
-                  rideDetailsViewModel.ride.dropoffLocation.toString(),
+                  ride.dropoffLocation.toString(),
                   style: Theme.of(context).textTheme.bodyText2,
                   textAlign: TextAlign.right,
                 )
@@ -129,12 +134,12 @@ class RideDetails extends StatelessWidget {
     );
   }
 
-  Widget _getProfileAndNotes(BuildContext context, Ride ride, double width) {
+  Widget _getProfileAndNotes(BuildContext context, Ride ride) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      padding: const EdgeInsets.only(top: 16, left: 24, right: 24),
       child: Column(
         children: [
-          // Profile picture and Deep link Facebook Button
+          // Profile picture and Deep-link Facebook Button
           Row(
             children: [
               Expanded(
@@ -163,10 +168,10 @@ class RideDetails extends StatelessWidget {
             ]
           ),
 
-          // Ride/Driver Notes
+          // Ride Notes
           const SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             width: MediaQuery.of(context).size.width,
             child: Text(ride.notes),
             decoration: BoxDecoration(
@@ -180,9 +185,9 @@ class RideDetails extends StatelessWidget {
 
           // Horizontal Divider
           const Padding(
-            padding: EdgeInsets.only(top: 16),
+            padding: EdgeInsets.all(16),
             child: Divider(
-              thickness: 1.75
+              thickness: 1
             ),
           )
         ]
@@ -221,7 +226,9 @@ class RideDetails extends StatelessWidget {
               Text('${ride.noBags} bags per person'),
             ]
           ),
-          const SizedBox(height: 16),
+          // IF covid precautions were required, introduce INFO (i) button
+          if (ride.vaccinationCard)
+            const SizedBox(height: 16),
           if (ride.vaccinationCard)
             Row(
                 children: [
@@ -229,9 +236,10 @@ class RideDetails extends StatelessWidget {
                       padding: EdgeInsets.only(right: 16),
                       child: Icon(Icons.masks)
                   ),
-                  const Flexible(child: Text('COVID safety precautions required')),
+                  const Text('COVID safety precautions required'),
+                  const SizedBox(width: 16),
                   IconButton(
-                    //padding: const EdgeInsets.only(left:16),
+                    padding: const EdgeInsets.all(0),
                     constraints: const BoxConstraints(),
                     icon: const Icon(Icons.info_outline),
                     onPressed: () async {
@@ -254,6 +262,75 @@ class RideDetails extends StatelessWidget {
                   )
                 ]
             )
+        ]
+      )
+    );
+  }
+
+  Widget _getPricing(BuildContext context, Ride ride) {
+    var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Subtotal
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Subtotal'),
+              Text('\$${ride.price}')
+            ]
+          ),
+          const SizedBox(height: 16),
+
+          // Service Fee
+          Row(
+            children: [
+              const Text('Service Fee'),
+              const SizedBox(width: 16),
+              IconButton(
+                  padding: const EdgeInsets.all(0),
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.info_outline),
+                  onPressed: () async {
+                    return showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                              title: const Text('Pricing Details'),
+                              content: const Text('This fee helps support TagAlong’s platform and covers a broad range of operating costs including app maintenance and support.'),
+                              actions: <Widget>[
+                                TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () => Navigator.pop(context)
+                                )
+                              ]
+                          );
+                        }
+                    );
+                  }
+              ),
+              const Spacer(),
+              Text('\$${rideDetailsViewModel.getServiceFee()}'),
+            ]
+          ),
+          // "Continue" Button
+          const SizedBox(height: 16),
+          ElevatedButton(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Continue'),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text('\$${rideDetailsViewModel.getTotalPrice()}')
+                  )
+                ]
+              ),
+              onPressed: () {
+
+              }
+          )
         ]
       )
     );
