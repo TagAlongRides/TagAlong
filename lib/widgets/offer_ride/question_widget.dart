@@ -11,7 +11,8 @@ class QuestionWidget extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Text(
         question,
-        style: Theme.of(context).textTheme.headline1),
+        style: Theme.of(context).textTheme.headline5,
+      ),
     );
   }
 }

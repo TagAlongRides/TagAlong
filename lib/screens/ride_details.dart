@@ -10,6 +10,7 @@ class RideDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
 
     return Scaffold(
@@ -79,7 +80,6 @@ class RideDetails extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _getLocationData(BuildContext context, Ride ride) {
     return Container(
@@ -335,5 +335,4 @@ class RideDetails extends StatelessWidget {
       )
     );
   }
-
 }

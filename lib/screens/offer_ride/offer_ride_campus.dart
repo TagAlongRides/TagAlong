@@ -9,59 +9,51 @@ class OfferRideCampus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            var vm = Provider.of<OfferRideViewModel>(context, listen: false);
-            vm.resetCampusChoice();
-            Navigator.of(context).pop();
-          }
-        ),
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              var vm = Provider.of<OfferRideViewModel>(context, listen: false);
+              vm.resetCampusChoice();
+              Navigator.of(context).pop();
+            }),
         title: const Text('Offer a Ride'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Question
-          const QuestionWidget(
-            question: 'Where are you heading?'
-          ),
-          Center(
-            child: Consumer<OfferRideViewModel> (
-              builder: (context, offerRideViewModel, child) {
-                return Column(
-                  children: [
-                    ChoiceChip(
-                      selected: offerRideViewModel.toCampus,
-                      label: const SizedBox(
-                          width: 120,
-                          child: Text('To Campus')
-                      ),
-                      onSelected: (bool selected) {
-                        offerRideViewModel.toCampusChoice();
-                      },
-                    ),
-                    ChoiceChip(
-                      selected: !offerRideViewModel.toCampus,
-                      label: const SizedBox(
-                        width: 120,
-                        child: Text('From Campus'),
-                      ),
-                      onSelected: (bool selected) {
-                        offerRideViewModel.fromCampusChoice();
-                      },
-                    )
-                  ],
-                );
-              }
-            )
-          )
-        ]
-      ),
-      floatingActionButton: FloatingActionButton.small(
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // 1. Question
+        const QuestionWidget(question: 'Where are you heading?'),
+        Center(child: Consumer<OfferRideViewModel>(
+            builder: (context, offerRideViewModel, child) {
+          return Column(
+            children: [
+              ChoiceChip(
+                selected: offerRideViewModel.toCampus,
+                label: Container(
+                  width: 120,
+                  alignment: Alignment.center,
+                  child: const Text('To Campus'),
+                ),
+                onSelected: (bool selected) {
+                  offerRideViewModel.toCampusChoice();
+                },
+              ),
+              ChoiceChip(
+                selected: !offerRideViewModel.toCampus,
+                label: Container(
+                  width: 120,
+                  alignment: Alignment.center,
+                  child: const Text('From Campus'),
+                ),
+                onSelected: (bool selected) {
+                  offerRideViewModel.fromCampusChoice();
+                },
+              )
+            ],
+          );
+        }))
+      ]),
+      floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
           logger.log.fine('Leaving OfferRideCampus');

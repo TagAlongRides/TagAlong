@@ -73,7 +73,6 @@ class RideBoardCard extends StatelessWidget {
     );
   }
 
-
   /// Returns an Expanded Column widget which details the "To-From" Locations
   /// of a given [Ride]. This Widget MUST be used within a Row/Column.
   /// The [Ride] fields this utilizes is:
@@ -82,53 +81,46 @@ class RideBoardCard extends StatelessWidget {
   Widget _getLocations(Ride ride) {
     // Column parent
     return Expanded(
-      flex: 2,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        flex: 2,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.circle_outlined,
-                size: 24,
-              ),
-              const SizedBox(width: 6),
-              // PICKUP / ORIGIN
-              Expanded(
-                child: Text(
-                  ride.pickupLocation.label ?? ride.pickupLocation.city,
-                  style: TagAlongTheme.lightTextTheme.headline6,
+              Row(children: [
+                const Icon(
+                  Icons.circle_outlined,
+                  size: 24,
                 ),
-              ),
-            ]
-          ),
-          const Icon(
-            Icons.more_vert,
-            size: 24,
-          ),
-          Row(
-            children: [
+                const SizedBox(width: 6),
+                // PICKUP / ORIGIN
+                Expanded(
+                  child: Text(
+                    ride.pickupLocation.label ?? ride.pickupLocation.city,
+                    style: TagAlongTheme.lightTextTheme.headline6,
+                  ),
+                ),
+              ]),
               const Icon(
-                Icons.circle_rounded,
+                Icons.more_vert,
                 size: 24,
               ),
-              const SizedBox(width: 6),
-              // DROPOFF / DESTINATION
-              Expanded(
-                child: Text(
-                  ride.dropoffLocation.label ?? ride.dropoffLocation.city,
-                  style: TagAlongTheme.lightTextTheme.headline6,
-                )
+              Row(
+                children: [
+                  const Icon(
+                    Icons.circle_rounded,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 6),
+                  // DROPOFF / DESTINATION
+                  Expanded(
+                      child: Text(
+                    ride.dropoffLocation.label ?? ride.dropoffLocation.city,
+                    style: TagAlongTheme.lightTextTheme.headline6,
+                  )),
+                ],
               ),
-            ],
-          ),
-        ]
-      )
-
-    );
+            ]));
   }
-
 
   /// Returns an Expanded Widget that exposes the Driver's
   /// 1. First Name, last initial
@@ -149,7 +141,7 @@ class RideBoardCard extends StatelessWidget {
           ),
           Text(
             firstNameWithInitial,
-            style: TagAlongTheme.lightTextTheme.headline6,
+            style: TagAlongTheme.lightTextTheme.bodyText1,
           ),
         ],
       ),
@@ -161,14 +153,13 @@ class RideBoardCard extends StatelessWidget {
       child: Container(
         child: Text(
           "\$${ride.price}",
-          style: TagAlongTheme.lightTextTheme.headline1,
+          style: TagAlongTheme.lightTextTheme.headline5,
           // textAlign: TextAlign.right,
         ),
         alignment: Alignment.topRight,
       ),
     );
   }
-
 
   Widget _getDepartureDate(Ride ride) {
     return Row(
@@ -188,7 +179,6 @@ class RideBoardCard extends StatelessWidget {
       ],
     );
   }
-
 
   Widget _getDepartureTime(Ride ride) {
     return Row(
@@ -216,22 +206,19 @@ class RideBoardCard extends StatelessWidget {
       return Expanded(
         child: Container(
           alignment: Alignment.bottomRight,
-          child:
-            Text(
-              "$seatsRemaining SEATS REMAINING",
-              style: TagAlongTheme.lightTextTheme.overline,
+          child: Text(
+            "$seatsRemaining SEATS REMAINING",
+            style: TagAlongTheme.lightTextTheme.caption,
           ),
         ),
       );
-    }
-    else {
+    } else {
       return Expanded(
         child: Container(
           alignment: Alignment.bottomRight,
-          child:
-          Text(
+          child: Text(
             "$seatsRemaining SEAT REMAINING",
-            style: TagAlongTheme.lightTextTheme.overline,
+            style: TagAlongTheme.lightTextTheme.caption,
           ),
         ),
       );

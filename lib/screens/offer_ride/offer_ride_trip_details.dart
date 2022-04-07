@@ -9,7 +9,6 @@ class OfferRideTripDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -19,69 +18,49 @@ class OfferRideTripDetails extends StatelessWidget {
               vm.resetNoPassengers();
               vm.resetNoBags();
               Navigator.of(context).pop();
-            }
-        ),
+            }),
         title: const Text('Offer a Ride'),
       ),
       body: Consumer<OfferRideViewModel>(
-        builder: (context, offerRideViewModel, child) {
-          return SingleChildScrollView(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Question
-                  const QuestionWidget(
-                      question: 'How many passengers?'
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () => offerRideViewModel.decrementNoPassengers()
-                            ),
-                            Text(
-                                '${offerRideViewModel.noPassengers}',
-                                style: Theme.of(context).textTheme.headline1
-                            ),
-                            IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () => offerRideViewModel.incrementNoPassengers()
-                            ),
-                          ]
-                      )
-                  ),
-                  const QuestionWidget(
-                      question: 'How many bags per passenger?'
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () => offerRideViewModel.decrementNoBags()
-                            ),
-                            Text(
-                                '${offerRideViewModel.noBags}',
-                                style: Theme.of(context).textTheme.headline1
-                            ),
-                            IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () => offerRideViewModel.incrementNoBags()
-                            ),
-                          ]
-                      )
-                  ),
-                ]
-            ),
-          );
-        }
-      ),
-      floatingActionButton: FloatingActionButton.small(
+          builder: (context, offerRideViewModel, child) {
+        return SingleChildScrollView(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            // 1. Question
+            const QuestionWidget(question: 'How many passengers?'),
+            Padding(
+                padding: const EdgeInsets.all(12),
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  IconButton(
+                      icon: const Icon(Icons.remove),
+                      onPressed: () =>
+                          offerRideViewModel.decrementNoPassengers()),
+                  Text('${offerRideViewModel.noPassengers}',
+                      style: Theme.of(context).textTheme.headline2),
+                  IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () =>
+                          offerRideViewModel.incrementNoPassengers()),
+                ])),
+            const QuestionWidget(question: 'How many bags per passenger?'),
+            Padding(
+                padding: const EdgeInsets.all(12),
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  IconButton(
+                      icon: const Icon(Icons.remove),
+                      onPressed: () => offerRideViewModel.decrementNoBags()),
+                  Text('${offerRideViewModel.noBags}',
+                      style: Theme.of(context).textTheme.headline2),
+                  IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () => offerRideViewModel.incrementNoBags()),
+                ])),
+          ]),
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
           logger.log.fine('Leaving OfferRideTripDetails');
