@@ -179,7 +179,14 @@ class TagAlongTheme {
         horizontal: 20,
       ),
       onSurface: secondarySwatch.shade50,
-      side: BorderSide.none,
+      // side: BorderSide.none,
+      shape: RoundedRectangleBorder(
+        // Using very large number to create semicircle ends of button; Flutter sets borderRadius to max allowable
+        borderRadius: BorderRadius.circular(500),
+        side: const BorderSide(
+          color: colorHighEmphasis,
+        ),
+      ),
     ),
   );
 
