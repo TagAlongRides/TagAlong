@@ -138,6 +138,15 @@ class TagAlongTheme {
     elevation: 0,
   );
 
+  static AppBarTheme progressBarTheme = const AppBarTheme(
+    backgroundColor: Colors.transparent,
+    iconTheme: IconThemeData(
+      color: colorHighEmphasis,
+      size: 18,
+    ),
+    elevation: 0,
+  );
+
   static BottomNavigationBarThemeData bottomNavigationBarTheme =
       BottomNavigationBarThemeData(
     selectedItemColor: Colors.yellow[200],

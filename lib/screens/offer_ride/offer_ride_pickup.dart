@@ -4,6 +4,7 @@ import 'package:tagalong/util/university_locations.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
 class OfferRidePickup extends StatefulWidget {
   const OfferRidePickup({Key? key}) : super(key: key);
@@ -19,6 +20,8 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -27,7 +30,21 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
               vm.resetCityAndZip();
               Navigator.of(context).pop();
             }),
-        title: const Text('Offer a Ride'),
+        title: Row(
+          children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+          ],
+        ),
       ),
       body: Form(
           key: _formKey,
@@ -58,7 +75,6 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         ),
                       ),
                     ),
-                    // const QuestionWidget(question: 'Pickup location?'),
 
                     // 2. TextFormField OR DropdownButtonFormField
                     if (offerRideViewModel.toCampus)

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
 class OfferRideTripDetails extends StatelessWidget {
   const OfferRideTripDetails({Key? key}) : super(key: key);
@@ -11,6 +12,8 @@ class OfferRideTripDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -19,7 +22,21 @@ class OfferRideTripDetails extends StatelessWidget {
               vm.resetNoBags();
               Navigator.of(context).pop();
             }),
-        title: const Text('Offer a Ride'),
+        title: Row(
+          children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+          ],
+        ),
       ),
       body: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {

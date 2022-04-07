@@ -23,6 +23,8 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -31,7 +33,21 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
               vm.resetVaccinationCard();
               Navigator.of(context).pop();
             }),
-        title: const Text('Offer a Ride'),
+        title: Row(
+          children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+          ],
+        ),
       ),
       body: SingleChildScrollView(child: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
 class OfferRideCampus extends StatelessWidget {
   const OfferRideCampus({Key? key}) : super(key: key);
@@ -11,22 +13,42 @@ class OfferRideCampus extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
+            color: theme.TagAlongTheme.colorHighEmphasis,
             onPressed: () {
               var vm = Provider.of<OfferRideViewModel>(context, listen: false);
               vm.resetCampusChoice();
               Navigator.of(context).pop();
             }),
-        title: const Text('Offer a Ride'),
+        title: Row(
+          children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+          ],
+        ),
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // 1. Question
         // const QuestionWidget(question: 'Where are your travel plans?'),
-        RichText(
-          text: TextSpan(
-            style: Theme.of(context).textTheme.headline4,
-            text: 'What are your travel plans?',
+        Padding(
+          padding: const EdgeInsets.all(24),
+          child: RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.headline4,
+              text: 'What are your travel plans?',
+            ),
           ),
         ),
         Center(child: Consumer<OfferRideViewModel>(
