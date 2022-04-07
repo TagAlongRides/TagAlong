@@ -62,35 +62,53 @@ class _TagAlongAppState extends State<TagAlongApp> {
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
         // TODO: May need `lazy: false`
-        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
-        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
-        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
-        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
-        ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
-        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel())
+        Provider<TagAlongUserViewModel>(
+            create: (BuildContext context) => TagAlongUserViewModel()),
+        ChangeNotifierProvider<RegisterDriverViewModel>(
+            create: (BuildContext context) => RegisterDriverViewModel()),
+        ChangeNotifierProvider<RideBoardViewModel>(
+            create: (BuildContext context) => RideBoardViewModel()),
+        ChangeNotifierProvider<OfferRideViewModel>(
+            create: (BuildContext context) => OfferRideViewModel(
+                tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(
+                    context,
+                    listen: false))),
+        ChangeNotifierProvider<FilterRideViewModel>(
+            create: (BuildContext context) => FilterRideViewModel()),
+        ChangeNotifierProvider<RideDetailsViewModel>(
+            create: (BuildContext context) => RideDetailsViewModel())
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: true,
-        theme: theme,
-        title: 'TagAlong App',
-        home: const AuthWrapper(),
-        routes: <String, WidgetBuilder> {
-          '/register_user': (BuildContext context) => const RegisterUserScreen(),
-          '/register_driver': (BuildContext context) => const RegisterDriverScreen(),
-          '/ride_board': (BuildContext context) => const RideBoardScreen(),
-          '/driver_registration_prompt': (BuildContext context) => const DriverRegistrationPromptScreen(),
-          '/login_screen': (BuildContext context) => const LoginScreen(),
-          '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
-          '/registration_wrapper': (BuildContext context) => const RegistrationWrapper(),
-          '/offer_ride_campus': (BuildContext context) => const OfferRideCampus(),
-          '/offer_ride_pickup': (BuildContext context) => const OfferRidePickup(),
-          '/offer_ride_dropoff': (BuildContext context) => const OfferRideDropoff(),
-          '/offer_ride_departure': (BuildContext context) => const OfferRideDeparture(),
-          '/offer_ride_trip_details': (BuildContext context) => const OfferRideTripDetails(),
-          '/offer_ride_price_prefs': (BuildContext context) => const OfferRidePricePrefs(),
-          '/ride_details': (BuildContext context) => const RideDetails(),
-        }
-      ),
+          debugShowCheckedModeBanner: true,
+          theme: theme,
+          title: 'TagAlong App',
+          home: const AuthWrapper(),
+          routes: <String, WidgetBuilder>{
+            '/register_user': (BuildContext context) =>
+                const RegisterUserScreen(),
+            '/register_driver': (BuildContext context) =>
+                const RegisterDriverScreen(),
+            '/ride_board': (BuildContext context) => const RideBoardScreen(),
+            '/driver_registration_prompt': (BuildContext context) =>
+                const DriverRegistrationPromptScreen(),
+            '/login_screen': (BuildContext context) => const LoginScreen(),
+            '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
+            '/registration_wrapper': (BuildContext context) =>
+                const RegistrationWrapper(),
+            '/offer_ride_campus': (BuildContext context) =>
+                const OfferRideCampus(),
+            '/offer_ride_pickup': (BuildContext context) =>
+                const OfferRidePickup(),
+            '/offer_ride_dropoff': (BuildContext context) =>
+                const OfferRideDropoff(),
+            '/offer_ride_departure': (BuildContext context) =>
+                const OfferRideDeparture(),
+            '/offer_ride_trip_details': (BuildContext context) =>
+                const OfferRideTripDetails(),
+            '/offer_ride_price_prefs': (BuildContext context) =>
+                const OfferRidePricePrefs(),
+            '/ride_details': (BuildContext context) => const RideDetails(),
+          }),
     );
   }
 }

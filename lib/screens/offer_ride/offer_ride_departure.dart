@@ -31,9 +31,25 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
       body: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {
         return Column(children: [
-          const Align(
+          Align(
             alignment: Alignment.topLeft,
-            child: QuestionWidget(question: 'Date & time of departure?'),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.headline4,
+                  children: const [
+                    TextSpan(
+                      text: 'When will you depart',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: ' from the pick-up location?',
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
           ElevatedButton(
             style: theme.TagAlongTheme.elevatedButtonTheme.style,

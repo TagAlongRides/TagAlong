@@ -38,7 +38,27 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 1. Question
-                    const QuestionWidget(question: 'Pickup location?'),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.headline4,
+                          children: const [
+                            TextSpan(
+                              text: 'Where will you ',
+                            ),
+                            TextSpan(
+                              text: 'pick up',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text: ' passengers?',
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    // const QuestionWidget(question: 'Pickup location?'),
 
                     // 2. TextFormField OR DropdownButtonFormField
                     if (offerRideViewModel.toCampus)

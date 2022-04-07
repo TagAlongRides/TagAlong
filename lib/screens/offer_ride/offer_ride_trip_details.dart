@@ -27,7 +27,23 @@ class OfferRideTripDetails extends StatelessWidget {
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // 1. Question
-            const QuestionWidget(question: 'How many passengers?'),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.headline4,
+                  children: const [
+                    TextSpan(
+                      text: 'How many passengers',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: ' will you take?',
+                    )
+                  ],
+                ),
+              ),
+            ),
             Padding(
                 padding: const EdgeInsets.all(12),
                 child:
@@ -43,7 +59,23 @@ class OfferRideTripDetails extends StatelessWidget {
                       onPressed: () =>
                           offerRideViewModel.incrementNoPassengers()),
                 ])),
-            const QuestionWidget(question: 'How many bags per passenger?'),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.headline4,
+                  children: const [
+                    TextSpan(
+                      text: 'How many bags',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(
+                      text: ' can each person bring?',
+                    )
+                  ],
+                ),
+              ),
+            ),
             Padding(
                 padding: const EdgeInsets.all(12),
                 child:

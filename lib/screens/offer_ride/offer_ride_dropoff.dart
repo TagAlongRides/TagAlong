@@ -39,7 +39,26 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 1. Question
-                    const QuestionWidget(question: 'Drop off Location?'),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.headline4,
+                          children: const [
+                            TextSpan(
+                              text: 'Where will you ',
+                            ),
+                            TextSpan(
+                              text: 'drop off',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text: ' passengers?',
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
 
                     // 2. TextFormField OR DropdownButtonFormField
                     if (!offerRideViewModel.toCampus)

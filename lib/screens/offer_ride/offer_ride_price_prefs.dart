@@ -37,7 +37,24 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
           builder: (context, offerRideViewModel, child) {
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // 1. Question
-          const QuestionWidget(question: 'Price per person?'),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.headline4,
+                children: const [
+                  TextSpan(
+                    text: 'What is the ',
+                  ),
+                  TextSpan(
+                    text: 'price per person?',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+          ),
+
           Padding(
               padding: const EdgeInsets.all(12),
               child:
@@ -51,23 +68,18 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                     icon: const Icon(Icons.add),
                     onPressed: () => offerRideViewModel.incrementPrice()),
               ])),
-          const QuestionWidget(question: 'Require vaccination card?'),
+
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(children: [
-              Checkbox(
-                value: offerRideViewModel.vaccinationCard,
-                onChanged: (bool? value) {
-                  offerRideViewModel.updateVaccinationCard();
-                },
+            padding: const EdgeInsets.all(24),
+            child: RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.headline4,
+                text: 'Any notes for the passenger?',
               ),
-              const Flexible(
-                  child: Text('Require proof of vaccination card on arrival.'))
-            ]),
+            ),
           ),
-          const QuestionWidget(question: 'Any notes?'),
           Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               child: TextField(
                 maxLength: 280,
                 controller: notesController,
@@ -85,6 +97,35 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                 keyboardType: TextInputType.multiline,
                 maxLines: 6,
               )),
+          Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 24),
+            child: Row(children: [
+              Checkbox(
+                value: offerRideViewModel.vaccinationCard,
+                onChanged: (bool? value) {
+                  offerRideViewModel.updateVaccinationCard();
+                },
+              ),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.caption,
+                    children: const [
+                      TextSpan(
+                        text:
+                            'If you require proof of vaccination or wearing a mask, check the box.',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text:
+                            ' This requirement will be shown to passengers viewing your ride, and you reserve the right to refuse a ride to anyone who refuses to comply with your car rules.',
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ]),
+          ),
           Padding(
               padding: const EdgeInsets.only(bottom: 24),
               child: Row(

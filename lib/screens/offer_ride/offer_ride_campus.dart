@@ -22,7 +22,13 @@ class OfferRideCampus extends StatelessWidget {
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // 1. Question
-        const QuestionWidget(question: 'Where are you heading?'),
+        // const QuestionWidget(question: 'Where are your travel plans?'),
+        RichText(
+          text: TextSpan(
+            style: Theme.of(context).textTheme.headline4,
+            text: 'What are your travel plans?',
+          ),
+        ),
         Center(child: Consumer<OfferRideViewModel>(
             builder: (context, offerRideViewModel, child) {
           return Column(
