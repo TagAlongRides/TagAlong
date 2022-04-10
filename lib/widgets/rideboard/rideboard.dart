@@ -18,9 +18,10 @@ class RideBoard extends StatelessWidget {
     // rebuild this RideBoard Widget, hence re-querying data with filters
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen:true);
 
-    // Listening to OfferRideViewModel for the case when a Driver posts a ride -
-    // The RideBoard should rebuild to show that ride.
-    var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
+    // // Listening to OfferRideViewModel for the case when a Driver posts a ride -
+    // // The RideBoard should rebuild to show that ride.
+    // var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
+    var uploadedRideViewModel = Provider.of<UploadRideViewModel>(context, listen: true);
 
     // The "RefreshIndicator" will allow us to refresh the Rideboard to get the
     // most up-to-date Rides based on set filters within RideBoardViewModel

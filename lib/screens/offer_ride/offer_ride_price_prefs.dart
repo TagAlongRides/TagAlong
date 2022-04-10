@@ -18,6 +18,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
   @override
   Widget build(BuildContext context) {
     var vm = Provider.of<OfferRideViewModel>(context, listen: false);
+    var uploadRideViewModel = Provider.of<UploadRideViewModel>(context, listen: false);
     print('HERE: ${vm.runtimeType}');
     var buttonWidth = MediaQuery.of(context).size.width * .35;
 
@@ -153,6 +154,8 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                                       offerRideViewModel
                                           .updateNotes(notesController.text);
                                       await offerRideViewModel.createNewRide();
+                                      uploadRideViewModel.uploadedRide();
+
                                       logger.log
                                           .fine('Posting OfferRidePricePrefs');
                                       Navigator.popUntil(context,

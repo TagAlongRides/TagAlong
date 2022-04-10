@@ -197,7 +197,6 @@ class OfferRideViewModel with ChangeNotifier {
 
   /// Will create a new [Ride] instance and upload the [Ride]
   /// to the "rides" collection in Firestore.
-  /// info, such as university W/O another read!
   Future<bool> createNewRide() async {
     late Ride ride;
     late Location pickupLocation;
@@ -297,4 +296,18 @@ class OfferRideViewModel with ChangeNotifier {
     return map.toString();
   }
 
+}
+
+
+/// A ViewModel that represents a subset of the "Offer Ride" user flow.
+/// This is used for the last step of actually uploading the [Ride] to the
+/// "rides" Firestore Collection.
+/// This is solely separated from [OfferRideViewModel] because we want to
+/// alert the [RideBoard] to rebuild when the user uploads a ride,
+/// not everytime an update occurs in the "Offer Ride" flow.
+class UploadRideViewModel with ChangeNotifier {
+
+  void uploadedRide() {
+    notifyListeners();
+  }
 }

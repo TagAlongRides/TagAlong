@@ -81,7 +81,7 @@ class RideBoardCard extends StatelessWidget {
   Widget _getLocations(Ride ride) {
     // Column parent
     return Expanded(
-        flex: 2,
+        flex: 4,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
