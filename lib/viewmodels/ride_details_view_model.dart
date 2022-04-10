@@ -14,7 +14,6 @@ class RideDetailsViewModel with ChangeNotifier {
     this.ride = ride;
   }
 
-
   /// Returns the service fee on a given ride based on the following algorithm.
   /// serviceFee = ride.price * .20
   String getServiceFee() {

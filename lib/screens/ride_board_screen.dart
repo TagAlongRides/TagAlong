@@ -4,6 +4,7 @@ import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/widgets/rideboard/rideboard.dart';
 import 'package:tagalong/widgets/rideboard/account.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -36,76 +37,10 @@ class _RideBoardScreenState extends State<RideBoardScreen>
     return Scaffold(
       appBar: _getAppBar(context),
       body: _getBody(context),
-      bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-              label: 'Ride Board',
-              icon: Icon(Icons.home_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: 'Post Ride',
-              icon: Icon(Icons.add),
-            ),
-            BottomNavigationBarItem(
-              label: 'My Rides',
-              icon: Icon(Icons.directions_car_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: 'Account',
-              icon: Icon(Icons.account_circle_outlined),
-            ),
-          ],
-          currentIndex: _selectedItem,
-          // OnTap, update our current index into `items` and rebuild ONLY this
-          // specific widget. DOES NOT REBUILD Children!
-          // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
-          onTap: (int index) async {
-            // 1. User tapped a valid BottomNavBar Page (RideBoard, MyRides, Account)
-            if ([0, 2, 3].contains(index)) {
-              setState(() {
-                _selectedItem = index;
-              });
-            }
-
-            // 2. User tapped on "Post Ride"
-            else {
-              bool isActiveDriver = await rideBoardViewModel.isActiveDriver();
-              logger.log
-                  .fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
-              // If Active Driver, go to `Offer Ride Page`
-              if (isActiveDriver) {
-                logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
-                Navigator.pushNamed(context, '/offer_ride_campus');
-              }
-              // If NOT Active Driver, offer option to register as such
-              else {
-                showDialog<String>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                          title: const Text('Not a Driver'),
-                          content: const Text(
-                              'You’re almost ready to post rides! Create your driver profile to get started.'),
-                          actions: <Widget>[
-                            TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Cancel')),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .popUntil((route) => route.isFirst);
-                                  Navigator.pushReplacementNamed(
-                                      context, '/register_driver');
-                                },
-                                child: const Text('OK')),
-                          ]);
-                    });
-              }
-            }
-          }),
+      bottomNavigationBar: _getBottomNavBar(context)
     );
   }
+
 
   /// UI for the filter Modal Bottom Sheet and its corresponding functionality.
   ///
@@ -300,5 +235,80 @@ class _RideBoardScreenState extends State<RideBoardScreen>
       MyRides(),
       Account()
     ]);
+  }
+
+
+  /// Returns the [RideBoardScreen] BottomNavigationBar
+  Widget _getBottomNavBar(BuildContext context) {
+    var tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+
+    return BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            label: 'Ride Board',
+            icon: Icon(Icons.home_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: 'Post Ride',
+            icon: Icon(Icons.add),
+          ),
+          BottomNavigationBarItem(
+            label: 'My Rides',
+            icon: Icon(Icons.directions_car_outlined),
+          ),
+          BottomNavigationBarItem(
+            label: 'Account',
+            icon: Icon(Icons.account_circle_outlined),
+          ),
+        ],
+        currentIndex: _selectedItem,
+        // OnTap, update our current index into `items` and rebuild ONLY this
+        // specific widget. DOES NOT REBUILD Children!
+        // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
+        onTap: (int index) async {
+          // 1. User tapped a valid BottomNavBar Page (RideBoard, MyRides, Account)
+          if ([0, 2, 3].contains(index)) {
+            setState(() {
+              _selectedItem = index;
+            });
+          }
+
+          // 2. User tapped on "Post Ride" (index 1)
+          else {
+            bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
+            logger.log
+                .fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
+            // If Active Driver, go to `Offer Ride Page`
+            if (isActiveDriver) {
+              logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
+              Navigator.pushNamed(context, '/offer_ride_campus');
+            }
+            // If NOT Active Driver, offer option to register as such
+            else {
+              showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                        title: const Text('Not a Driver'),
+                        content: const Text(
+                            'You’re almost ready to post rides! Create your driver profile to get started.'),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel')),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .popUntil((route) => route.isFirst);
+                                Navigator.pushReplacementNamed(
+                                    context, '/register_driver');
+                              },
+                              child: const Text('OK')),
+                        ]);
+                  });
+            }
+          }
+        });
   }
 }

@@ -58,6 +58,9 @@ class _TagAlongAppState extends State<TagAlongApp> {
   @override
   Widget build(BuildContext context) {
     final theme = TagAlongTheme.light();
+    // Note: By default, Providers are created "lazily", therefore only when
+    // they are needed. We depend on [TagAlongUserViewModel] to be created
+    // first, therefore when other Providers need it, it'll be ready.
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
