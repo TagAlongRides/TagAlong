@@ -30,8 +30,6 @@ class _RideBoardScreenState extends State<RideBoardScreen>
 
   @override
   Widget build(BuildContext context) {
-    RideBoardViewModel rideBoardViewModel =
-        Provider.of<RideBoardViewModel>(context, listen: false);
     logger.log.fine('RideboardScreen Build');
 
     return Scaffold(
