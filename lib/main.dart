@@ -58,6 +58,9 @@ class _TagAlongAppState extends State<TagAlongApp> {
   @override
   Widget build(BuildContext context) {
     final theme = TagAlongTheme.light();
+    // Note: By default, Providers are created "lazily", therefore only when
+    // they are needed. We depend on [TagAlongUserViewModel] to be created
+    // first, therefore when other Providers need it, it'll be ready.
     return MultiProvider(
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
@@ -67,7 +70,8 @@ class _TagAlongAppState extends State<TagAlongApp> {
         ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
         ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
         ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
-        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel())
+        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel()),
+        ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: true,

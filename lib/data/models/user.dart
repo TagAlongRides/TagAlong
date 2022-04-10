@@ -203,4 +203,15 @@ class TagAlongUser implements TADataModel {
     return toJson().toString();
   }
 
+
+  /// Returns the result of whether a [TagAlongUser] is an active driver.
+  bool isActiveDriver() {
+    if (driverData != null) {
+      if (driverData!.isActive) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
