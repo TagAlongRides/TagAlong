@@ -29,44 +29,16 @@ class _RideBoardScreenState extends State<RideBoardScreen>
 
   @override
   Widget build(BuildContext context) {
-    AuthService authService = Provider.of<AuthService>(context, listen: false);
     RideBoardViewModel rideBoardViewModel =
         Provider.of<RideBoardViewModel>(context, listen: false);
     logger.log.fine('RideboardScreen Build');
 
     return Scaffold(
-      appBar: AppBar(
-          title: const Text('Rideboard'),
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            // Filtering Button
-            onPressed: () {
-              showModalBottomSheet(
-                isScrollControlled: true,
-                context: context,
-                builder: (BuildContext context) {
-                  return _getFilterModalBottomSheet(context);
-                },
-              );
-            },
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                authService.signOut();
-              },
-              child: const Text('Sign Out'),
-            )
-          ]),
-      body: IndexedStack(index: _selectedItem, children: const [
-        RideBoard(),
-        Text(''), // This should never be shown - represents "Post Ride"
-        MyRides(),
-        Account()
-      ]),
+      appBar: _getAppBar(context),
+      body: _getBody(context),
       bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          items: [
+          items: const [
             BottomNavigationBarItem(
               label: 'Ride Board',
               icon: Icon(Icons.home_outlined),
@@ -287,5 +259,46 @@ class _RideBoardScreenState extends State<RideBoardScreen>
                     ])
               ]);
         });
+  }
+
+  /// Returns [RideBoardScreen] AppBar
+  _getAppBar(BuildContext context) {
+    // TODO: Take out AuthService - only here for quick debugging
+    var authService = Provider.of<AuthService>(context, listen: false);
+    return AppBar(
+        title: const Text('Ride Board'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          // Filtering Button
+          onPressed: () {
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context,
+              builder: (BuildContext context) {
+                // Brings up the "BottomModelSheet" for filtering
+                return _getFilterModalBottomSheet(context);
+              },
+            );
+          },
+        ),
+        // TODO: Take out with AuthService
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              authService.signOut();
+            },
+            child: const Text('Sign Out'),
+          )
+        ]);
+  }
+
+  /// Returns the [RideBoardScreen] body
+  Widget _getBody(BuildContext context) {
+    return IndexedStack(index: _selectedItem, children: const [
+      RideBoard(),
+      Text(''), // This should never be shown - represents "Post Ride"
+      MyRides(),
+      Account()
+    ]);
   }
 }
