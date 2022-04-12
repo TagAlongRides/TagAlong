@@ -17,10 +17,9 @@ class OfferRideDropoff extends StatefulWidget {
 }
 
 class _OfferRideDropoffState extends State<OfferRideDropoff> {
-  String? _chosenState;
   List<DropdownMenuItem<String>> get _statesList {
-    var state_abbreviations = USStates.getAllAbbreviations();
-    return state_abbreviations.map((state) {
+    var stateAbbreviations = USStates.getAllAbbreviations();
+    return stateAbbreviations.map((state) {
       return DropdownMenuItem(
         child: Text(state),
         value: state,
@@ -96,9 +95,15 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
                             initialValue: offerRideViewModel.dropoffLocation,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_location_outlined),
-                              labelText: 'Address*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.edit_location_outlined),
+                              labelText: 'Street Address',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (dropoff) {
                               if (dropoff == null || dropoff.isEmpty) {
@@ -113,9 +118,15 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
                             initialValue: offerRideViewModel.locationCity,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.location_city),
-                              labelText: 'City*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.location_city),
+                              labelText: 'City',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
@@ -130,15 +141,19 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                           padding: const EdgeInsets.all(24),
                           child: DropdownButtonFormField<String>(
                             items: _statesList,
-                            value: _chosenState,
-                            onChanged: (value) {
-                              setState(() {
-                                _chosenState = value;
-                              });
+                            value: offerRideViewModel.locationState,
+                            onChanged: (state) {
+                              offerRideViewModel.locationState = state;
                             },
-                            decoration: const InputDecoration(
-                              icon: Icon(FontAwesomeIcons.flagUsa),
-                              labelText: 'State*',
+                            decoration: InputDecoration(
+                              icon: const Icon(FontAwesomeIcons.flagUsa),
+                              labelText: 'State',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (state) {
                               if (state == null) {
@@ -153,9 +168,15 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
                             initialValue: offerRideViewModel.locationZip,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.code),
-                              labelText: 'Zip Code*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.code),
+                              labelText: 'Zip Code',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
@@ -173,9 +194,15 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: DropdownButtonFormField<String>(
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_location_outlined),
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.edit_location_outlined),
                               labelText: 'Drop off Location',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             value: offerRideViewModel.dropoffLocation,
                             validator: (text) {

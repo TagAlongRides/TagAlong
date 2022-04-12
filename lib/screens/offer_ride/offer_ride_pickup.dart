@@ -16,7 +16,6 @@ class OfferRidePickup extends StatefulWidget {
 }
 
 class _OfferRidePickupState extends State<OfferRidePickup> {
-  String? _chosenState;
   List<DropdownMenuItem<String>> get _statesList {
     var state_abbreviations = USStates.getAllAbbreviations();
     return state_abbreviations.map((state) {
@@ -96,14 +95,21 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.pickupLocation,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_location_outlined),
-                              labelText: 'Address*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.edit_location_outlined),
+                              labelText: 'Street Address',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (pickup) {
                               if (pickup == null || pickup.isEmpty) {
-                                return 'Address is required';
+                                return 'Please enter a street address';
                               }
                               offerRideViewModel.updatePickupLocation(pickup);
                               return null;
@@ -113,14 +119,21 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.locationCity,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.location_city),
-                              labelText: 'City*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.location_city),
+                              labelText: 'City',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
-                                return 'City is required';
+                                return 'Please enter a city';
                               }
                               offerRideViewModel.updateLocationCity(city);
                               return null;
@@ -131,19 +144,23 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                           padding: const EdgeInsets.all(24),
                           child: DropdownButtonFormField<String>(
                             items: _statesList,
-                            value: _chosenState,
-                            onChanged: (value) {
-                              setState(() {
-                                _chosenState = value;
-                              });
+                            value: offerRideViewModel.locationState,
+                            onChanged: (state) {
+                              offerRideViewModel.locationState = state;
                             },
-                            decoration: const InputDecoration(
-                              icon: Icon(FontAwesomeIcons.flagUsa),
-                              labelText: 'State*',
+                            decoration: InputDecoration(
+                              icon: const Icon(FontAwesomeIcons.flagUsa),
+                              labelText: 'State',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (state) {
                               if (state == null) {
-                                return 'State is required';
+                                return 'Please choose a state';
                               }
                               offerRideViewModel.updateLocationState(state);
                               return null;
@@ -154,13 +171,19 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
                             initialValue: offerRideViewModel.locationZip,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.code),
-                              labelText: 'Zip Code*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.code),
+                              labelText: 'Zip Code',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
-                                return 'Zip is required';
+                                return 'Please enter a zip code';
                               } else if (int.tryParse(city) == null) {
                                 return 'Please enter a numeric zip code';
                               }
@@ -174,9 +197,15 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: DropdownButtonFormField<String>(
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_location_outlined),
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.edit_location_outlined),
                               labelText: 'Pickup Location',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             value: offerRideViewModel.pickupLocation,
                             validator: (text) {
