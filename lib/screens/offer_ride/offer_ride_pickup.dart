@@ -5,6 +5,8 @@ import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:us_states/us_states.dart';
 
 class OfferRidePickup extends StatefulWidget {
   const OfferRidePickup({Key? key}) : super(key: key);
@@ -14,6 +16,18 @@ class OfferRidePickup extends StatefulWidget {
 }
 
 class _OfferRidePickupState extends State<OfferRidePickup> {
+  String? _chosenState;
+  List<DropdownMenuItem<String>> get _statesList {
+    var state_abbreviations = USStates.getAllAbbreviations();
+    return state_abbreviations.map((state) {
+      return DropdownMenuItem(
+        child: Text(state),
+        value: state,
+      );
+    }).toList();
+    // return states;
+  }
+
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
@@ -109,6 +123,29 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                                 return 'City is required';
                               }
                               offerRideViewModel.updateLocationCity(city);
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: DropdownButtonFormField<String>(
+                            items: _statesList,
+                            value: _chosenState,
+                            onChanged: (value) {
+                              setState(() {
+                                _chosenState = value;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              icon: Icon(FontAwesomeIcons.flagUsa),
+                              labelText: 'State*',
+                            ),
+                            validator: (state) {
+                              if (state == null) {
+                                return 'State is required';
+                              }
+                              offerRideViewModel.updateLocationState(state);
                               return null;
                             },
                           ),

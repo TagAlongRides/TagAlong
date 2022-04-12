@@ -21,7 +21,6 @@ class VirginiaTechLocation {
   static const String WEST_AJ = 'West AJ';
   static const String EAST_AJ = 'East AJ';
 
-
   /// A mapping of the location "label" to the full address, in U.S specific format
   static const Map<String, String> mappings = {
     BURRUSS_HALL: '800 Drillfield Dr, Blacksburg, VA 24061',
@@ -43,19 +42,18 @@ class VirginiaTechLocation {
 
   static List<String> locationNames = mappings.keys.toList();
 
-
   /// Will transform a U.S Postal formatted address into a [Location] instance.
   /// "<deliv_addr>, <city>, <State> <Zip>"
-  static Location transformAddressIntoLocation({required String address, String? label}) {
+  static Location transformAddressIntoLocation(
+      {required String address, String? label}) {
     List<String> elements = address.split(",");
     Location loc = Location(
-      address: elements[0],
-      city: elements[1].trim(),
-      zip: elements[2].split(" ")[2],
-      label: label ?? elements[1].trim(),
-      locationImageUrl: null
-    );
+        address: elements[0],
+        city: elements[1].trim(),
+        state: elements[2].split(" ")[1],
+        zip: elements[2].split(" ")[2],
+        label: label ?? elements[1].trim(),
+        locationImageUrl: null);
     return loc;
   }
-
 }
