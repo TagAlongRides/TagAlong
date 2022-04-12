@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
@@ -67,59 +68,190 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
               ),
             ),
           ),
-          ElevatedButton(
-            style: theme.TagAlongTheme.elevatedButtonTheme.style,
-            onPressed: () async {
-              DateTime chosenDate =
-                  offerRideViewModel.departureDateTime ?? DateTime.now();
-              final DateTime? newDate = await showDatePicker(
-                context: context,
-                initialDate: chosenDate,
-                firstDate: chosenDate,
-                lastDate: DateTime.now().add(const Duration(days: 180)),
-                helpText: 'DEPARTURE DATE',
-              );
-              offerRideViewModel.updateDepartureDateTime(newDate);
-            },
-            child: const Text('Select departure date'),
-          ),
-          const SizedBox(height: 8),
-          if (offerRideViewModel.departureDateTime != null)
-            Text(
-              'Leaving on ${offerRideViewModel.departureDateTime!.toIso8601String().split('T').first}',
+          const SizedBox(height: 40),
+          Container(
+            height: 20,
+            width: double.infinity,
+            margin: const EdgeInsets.only(left: 24),
+            child: Text(
+              'Date',
+              style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
+                color: theme.TagAlongTheme.primarySwatch.shade900,
+                fontWeight: FontWeight.w900,
+              ),
+              textAlign: TextAlign.left,
             ),
-          const SizedBox(height: 8),
-          if (offerRideViewModel.departureDateTime != null)
-            ElevatedButton(
-              onPressed: () async {
-                late TimeOfDay chosenTime;
+          ),
+          Container(
+            height: 80,
+            width: double.infinity,
+            margin: const EdgeInsets.only(left: 24),
+            child: Row(
+              children: [
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: Container(
+                    child: offerRideViewModel.departureDateTime != null
+                        ? RichText(
+                            text: TextSpan(
+                              style: Theme.of(context).textTheme.headline4,
+                              children: [
+                                TextSpan(
+                                  text: DateFormat('EEE').format(
+                                      offerRideViewModel.departureDateTime!),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black38,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: DateFormat(' MMMM dd').format(
+                                      offerRideViewModel.departureDateTime!),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        : Text("Choose a date",
+                            style: theme.TagAlongTheme.lightTextTheme.headline4!
+                                .copyWith(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.normal,
+                            )),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: OutlinedButton(
+                    style:
+                        theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
+                      backgroundColor: MaterialStateProperty.all(
+                          theme.TagAlongTheme.secondarySwatch.shade200),
+                      shape: MaterialStateProperty.all(
+                        const RoundedRectangleBorder(
+                          side: BorderSide(width: 0, color: Colors.transparent),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.calendar_today,
+                      size: 30,
+                      color: theme.TagAlongTheme.primarySwatch.shade900,
+                    ),
+                    onPressed: () async {
+                      DateTime chosenDate =
+                          offerRideViewModel.departureDateTime ??
+                              DateTime.now();
+                      final DateTime? newDate = await showDatePicker(
+                        context: context,
+                        initialDate: chosenDate,
+                        firstDate: chosenDate,
+                        lastDate: DateTime.now().add(const Duration(days: 180)),
+                        helpText: 'DEPARTURE DATE',
+                      );
+                      offerRideViewModel.updateDepartureDateTime(newDate);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 40),
+          Container(
+            height: 20,
+            width: double.infinity,
+            margin: const EdgeInsets.only(left: 24),
+            child: Text(
+              'Time',
+              style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
+                color: theme.TagAlongTheme.primarySwatch.shade900,
+                fontWeight: FontWeight.w900,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          Container(
+            height: 80,
+            width: double.infinity,
+            margin: const EdgeInsets.only(left: 24),
+            child: Row(
+              children: [
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: Container(
+                    child: offerRideViewModel.departureTimeOfDay != null
+                        ? RichText(
+                            text: TextSpan(
+                              style: Theme.of(context).textTheme.headline4,
+                              children: [
+                                TextSpan(
+                                  text: offerRideViewModel.departureTimeOfDay,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Text("Choose a time",
+                            style: theme.TagAlongTheme.lightTextTheme.headline4!
+                                .copyWith(
+                              color: Colors.black,
+                            )),
+                  ),
+                ),
+                Container(
+                  // padding: EdgeInsets.symmetric(horizontal: 15),
+                  margin: EdgeInsets.only(right: 15),
+                  child: OutlinedButton(
+                    style:
+                        theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
+                      backgroundColor: MaterialStateProperty.all(
+                          theme.TagAlongTheme.secondarySwatch.shade200),
+                      shape: MaterialStateProperty.all(
+                        const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.schedule_outlined,
+                      color: theme.TagAlongTheme.primarySwatch.shade900,
+                      size: 30,
+                    ),
+                    onPressed: () async {
+                      late TimeOfDay chosenTime;
 
-                // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
-                if (offerRideViewModel.departureTimeOfDay != null) {
-                  chosenTime = Ride.timeOfDayFromString(
-                      offerRideViewModel.departureTimeOfDay!);
-                }
-                // User HAS NOT chosen a TimeOfDay to leave - default to current time
-                else {
-                  chosenTime = const TimeOfDay(hour: 12, minute: 00);
-                }
+                      // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
+                      if (offerRideViewModel.departureTimeOfDay != null) {
+                        chosenTime = Ride.timeOfDayFromString(
+                            offerRideViewModel.departureTimeOfDay!);
+                      }
+                      // User HAS NOT chosen a TimeOfDay to leave - default to current time
+                      else {
+                        chosenTime = const TimeOfDay(hour: 12, minute: 00);
+                      }
 
-                final TimeOfDay? newTime = await showTimePicker(
-                  context: context,
-                  initialTime: chosenTime,
-                  initialEntryMode: TimePickerEntryMode.input,
-                  helpText: 'DEPARTURE TIME',
-                );
-                offerRideViewModel
-                    .updateDepartureTimeOfDay(newTime?.format(context));
-              },
-              child: const Text('Select departure time'),
-            )
-          else
-            const ElevatedButton(
-              onPressed: null,
-              child: Text('Select departure time'),
-            )
+                      final TimeOfDay? newTime = await showTimePicker(
+                        context: context,
+                        initialTime: chosenTime,
+                        initialEntryMode: TimePickerEntryMode.input,
+                        helpText: 'DEPARTURE TIME',
+                      );
+                      offerRideViewModel
+                          .updateDepartureTimeOfDay(newTime?.format(context));
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ]);
       }),
       floatingActionButton: FloatingActionButton(
