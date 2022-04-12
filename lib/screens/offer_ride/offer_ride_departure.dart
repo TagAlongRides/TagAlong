@@ -72,7 +72,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
           Container(
             height: 20,
             width: double.infinity,
-            margin: const EdgeInsets.only(left: 24),
+            margin: const EdgeInsets.only(left: 15, bottom: 10),
             child: Text(
               'Date',
               style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
@@ -83,88 +83,93 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             ),
           ),
           Container(
-            height: 80,
+            // height: 100,
             width: double.infinity,
-            margin: const EdgeInsets.only(left: 24),
-            child: Row(
-              children: [
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: Container(
-                    child: offerRideViewModel.departureDateTime != null
-                        ? RichText(
-                            text: TextSpan(
-                              style: Theme.of(context).textTheme.headline4,
-                              children: [
-                                TextSpan(
-                                  text: DateFormat('EEE').format(
-                                      offerRideViewModel.departureDateTime!),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black38,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: DateFormat(' MMMM dd').format(
-                                      offerRideViewModel.departureDateTime!),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black,
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        : Text("Choose a date",
-                            style: theme.TagAlongTheme.lightTextTheme.headline4!
-                                .copyWith(
-                              color: Colors.black45,
-                              fontWeight: FontWeight.normal,
-                            )),
+            margin: const EdgeInsets.symmetric(horizontal: 15),
+            child: OutlinedButton(
+              style: theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
+                backgroundColor: MaterialStateProperty.all(Colors.white
+                    // theme.TagAlongTheme.secondarySwatch.shade200
+                    ),
+                shape: MaterialStateProperty.all(
+                  const RoundedRectangleBorder(
+                    side: BorderSide.none,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: OutlinedButton(
-                    style:
-                        theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
-                      backgroundColor: MaterialStateProperty.all(
-                          theme.TagAlongTheme.secondarySwatch.shade200),
-                      shape: MaterialStateProperty.all(
-                        const RoundedRectangleBorder(
-                          side: BorderSide(width: 0, color: Colors.transparent),
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                      ),
+              ),
+              onPressed: () async {
+                DateTime chosenDate =
+                    offerRideViewModel.departureDateTime ?? DateTime.now();
+                final DateTime? newDate = await showDatePicker(
+                  context: context,
+                  initialDate: chosenDate,
+                  firstDate: chosenDate,
+                  lastDate: DateTime.now().add(const Duration(days: 180)),
+                  helpText: 'DEPARTURE DATE',
+                );
+                offerRideViewModel.updateDepartureDateTime(newDate);
+              },
+              child: Row(
+                children: [
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Container(
+                      child: offerRideViewModel.departureDateTime != null
+                          ? FittedBox(
+                              fit: BoxFit.contain,
+                              child: RichText(
+                                text: TextSpan(
+                                  style: Theme.of(context).textTheme.headline4,
+                                  children: [
+                                    TextSpan(
+                                      text: DateFormat('EEEE').format(
+                                          offerRideViewModel
+                                              .departureDateTime!),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: DateFormat(' MMMM dd').format(
+                                          offerRideViewModel
+                                              .departureDateTime!),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Text("Choose a date",
+                              style: theme
+                                  .TagAlongTheme.lightTextTheme.headline6!
+                                  .copyWith(
+                                color: Colors.black45,
+                                fontWeight: FontWeight.normal,
+                              )),
                     ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
                     child: Icon(
                       Icons.calendar_today,
                       size: 30,
                       color: theme.TagAlongTheme.primarySwatch.shade900,
                     ),
-                    onPressed: () async {
-                      DateTime chosenDate =
-                          offerRideViewModel.departureDateTime ??
-                              DateTime.now();
-                      final DateTime? newDate = await showDatePicker(
-                        context: context,
-                        initialDate: chosenDate,
-                        firstDate: chosenDate,
-                        lastDate: DateTime.now().add(const Duration(days: 180)),
-                        helpText: 'DEPARTURE DATE',
-                      );
-                      offerRideViewModel.updateDepartureDateTime(newDate);
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 40),
           Container(
             height: 20,
             width: double.infinity,
-            margin: const EdgeInsets.only(left: 24),
+            margin: const EdgeInsets.only(left: 15, bottom: 10),
             child: Text(
               'Time',
               style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
@@ -175,81 +180,82 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             ),
           ),
           Container(
-            height: 80,
+            // height: 65,
             width: double.infinity,
-            margin: const EdgeInsets.only(left: 24),
-            child: Row(
-              children: [
-                Flexible(
-                  fit: FlexFit.tight,
-                  child: Container(
-                    child: offerRideViewModel.departureTimeOfDay != null
-                        ? RichText(
-                            text: TextSpan(
-                              style: Theme.of(context).textTheme.headline4,
-                              children: [
-                                TextSpan(
-                                  text: offerRideViewModel.departureTimeOfDay,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Text("Choose a time",
-                            style: theme.TagAlongTheme.lightTextTheme.headline4!
-                                .copyWith(
-                              color: Colors.black,
-                            )),
+            margin: const EdgeInsets.symmetric(horizontal: 15),
+            child: OutlinedButton(
+              style: theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
+                backgroundColor: MaterialStateProperty.all(
+                    // theme.TagAlongTheme.secondarySwatch.shade200
+                    Colors.white),
+                shape: MaterialStateProperty.all(
+                  const RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.transparent),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                 ),
-                Container(
-                  // padding: EdgeInsets.symmetric(horizontal: 15),
-                  margin: EdgeInsets.only(right: 15),
-                  child: OutlinedButton(
-                    style:
-                        theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
-                      backgroundColor: MaterialStateProperty.all(
-                          theme.TagAlongTheme.secondarySwatch.shade200),
-                      shape: MaterialStateProperty.all(
-                        const RoundedRectangleBorder(
-                          side: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                      ),
+              ),
+              onPressed: () async {
+                late TimeOfDay chosenTime;
+
+                // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
+                if (offerRideViewModel.departureTimeOfDay != null) {
+                  chosenTime = Ride.timeOfDayFromString(
+                      offerRideViewModel.departureTimeOfDay!);
+                }
+                // User HAS NOT chosen a TimeOfDay to leave - default to current time
+                else {
+                  chosenTime = const TimeOfDay(hour: 12, minute: 00);
+                }
+
+                final TimeOfDay? newTime = await showTimePicker(
+                  context: context,
+                  initialTime: chosenTime,
+                  initialEntryMode: TimePickerEntryMode.input,
+                  helpText: 'DEPARTURE TIME',
+                );
+                offerRideViewModel
+                    .updateDepartureTimeOfDay(newTime?.format(context));
+              },
+              child: Row(
+                children: [
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Container(
+                      child: offerRideViewModel.departureTimeOfDay != null
+                          ? RichText(
+                              textAlign: TextAlign.left,
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.headline4,
+                                children: [
+                                  TextSpan(
+                                    text: offerRideViewModel.departureTimeOfDay,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Text("Choose a time",
+                              style: theme
+                                  .TagAlongTheme.lightTextTheme.headline6!
+                                  .copyWith(
+                                color: Colors.black45,
+                              )),
                     ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
                     child: Icon(
                       Icons.schedule_outlined,
                       color: theme.TagAlongTheme.primarySwatch.shade900,
                       size: 30,
                     ),
-                    onPressed: () async {
-                      late TimeOfDay chosenTime;
-
-                      // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
-                      if (offerRideViewModel.departureTimeOfDay != null) {
-                        chosenTime = Ride.timeOfDayFromString(
-                            offerRideViewModel.departureTimeOfDay!);
-                      }
-                      // User HAS NOT chosen a TimeOfDay to leave - default to current time
-                      else {
-                        chosenTime = const TimeOfDay(hour: 12, minute: 00);
-                      }
-
-                      final TimeOfDay? newTime = await showTimePicker(
-                        context: context,
-                        initialTime: chosenTime,
-                        initialEntryMode: TimePickerEntryMode.input,
-                        helpText: 'DEPARTURE TIME',
-                      );
-                      offerRideViewModel
-                          .updateDepartureTimeOfDay(newTime?.format(context));
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ]);
