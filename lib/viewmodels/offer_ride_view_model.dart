@@ -14,10 +14,7 @@ import '../util/university_locations.dart';
 /// A ViewModel that maintains the state and functionality
 /// of the "Offer Ride" user flow.
 class OfferRideViewModel with ChangeNotifier {
-
-  OfferRideViewModel({
-    required this.tagAlongUserViewModel
-  });
+  OfferRideViewModel({required this.tagAlongUserViewModel});
 
   TagAlongUserViewModel tagAlongUserViewModel;
 
@@ -32,22 +29,24 @@ class OfferRideViewModel with ChangeNotifier {
   // User-inputted [Ride] attributes
   // Note: We don't actually hold an instance of [Location], but
   // rather create it at the end in "createRide"
-  bool toCampus = true;         // Default
+  bool toCampus = true; // Default
   String? pickupLocation;
   String? dropoffLocation;
   String? locationCity;
+  String? locationState;
   String? locationZip;
   DateTime? departureDateTime;
   String? departureTimeOfDay;
-  int noPassengers = 2;         // Default
-  int noBags = 2;               // Default
-  int price = 20;               // Default
-  bool vaccinationCard = true;  // Default
-  String notes = '';            // Default
+  int noPassengers = 2; // Default
+  int noBags = 2; // Default
+  int price = 20; // Default
+  bool vaccinationCard = true; // Default
+  String notes = ''; // Default
 
   void toCampusChoice() {
     toCampus = true;
-    print('TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser?.toString()}');
+    print(
+        'TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser?.toString()}');
     notifyListeners();
   }
 
@@ -68,6 +67,11 @@ class OfferRideViewModel with ChangeNotifier {
 
   void updateLocationCity(String? locationCity) {
     this.locationCity = locationCity!;
+    notifyListeners();
+  }
+
+  void updateLocationState(String? locationState) {
+    this.locationState = locationState!;
     notifyListeners();
   }
 
@@ -122,7 +126,7 @@ class OfferRideViewModel with ChangeNotifier {
   }
 
   void decrementPrice() {
-    if (price > 5){
+    if (price > 5) {
       price -= 1;
       notifyListeners();
     }
@@ -152,6 +156,7 @@ class OfferRideViewModel with ChangeNotifier {
 
   void resetCityAndZip() {
     locationCity = null;
+    locationState = null;
     locationZip = null;
   }
 
@@ -180,19 +185,19 @@ class OfferRideViewModel with ChangeNotifier {
   }
 
   void resetAll() {
-    toCampus = true;          // Default
+    toCampus = true; // Default
     pickupLocation = null;
     dropoffLocation = null;
     locationCity = null;
+    locationState = null;
     locationZip = null;
     departureDateTime = null;
     departureTimeOfDay = null;
-    noPassengers = 2;         // Default
-    noBags = 2;               // Default
-    price = 20;               // Default
-    vaccinationCard = true;   // Default
-    notes = '';               // Default
-
+    noPassengers = 2; // Default
+    noBags = 2; // Default
+    price = 20; // Default
+    vaccinationCard = true; // Default
+    notes = ''; // Default
   }
 
   /// Will create a new [Ride] instance and upload the [Ride]
@@ -208,40 +213,37 @@ class OfferRideViewModel with ChangeNotifier {
       pickupLocation = Location(
           address: this.pickupLocation!,
           city: this.locationCity!,
+          state: this.locationState!,
           zip: this.locationZip!,
-          locationImageUrl: null
-      );
+          locationImageUrl: null);
       // Dropoff Location - Label needed
-      String dropoffFullAddress = VirginiaTechLocation.mappings[this.dropoffLocation!]!;
+      String dropoffFullAddress =
+          VirginiaTechLocation.mappings[this.dropoffLocation!]!;
       dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(
-          address: dropoffFullAddress,
-          label: this.dropoffLocation
-      );
+          address: dropoffFullAddress, label: this.dropoffLocation);
     }
 
     // 2. Driver is going FROM campus
     else {
       // Pickup Location - Label NEEDED
-      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
+      String pickupFullAddress =
+          VirginiaTechLocation.mappings[this.pickupLocation!]!;
       pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(
-          address:pickupFullAddress,
-          label: this.pickupLocation
-      );
+          address: pickupFullAddress, label: this.pickupLocation);
       // 1. Create first [Location] - direction depends on `toCampus`
       dropoffLocation = Location(
           address: this.dropoffLocation!,
           city: this.locationCity!,
+          state: this.locationState!,
           zip: this.locationZip!,
-          locationImageUrl: null
-      );
+          locationImageUrl: null);
     }
 
     // Create a [Ride] instance
     final String ride_id = uuid.v4();
-    final driverFullName =
-      tagAlongUserViewModel.tagAlongUser!.firstName
-      + " "
-      + tagAlongUserViewModel.tagAlongUser!.lastName;
+    final driverFullName = tagAlongUserViewModel.tagAlongUser!.firstName +
+        " " +
+        tagAlongUserViewModel.tagAlongUser!.lastName;
     ride = Ride(
         createdAt: DateTime.now(),
         rideId: ride_id,
@@ -259,10 +261,10 @@ class OfferRideViewModel with ChangeNotifier {
         vaccinationCard: vaccinationCard,
         notes: notes.trim(),
         driverFullName: driverFullName,
-        driverProfilePictureUrl: tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
+        driverProfilePictureUrl:
+            tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
         riderIds: [],
-        vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle
-    );
+        vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle);
 
     // Get corresponding [Map] data from [Ride]
     Map<String, dynamic> map = ride.toJson();

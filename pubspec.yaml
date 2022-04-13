@@ -65,6 +65,9 @@ dependencies:
   # 3/25/22 - intl
   intl: ^0.17.0
 
+  # 4/12/22 - Added us_states - get US state data
+  us_states: ^1.1.5
+
 
 dev_dependencies:
   flutter_test:

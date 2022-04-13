@@ -1,4 +1,3 @@
-
 import 'package:tagalong/data/models/ta_data_model.dart';
 
 /// [Location] data model
@@ -9,18 +8,19 @@ import 'package:tagalong/data/models/ta_data_model.dart';
 class Location implements TADataModel {
   String address;
   String city;
+  String state;
   String zip;
   String? label;
   String? locationImageUrl;
 
   // Constructor
-  Location({
-    required this.address,
-    required this.city,
-    required this.zip,
-    this.label=null,
-    this.locationImageUrl=null
-  });
+  Location(
+      {required this.address,
+      required this.city,
+      required this.zip,
+      required this.state,
+      this.label = null,
+      this.locationImageUrl = null});
 
   /// A factory constructor that will convert a Map<String, dynamic> into
   /// a [Location] instance.
@@ -33,6 +33,10 @@ class Location implements TADataModel {
     if (city == null) {
       throw UnsupportedError('Invalid - city is $city');
     }
+    var state = json['state'] as String?;
+    if (state == null) {
+      throw UnsupportedError('Invalid - state is $state');
+    }
     var zip = json['zip'] as String?;
     if (zip == null) {
       throw UnsupportedError('Invalid - zip is $zip');
@@ -41,12 +45,12 @@ class Location implements TADataModel {
     var locationImageUrl = json['location_image_url'] as String?;
 
     return Location(
-      address: address,
-      city: city,
-      zip: zip,
-      label: label,
-      locationImageUrl: locationImageUrl
-    );
+        address: address,
+        city: city,
+        state: state,
+        zip: zip,
+        label: label,
+        locationImageUrl: locationImageUrl);
   }
 
   /// Converts this [Location] instance to a JSON Map<String, dynamic> structure.
@@ -55,6 +59,7 @@ class Location implements TADataModel {
     return {
       'address': address,
       'city': city,
+      'state': state,
       'zip': zip,
       'label': label,
       'location_image_url': locationImageUrl
@@ -64,9 +69,6 @@ class Location implements TADataModel {
   /// Returns a U.S Postal formatted version of the Location, without State info.
   @override
   String toString() {
-    return "$address $city, $zip";
+    return "$address $city, $state $zip";
   }
-
-
-
 }

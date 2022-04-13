@@ -6,7 +6,6 @@ import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
-
 /// Represents a RideBoardCard, the only element that should be shown on the
 /// RideBoard, and should surface basic information about a Ride as well as
 /// lead to a more detailed page onTap.
@@ -19,57 +18,49 @@ class RideBoardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
+        var rideDetailsViewModel =
+            Provider.of<RideDetailsViewModel>(context, listen: false);
         // Set up the RideDetailsViewModel with this card's [Ride] instance
         rideDetailsViewModel.instantiateRide(ride: ride);
         logger.log.fine("RideBoardCard - Tapped on Card");
         Navigator.pushNamed(context, '/ride_details');
       },
       child: Card(
-        color: Colors.white,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
-          side: const BorderSide(
-            color: Color.fromRGBO(145, 127, 159, .6)
-          )
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12
-          ),
-          child: SizedBox(
-            height: 180,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      _getLocations(ride),      // To-From Locations (Expanded)
-                      _getDriverData(ride)      // Driver Name, Picture (Expanded)
-                    ]
-                  )
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      _getPrice(ride),          // Price of Ride (Expanded)
-                      _getDepartureDate(ride),  // Departure Date (Row)
-                      _getDepartureTime(ride),  // Departure Time (Row)
-                      _getRemainingSeats(ride)  // Remaining Seats (Expanded)
-                    ],
-                  ),
-                )
-              ]
-            )
-          )
-        )
-      ),
+          color: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+              side: const BorderSide(color: Color.fromRGBO(145, 127, 159, .6))),
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: SizedBox(
+                  height: 180,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                              _getLocations(
+                                  ride), // To-From Locations (Expanded)
+                              _getDriverData(
+                                  ride) // Driver Name, Picture (Expanded)
+                            ])),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              _getPrice(ride), // Price of Ride (Expanded)
+                              _getDepartureDate(ride), // Departure Date (Row)
+                              _getDepartureTime(ride), // Departure Time (Row)
+                              _getRemainingSeats(
+                                  ride) // Remaining Seats (Expanded)
+                            ],
+                          ),
+                        )
+                      ])))),
     );
   }
 
@@ -94,9 +85,13 @@ class RideBoardCard extends StatelessWidget {
                 const SizedBox(width: 6),
                 // PICKUP / ORIGIN
                 Expanded(
-                  child: Text(
-                    ride.pickupLocation.label ?? ride.pickupLocation.city,
-                    style: TagAlongTheme.lightTextTheme.headline6,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      ride.pickupLocation.label ?? ride.pickupLocation.city,
+                      style: TagAlongTheme.lightTextTheme.headline6,
+                    ),
                   ),
                 ),
               ]),
@@ -113,10 +108,15 @@ class RideBoardCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   // DROPOFF / DESTINATION
                   Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
                       child: Text(
-                    ride.dropoffLocation.label ?? ride.dropoffLocation.city,
-                    style: TagAlongTheme.lightTextTheme.headline6,
-                  )),
+                        ride.dropoffLocation.label ?? ride.dropoffLocation.city,
+                        style: TagAlongTheme.lightTextTheme.headline6,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ]));

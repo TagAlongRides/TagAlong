@@ -4,6 +4,9 @@ import 'package:tagalong/util/university_locations.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:us_states/us_states.dart';
 
 class OfferRidePickup extends StatefulWidget {
   const OfferRidePickup({Key? key}) : super(key: key);
@@ -13,12 +16,25 @@ class OfferRidePickup extends StatefulWidget {
 }
 
 class _OfferRidePickupState extends State<OfferRidePickup> {
+  List<DropdownMenuItem<String>> get _statesList {
+    var state_abbreviations = USStates.getAllAbbreviations();
+    return state_abbreviations.map((state) {
+      return DropdownMenuItem(
+        child: Text(state),
+        value: state,
+      );
+    }).toList();
+    // return states;
+  }
+
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -27,7 +43,21 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
               vm.resetCityAndZip();
               Navigator.of(context).pop();
             }),
-        title: const Text('Offer a Ride'),
+        title: Row(
+          children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+          ],
+        ),
       ),
       body: Form(
           key: _formKey,
@@ -38,7 +68,26 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 1. Question
-                    const QuestionWidget(question: 'Pickup location?'),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.headline4,
+                          children: const [
+                            TextSpan(
+                              text: 'Where will you ',
+                            ),
+                            TextSpan(
+                              text: 'pick up',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text: ' passengers?',
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
 
                     // 2. TextFormField OR DropdownButtonFormField
                     if (offerRideViewModel.toCampus)
@@ -46,14 +95,21 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.pickupLocation,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_location_outlined),
-                              labelText: 'Address*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.edit_location_outlined),
+                              labelText: 'Street Address',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (pickup) {
                               if (pickup == null || pickup.isEmpty) {
-                                return 'Address is required';
+                                return 'Please enter a street address';
                               }
                               offerRideViewModel.updatePickupLocation(pickup);
                               return null;
@@ -63,14 +119,21 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.locationCity,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.location_city),
-                              labelText: 'City*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.location_city),
+                              labelText: 'City',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
-                                return 'City is required';
+                                return 'Please enter a city';
                               }
                               offerRideViewModel.updateLocationCity(city);
                               return null;
@@ -79,15 +142,48 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(24),
+                          child: DropdownButtonFormField<String>(
+                            items: _statesList,
+                            value: offerRideViewModel.locationState,
+                            onChanged: (state) {
+                              offerRideViewModel.locationState = state;
+                            },
+                            decoration: InputDecoration(
+                              icon: const Icon(FontAwesomeIcons.flagUsa),
+                              labelText: 'State',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
+                            ),
+                            validator: (state) {
+                              if (state == null) {
+                                return 'Please choose a state';
+                              }
+                              offerRideViewModel.updateLocationState(state);
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(24),
                           child: TextFormField(
                             initialValue: offerRideViewModel.locationZip,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.code),
-                              labelText: 'Zip Code*',
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.code),
+                              labelText: 'Zip Code',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
-                                return 'Zip is required';
+                                return 'Please enter a zip code';
                               } else if (int.tryParse(city) == null) {
                                 return 'Please enter a numeric zip code';
                               }
@@ -101,9 +197,15 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: DropdownButtonFormField<String>(
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.edit_location_outlined),
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.edit_location_outlined),
                               labelText: 'Pickup Location',
+                              labelStyle: theme
+                                  .TagAlongTheme.lightTextTheme.bodyText2!
+                                  .copyWith(
+                                fontStyle: FontStyle.normal,
+                                color: theme.TagAlongTheme.colorHighEmphasis,
+                              ),
                             ),
                             value: offerRideViewModel.pickupLocation,
                             validator: (text) {

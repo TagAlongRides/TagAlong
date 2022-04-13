@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
 class OfferRideTripDetails extends StatelessWidget {
   const OfferRideTripDetails({Key? key}) : super(key: key);
@@ -11,6 +13,8 @@ class OfferRideTripDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -19,45 +23,138 @@ class OfferRideTripDetails extends StatelessWidget {
               vm.resetNoBags();
               Navigator.of(context).pop();
             }),
-        title: const Text('Offer a Ride'),
+        title: Row(
+          children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+          ],
+        ),
       ),
       body: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {
         return SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // 1. Question
-            const QuestionWidget(question: 'How many passengers?'),
-            Padding(
-                padding: const EdgeInsets.all(12),
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // 1. Question
+              Padding(
+                padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
+                child: RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.headline4,
+                    children: const [
+                      TextSpan(
+                        text: 'How many passengers',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: ' will you take?',
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () =>
-                          offerRideViewModel.decrementNoPassengers()),
-                  Text('${offerRideViewModel.noPassengers}',
-                      style: Theme.of(context).textTheme.headline2),
-                  IconButton(
-                      icon: const Icon(Icons.add),
+                      icon: Icon(
+                        FontAwesomeIcons.caretUp,
+                        size: 36,
+                        color: theme.TagAlongTheme.primarySwatch.shade400,
+                      ),
                       onPressed: () =>
                           offerRideViewModel.incrementNoPassengers()),
-                ])),
-            const QuestionWidget(question: 'How many bags per passenger?'),
-            Padding(
-                padding: const EdgeInsets.all(12),
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                    width: 100,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 1,
+                          color: theme.TagAlongTheme.colorHighEmphasis,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      '${offerRideViewModel.noPassengers}',
+                      style: Theme.of(context).textTheme.headline2,
+                    ),
+                  ),
                   IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () => offerRideViewModel.decrementNoBags()),
-                  Text('${offerRideViewModel.noBags}',
-                      style: Theme.of(context).textTheme.headline2),
-                  IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () => offerRideViewModel.incrementNoBags()),
-                ])),
-          ]),
+                      icon: Icon(
+                        FontAwesomeIcons.caretDown,
+                        size: 36,
+                        color: theme.TagAlongTheme.primarySwatch.shade400,
+                      ),
+                      onPressed: () =>
+                          offerRideViewModel.decrementNoPassengers()),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
+                child: RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.headline4,
+                    children: const [
+                      TextSpan(
+                        text: 'How many bags',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: ' can each person bring?',
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.caretUp,
+                          size: 36,
+                          color: theme.TagAlongTheme.primarySwatch.shade400,
+                        ),
+                        onPressed: () => offerRideViewModel.incrementNoBags()),
+                    Container(
+                      width: 100,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            width: 1,
+                            color: theme.TagAlongTheme.colorHighEmphasis,
+                          ),
+                        ),
+                      ),
+                      child: Text('${offerRideViewModel.noBags}',
+                          style: Theme.of(context).textTheme.headline2),
+                    ),
+                    IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.caretDown,
+                          size: 36,
+                          color: theme.TagAlongTheme.primarySwatch.shade400,
+                        ),
+                        onPressed: () => offerRideViewModel.decrementNoBags()),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       }),
       floatingActionButton: FloatingActionButton(
