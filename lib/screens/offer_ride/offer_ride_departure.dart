@@ -88,9 +88,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             margin: const EdgeInsets.symmetric(horizontal: 15),
             child: OutlinedButton(
               style: theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
-                backgroundColor: MaterialStateProperty.all(Colors.white
-                    // theme.TagAlongTheme.secondarySwatch.shade200
-                    ),
+                backgroundColor: MaterialStateProperty.all(Colors.white),
                 shape: MaterialStateProperty.all(
                   const RoundedRectangleBorder(
                     side: BorderSide.none,
