@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
@@ -42,7 +43,7 @@ class OfferRideTripDetails extends StatelessWidget {
           builder: (context, offerRideViewModel, child) {
         return SingleChildScrollView(
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
             // 1. Question
             Padding(
               padding: const EdgeInsets.all(24),
@@ -61,21 +62,43 @@ class OfferRideTripDetails extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-                padding: const EdgeInsets.all(12),
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () =>
-                          offerRideViewModel.decrementNoPassengers()),
-                  Text('${offerRideViewModel.noPassengers}',
-                      style: Theme.of(context).textTheme.headline2),
-                  IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () =>
-                          offerRideViewModel.incrementNoPassengers()),
-                ])),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.caretUp,
+                      size: 36,
+                      color: theme.TagAlongTheme.primarySwatch.shade400,
+                    ),
+                    onPressed: () =>
+                        offerRideViewModel.incrementNoPassengers()),
+                Container(
+                  width: 100,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 1,
+                        color: theme.TagAlongTheme.colorHighEmphasis,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    '${offerRideViewModel.noPassengers}',
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
+                ),
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.caretDown,
+                      size: 36,
+                      color: theme.TagAlongTheme.primarySwatch.shade400,
+                    ),
+                    onPressed: () =>
+                        offerRideViewModel.decrementNoPassengers()),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(24),
               child: RichText(
@@ -93,19 +116,41 @@ class OfferRideTripDetails extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-                padding: const EdgeInsets.all(12),
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () => offerRideViewModel.decrementNoBags()),
-                  Text('${offerRideViewModel.noBags}',
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.caretUp,
+                      size: 36,
+                      color: theme.TagAlongTheme.primarySwatch.shade400,
+                    ),
+                    onPressed: () => offerRideViewModel.incrementNoBags()),
+                Container(
+                  width: 100,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 1,
+                        color: theme.TagAlongTheme.colorHighEmphasis,
+                      ),
+                    ),
+                  ),
+                  child: Text('${offerRideViewModel.noBags}',
                       style: Theme.of(context).textTheme.headline2),
-                  IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () => offerRideViewModel.incrementNoBags()),
-                ])),
+                ),
+                // Text('${offerRideViewModel.noBags}',
+                //     style: Theme.of(context).textTheme.headline2),
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.caretDown,
+                      size: 36,
+                      color: theme.TagAlongTheme.primarySwatch.shade400,
+                    ),
+                    onPressed: () => offerRideViewModel.decrementNoBags()),
+              ],
+            ),
           ]),
         );
       }),
