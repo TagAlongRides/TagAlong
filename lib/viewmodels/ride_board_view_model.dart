@@ -7,13 +7,10 @@ import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 
-/// The ViewModel for the RideBoard page.
-///
-/// Will manage state for:
-/// - Rides ListView
-/// - Top Nav Bar
+/// The ViewModel for the RideBoardScreen page.
 class RideBoardViewModel extends ChangeNotifier {
 
   final AuthService authService = AuthService();
@@ -23,7 +20,7 @@ class RideBoardViewModel extends ChangeNotifier {
   /// updated via the Modal Bottom Sheet for filtering
   Map<String, dynamic>? filters;
 
-  /// Data from a query to the [rides] collection
+  /// Data from a query to the [rides] Firestore collection
   QuerySnapshot<Object?>? querySnapshot;
 
 
@@ -35,22 +32,6 @@ class RideBoardViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  // TODO: Currently checks Firebase, not best solution!!
-  /// Checks whether the current user is an 1. Active 2. Driver.
-  Future<bool> isActiveDriver() async {
-    User? user = authService.getUser();
-    if (user != null) {
-      DocumentSnapshot data = await databaseService.users.doc(user.uid).get();
-      Map<String, dynamic>? driverDataJson = data.get('driver_data');
-      if (driverDataJson != null) {
-        if (driverDataJson['is_active'] == true) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 
   /// Returns a Future<QuerySnapshot<Map<String, dynamic>>> of ALL rides
   /// ordered by the `departure_date_time` field, from `rides` collection.

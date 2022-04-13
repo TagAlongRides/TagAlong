@@ -189,4 +189,10 @@ class TagAlongUserViewModel {
   }
 
 
+  /// Checks whether the current user is an 1. Active 2. Driver.
+  bool isActiveDriver() {
+    return tagAlongUser?.isActiveDriver() ?? false;
+  }
+
+
 }
