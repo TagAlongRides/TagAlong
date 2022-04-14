@@ -35,21 +35,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
               vm.resetVaccinationCard();
               Navigator.of(context).pop();
             }),
-        title: Row(
-          children: const [
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-          ],
-        ),
+        title: _getProgressBar(),
       ),
       body: SingleChildScrollView(child: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {
@@ -143,7 +129,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                   maxLines: 6,
                 )),
             Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12, bottom: 24),
+              padding: const EdgeInsets.only(left: 12, right: 24, bottom: 24),
               child: Row(children: [
                 Checkbox(
                   value: offerRideViewModel.vaccinationCard,
@@ -278,5 +264,22 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
     // Clean up the controller when the widget is disposed.
     notesController.dispose();
     super.dispose();
+  }
+
+  Widget _getProgressBar() {
+    return Row(
+        children: const [
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+        ]);
   }
 }

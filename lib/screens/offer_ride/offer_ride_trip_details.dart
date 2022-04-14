@@ -23,21 +23,7 @@ class OfferRideTripDetails extends StatelessWidget {
               vm.resetNoBags();
               Navigator.of(context).pop();
             }),
-        title: Row(
-          children: const [
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-          ],
-        ),
+        title: _getProgressBar(),
       ),
       body: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {
@@ -165,5 +151,22 @@ class OfferRideTripDetails extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _getProgressBar() {
+    return Row(
+        children: const [
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+        ]);
   }
 }

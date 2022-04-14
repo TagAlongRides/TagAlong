@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
-import 'package:tagalong/widgets/offer_ride/question_widget.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
@@ -19,25 +17,12 @@ class OfferRideCampus extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios),
             color: theme.TagAlongTheme.colorHighEmphasis,
             onPressed: () {
+              // Back Button ; Pop out to previous Screen
               var vm = Provider.of<OfferRideViewModel>(context, listen: false);
               vm.resetCampusChoice();
               Navigator.of(context).pop();
             }),
-        title: Row(
-          children: const [
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-          ],
-        ),
+        title: _getProgressBar(),
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // 1. Question
@@ -89,5 +74,22 @@ class OfferRideCampus extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _getProgressBar() {
+    return Row(
+        children: const [
+            Icon(Icons.circle),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+            SizedBox(width: 10),
+            Icon(Icons.circle_outlined),
+        ]);
   }
 }

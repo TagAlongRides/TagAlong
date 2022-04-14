@@ -6,11 +6,11 @@ import 'package:tagalong/data/models/ta_data_model.dart';
 /// as to what the U.S Postal Office considers a complete address as well as
 /// how to format it.
 class Location implements TADataModel {
-  String address;
-  String city;
-  String state;
-  String zip;
-  String? label;
+  String address;     // 1234 Fake Street
+  String city;        // Chantilly
+  String state;       // VA
+  String zip;         // 202022
+  String? label;      // <city> OR University "place"
   String? locationImageUrl;
 
   // Constructor
@@ -66,7 +66,7 @@ class Location implements TADataModel {
     };
   }
 
-  /// Returns a U.S Postal formatted version of the Location, without State info.
+  /// Returns a U.S Postal formatted version of the Location
   @override
   String toString() {
     return "$address $city, $state $zip";
