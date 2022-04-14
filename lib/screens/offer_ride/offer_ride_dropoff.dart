@@ -42,21 +42,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
               vm.resetDropoffLocation();
               Navigator.of(context).pop();
             }),
-        title: Row(
-          children: const [
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-          ],
-        ),
+        title: _getProgressBar(),
       ),
       body: Form(
           key: _formKey,
@@ -94,6 +80,8 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            keyboardType: TextInputType.streetAddress,
+                            textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.dropoffLocation,
                             decoration: InputDecoration(
                               icon: const Icon(Icons.edit_location_outlined),
@@ -107,7 +95,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                             ),
                             validator: (dropoff) {
                               if (dropoff == null || dropoff.isEmpty) {
-                                return 'Address is required';
+                                return 'Please enter a street address';
                               }
                               offerRideViewModel.updateDropoffLocation(dropoff);
                               return null;
@@ -117,6 +105,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.locationCity,
                             decoration: InputDecoration(
                               icon: const Icon(Icons.location_city),
@@ -130,7 +119,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                             ),
                             validator: (city) {
                               if (city == null || city.isEmpty) {
-                                return 'City is required';
+                                return 'Please enter a city';
                               }
                               offerRideViewModel.updateLocationCity(city);
                               return null;
@@ -167,6 +156,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            keyboardType: TextInputType.number,
                             initialValue: offerRideViewModel.locationZip,
                             decoration: InputDecoration(
                               icon: const Icon(Icons.code),
@@ -178,13 +168,15 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                                 color: theme.TagAlongTheme.colorHighEmphasis,
                               ),
                             ),
-                            validator: (city) {
-                              if (city == null || city.isEmpty) {
+                            validator: (zip) {
+                              if (zip == null || zip.isEmpty) {
                                 return 'Zip is required';
-                              } else if (int.tryParse(city) == null) {
+                              } else if (int.tryParse(zip) == null) {
                                 return 'Please enter a numeric zip code';
+                              } else if (zip.length != 5) {
+                                return 'Please enter a valid 5 digit U.S zip code';
                               }
-                              offerRideViewModel.updateLocationZip(city);
+                              offerRideViewModel.updateLocationZip(zip);
                               return null;
                             },
                           ),
@@ -235,5 +227,22 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
         },
       ),
     );
+  }
+
+  Widget _getProgressBar() {
+    return Row(
+        children: const [
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+        ]);
   }
 }

@@ -17,8 +17,8 @@ class OfferRidePickup extends StatefulWidget {
 
 class _OfferRidePickupState extends State<OfferRidePickup> {
   List<DropdownMenuItem<String>> get _statesList {
-    var state_abbreviations = USStates.getAllAbbreviations();
-    return state_abbreviations.map((state) {
+    var stateAbbreviations = USStates.getAllAbbreviations();
+    return stateAbbreviations.map((state) {
       return DropdownMenuItem(
         child: Text(state),
         value: state,
@@ -38,26 +38,13 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
+              // Back Button ; Pop out to previous Screen
               var vm = Provider.of<OfferRideViewModel>(context, listen: false);
               vm.resetPickupLocation();
               vm.resetCityAndZip();
               Navigator.of(context).pop();
             }),
-        title: Row(
-          children: const [
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-          ],
-        ),
+        title: _getProgressBar(),
       ),
       body: Form(
           key: _formKey,
@@ -95,6 +82,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            keyboardType: TextInputType.streetAddress,
                             textCapitalization: TextCapitalization.words,
                             initialValue: offerRideViewModel.pickupLocation,
                             decoration: InputDecoration(
@@ -170,6 +158,7 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: TextFormField(
+                            keyboardType: TextInputType.number,
                             initialValue: offerRideViewModel.locationZip,
                             decoration: InputDecoration(
                               icon: const Icon(Icons.code),
@@ -181,13 +170,15 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
                                 color: theme.TagAlongTheme.colorHighEmphasis,
                               ),
                             ),
-                            validator: (city) {
-                              if (city == null || city.isEmpty) {
+                            validator: (zip) {
+                              if (zip == null || zip.isEmpty) {
                                 return 'Please enter a zip code';
-                              } else if (int.tryParse(city) == null) {
+                              } else if (int.tryParse(zip) == null) {
                                 return 'Please enter a numeric zip code';
+                              } else if (zip.length != 5) {
+                                return 'Please enter a valid 5 digit U.S zip code';
                               }
-                              offerRideViewModel.updateLocationZip(city);
+                              offerRideViewModel.updateLocationZip(zip);
                               return null;
                             },
                           ),
@@ -238,5 +229,22 @@ class _OfferRidePickupState extends State<OfferRidePickup> {
         },
       ),
     );
+  }
+
+  Widget _getProgressBar() {
+    return Row(
+        children: const [
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+        ]);
   }
 }

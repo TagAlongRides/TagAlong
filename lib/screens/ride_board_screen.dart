@@ -279,7 +279,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>
                 .fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
             // If Active Driver, go to `Offer Ride Page`
             if (isActiveDriver) {
-              logger.log.fine('RideBoardScreen - Going to OfferRideScreen');
+              logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
               Navigator.pushNamed(context, '/offer_ride_campus');
             }
             // If NOT Active Driver, offer option to register as such
