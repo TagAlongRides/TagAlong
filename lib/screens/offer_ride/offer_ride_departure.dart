@@ -24,26 +24,13 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
+              // Back Button ; Pop out to previous Screen
               var vm = Provider.of<OfferRideViewModel>(context, listen: false);
               vm.resetDepartureDateTime();
               vm.resetDepartureTimeOfDay();
               Navigator.of(context).pop();
             }),
-        title: Row(
-          children: const [
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-            SizedBox(width: 10),
-            Icon(Icons.circle_outlined),
-          ],
-        ),
+        title: _getProgressBar(),
       ),
       body: Consumer<OfferRideViewModel>(
           builder: (context, offerRideViewModel, child) {
@@ -72,7 +59,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
           Container(
             height: 20,
             width: double.infinity,
-            margin: const EdgeInsets.only(left: 15, bottom: 10),
+            margin: const EdgeInsets.only(left: 16, bottom: 10),
             child: Text(
               'Date',
               style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
@@ -85,7 +72,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
           Container(
             // height: 100,
             width: double.infinity,
-            margin: const EdgeInsets.symmetric(horizontal: 15),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             child: OutlinedButton(
               style: theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
                 backgroundColor: MaterialStateProperty.all(Colors.white),
@@ -102,7 +89,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                 final DateTime? newDate = await showDatePicker(
                   context: context,
                   initialDate: chosenDate,
-                  firstDate: chosenDate,
+                  firstDate: DateTime.now(),
                   lastDate: DateTime.now().add(const Duration(days: 180)),
                   helpText: 'DEPARTURE DATE',
                 );
@@ -152,7 +139,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: Icon(
                       Icons.calendar_today,
                       size: 30,
@@ -167,7 +154,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
           Container(
             height: 20,
             width: double.infinity,
-            margin: const EdgeInsets.only(left: 15, bottom: 10),
+            margin: const EdgeInsets.only(left: 16, bottom: 10),
             child: Text(
               'Time',
               style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
@@ -245,7 +232,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
                     child: Icon(
                       Icons.schedule_outlined,
                       color: theme.TagAlongTheme.primarySwatch.shade900,
@@ -281,5 +268,22 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
         },
       ),
     );
+  }
+
+  Widget _getProgressBar() {
+    return Row(
+        children: const [
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+          SizedBox(width: 10),
+          Icon(Icons.circle_outlined),
+        ]);
   }
 }
