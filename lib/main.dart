@@ -83,11 +83,14 @@ class _TagAlongAppState extends State<TagAlongApp> {
                 const RegisterUserScreen(),
             '/register_driver': (BuildContext context) =>
                 const RegisterDriverScreen(),
-            '/ride_board': (BuildContext context) => const RideBoardScreen(),
+            '/ride_board': (BuildContext context) =>
+                const RideBoardScreen(),
             '/driver_registration_prompt': (BuildContext context) =>
                 const DriverRegistrationPromptScreen(),
-            '/login_screen': (BuildContext context) => const LoginScreen(),
-            '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
+            '/login_screen': (BuildContext context) =>
+                const LoginScreen(),
+            '/welcome_screen': (BuildContext context) =>
+                const WelcomeScreen(),
             '/registration_wrapper': (BuildContext context) =>
                 const RegistrationWrapper(),
             '/offer_ride_campus': (BuildContext context) =>
@@ -102,7 +105,8 @@ class _TagAlongAppState extends State<TagAlongApp> {
                 const OfferRideTripDetails(),
             '/offer_ride_price_prefs': (BuildContext context) =>
                 const OfferRidePricePrefs(),
-            '/ride_details': (BuildContext context) => const RideDetails(),
+            '/ride_details': (BuildContext context) =>
+                const RideDetails(),
           }),
     );
   }
