@@ -100,6 +100,30 @@ class TagAlongUserViewModel {
     }
   }
 
+  ///
+  ///
+  ///
+  Future<void> createOrSignInAppleUser() async {
+    // Perform the Facebook login
+    UserCredential? userCred = await _authService.appleLogin();
+
+    // 1. User successfully logged into Facebook and
+    // has created or has an entry in FirebaseAuth
+    if (userCred != null) {
+      if (userCred.user != null) {
+        // Extract the `uid` from the `UserCredential.User?`
+        String uid = userCred.user!.uid;
+        // Set up our [TagAlongUser] instance
+        await setUpUser(uid);
+      }
+    }
+
+    // 2. User unsuccessful in Facebook Login
+    else {
+      return;
+    }
+  }
+
   /// Sets up this ViewModel's [TagAlongUser] instance.
   ///
   /// This [TagAlongUser] may or may-not exist in the Firestore, however the
