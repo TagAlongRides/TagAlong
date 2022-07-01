@@ -4,10 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 ///
 /// It will contain references to various collections.
 class DatabaseService {
-
   /// A CollectionReference to our [users] collection.
-  final CollectionReference users = FirebaseFirestore.instance.collection('users');
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
 
   /// A CollectionReference to our [rides] collection.
-  final CollectionReference rides = FirebaseFirestore.instance.collection('rides');
+  final CollectionReference rides =
+      FirebaseFirestore.instance.collection('rides');
 }

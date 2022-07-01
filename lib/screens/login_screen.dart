@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 /// [LoginScreen] will be a Screen Widget that either:
 ///
 /// 1. Creates a new "TagAlong" User who is NOT registered.
 /// 2. Signs in a existing "TagAlong" User who may or may-not be registered.
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  StripeConnectResponse? _connectResponse;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +50,37 @@ class LoginScreen extends StatelessWidget {
       Expanded(
           flex: 2,
           child: Column(children: [
+            SizedBox(
+              width: 220,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed('/stripe-registration')
+                      .then((value) {
+                    if (value != null) {
+                      setState(() {
+                        _connectResponse = value as StripeConnectResponse;
+                      });
+                    }
+                  });
+                },
+                icon: _connectResponse == null
+                    ? const Icon(Icons.payment_rounded)
+                    : const Icon(Icons.check_rounded),
+                label: const Text('Connect To Stripe'),
+                style: ElevatedButton.styleFrom(
+                  primary: _connectResponse == null
+                      ? Colors.red.withOpacity(.9)
+                      : Colors.green.withOpacity(.9),
+                ),
+              ),
+            ),
+            // ElevatedButton.icon(
+            //   onPressed: () {},
+            //   icon: ,
+            //   child: const Text('Connect To Stripe'),
+            //   style: ElevatedButton.styleFrom(primary: Colors.red),
+            // ),
             SizedBox(
                 height: 40,
                 // Facebook Logo and Text

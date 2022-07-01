@@ -12,21 +12,22 @@ import 'package:tagalong/screens/offer_ride/offer_ride_departure.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_dropoff.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_price_prefs.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_trip_details.dart';
-import 'package:tagalong/screens/ride_details.dart';
-import 'package:tagalong/screens/welcome_screen.dart';
-import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
-import 'package:tagalong/viewmodels/ride_board_view_model.dart';
-import 'package:tagalong/viewmodels/ride_details_view_model.dart';
-import 'screens/offer_ride/offer_ride_pickup.dart';
-import 'themes/tagalong_theme.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
+import 'package:tagalong/screens/ride_details.dart';
+import 'package:tagalong/screens/stripe_connect_registration/stripe_connect_registration_screen.dart';
+import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
+import 'package:tagalong/viewmodels/register_driver_view_model.dart';
+import 'package:tagalong/viewmodels/ride_board_view_model.dart';
+import 'package:tagalong/viewmodels/ride_details_view_model.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
+import 'screens/offer_ride/offer_ride_pickup.dart';
+import 'themes/tagalong_theme.dart';
 import 'viewmodels/offer_ride_view_model.dart';
 
 void main() async {
@@ -65,13 +66,23 @@ class _TagAlongAppState extends State<TagAlongApp> {
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
         // TODO: May need `lazy: false`
-        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
-        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
-        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
-        ChangeNotifierProvider<OfferRideViewModel>(create: (BuildContext context) => OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
-        ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
-        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel()),
-        ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
+        Provider<TagAlongUserViewModel>(
+            create: (BuildContext context) => TagAlongUserViewModel()),
+        ChangeNotifierProvider<RegisterDriverViewModel>(
+            create: (BuildContext context) => RegisterDriverViewModel()),
+        ChangeNotifierProvider<RideBoardViewModel>(
+            create: (BuildContext context) => RideBoardViewModel()),
+        ChangeNotifierProvider<OfferRideViewModel>(
+            create: (BuildContext context) => OfferRideViewModel(
+                tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(
+                    context,
+                    listen: false))),
+        ChangeNotifierProvider<FilterRideViewModel>(
+            create: (BuildContext context) => FilterRideViewModel()),
+        ChangeNotifierProvider<RideDetailsViewModel>(
+            create: (BuildContext context) => RideDetailsViewModel()),
+        ChangeNotifierProvider<UploadRideViewModel>(
+            create: (BuildContext context) => UploadRideViewModel())
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: true,
@@ -83,14 +94,11 @@ class _TagAlongAppState extends State<TagAlongApp> {
                 const RegisterUserScreen(),
             '/register_driver': (BuildContext context) =>
                 const RegisterDriverScreen(),
-            '/ride_board': (BuildContext context) =>
-                const RideBoardScreen(),
+            '/ride_board': (BuildContext context) => const RideBoardScreen(),
             '/driver_registration_prompt': (BuildContext context) =>
                 const DriverRegistrationPromptScreen(),
-            '/login_screen': (BuildContext context) =>
-                const LoginScreen(),
-            '/welcome_screen': (BuildContext context) =>
-                const WelcomeScreen(),
+            '/login_screen': (BuildContext context) => LoginScreen(),
+            '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
             '/registration_wrapper': (BuildContext context) =>
                 const RegistrationWrapper(),
             '/offer_ride_campus': (BuildContext context) =>
@@ -105,8 +113,9 @@ class _TagAlongAppState extends State<TagAlongApp> {
                 const OfferRideTripDetails(),
             '/offer_ride_price_prefs': (BuildContext context) =>
                 const OfferRidePricePrefs(),
-            '/ride_details': (BuildContext context) =>
-                const RideDetails(),
+            '/ride_details': (BuildContext context) => const RideDetails(),
+            '/stripe-registration': (BuildContext context) =>
+                const StripeConnectRegistrationScreen(),
           }),
     );
   }

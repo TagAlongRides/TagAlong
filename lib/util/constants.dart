@@ -1,10 +1,11 @@
 class Constants {
   static const BASE_URL = "";
-    //Tets Credit card details
+  //Tets Credit card details
   static const String CARD_NUMBER = "4242424242424242";
   static const String CARD_CVV = "123";
   static const String CARD_EXPIRY = "12/23";
   static const String CARD_HOLDER_NAME = "Rohit Kumar Mishra";
+
   static const String CREATE_STRIPE_CUSTOMER = "v1/customers";
   static const String CREATE_STRIPE_PAYMENT_INTENT = "";
   static const String STRIPE_CUSTOMER_UPDATE = "";

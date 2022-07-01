@@ -1,0 +1,94 @@
+import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:core/core.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:stripe_repo/stripe_repo.dart';
+import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+class StripeConnectRegistrationScreen extends StatefulWidget {
+  const StripeConnectRegistrationScreen({Key? key}) : super(key: key);
+
+  @override
+  State<StripeConnectRegistrationScreen> createState() =>
+      _StripeConnectRegistrationScreenState();
+}
+
+class _StripeConnectRegistrationScreenState
+    extends State<StripeConnectRegistrationScreen> {
+  StripeConnectResponse? _connectResponse;
+
+  TagAlongUser? _tagAlongUser;
+
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (Platform.isAndroid) WebView.platform = AndroidWebView();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _fetchStripeConnectUrl();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _themeData = Theme.of(context);
+    final _tagAlongUserViewModel =
+        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    _tagAlongUser = _tagAlongUserViewModel.tagAlongUser;
+
+    return _connectResponse != null
+        ? WebView(
+            initialUrl: _connectResponse!.data.url,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController webViewController) async {
+              _controller.complete(webViewController);
+            },
+            navigationDelegate: (NavigationRequest request) {
+              log('STRIPE CONNECT : ${request.url}');
+              //Stripe Connect Flow is completed
+              //Update the account id and registration status
+              if (request.url.contains('returnurl')) {
+                Navigator.of(context).pop(_connectResponse);
+                return NavigationDecision.prevent;
+              }
+              return NavigationDecision.navigate;
+            },
+          )
+        : Container(
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(color: Colors.white),
+            child: const CircularProgressIndicator(),
+          );
+  }
+
+  void _fetchStripeConnectUrl() async {
+    final completer = Completer<void>();
+
+    ProgressDialog.showWithCompleter(
+      context,
+      completer: completer,
+      message: 'Loading',
+    );
+
+    StripeRepository.instance
+        .getStripeConnectLink(StripeConnectRequest(
+            email: 'sorbh.kd@gmail.com',
+            refreshUrl: stripeConnectRefreshUrl,
+            returnUrl: stripeConnectReturnUrl))
+        .then((value) {
+      completer.complete();
+      setState(() {
+        _connectResponse = value;
+      });
+    });
+  }
+}

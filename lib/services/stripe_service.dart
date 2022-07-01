@@ -8,8 +8,7 @@ class StripeService {
   ///
   ///
   ///Api to create customer
-  Future<dynamic?> createCustomer(
-      String email, dynamic paymentMethod) async {
+  Future<dynamic?> createCustomer(String email, dynamic paymentMethod) async {
     try {
       var resp = await ApiClient.getClient()
           .post(Constants.CREATE_STRIPE_CUSTOMER, data: {
@@ -130,8 +129,7 @@ class StripeService {
   ///
   ///
   ///Api to confirm payment intent
-  Future<dynamic> confirmPaymentIntent(
-      dynamic method, String intentId) async {
+  Future<dynamic> confirmPaymentIntent(dynamic method, String intentId) async {
     try {
       final Map<String, Object> map = {'payment_method': method.id ?? ""};
       var resp = await ApiClient.getClient().post(
@@ -156,7 +154,7 @@ class StripeService {
         Constants.STRIPE_FETCH_ALL_COUPONS_URL,
       );
       Map<String, dynamic> responseData = resp.data;
-      
+
       return responseData;
     } catch (e) {
       return null;
