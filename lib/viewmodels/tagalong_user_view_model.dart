@@ -214,4 +214,8 @@ class TagAlongUserViewModel {
   bool isActiveDriver() {
     return tagAlongUser?.isActiveDriver() ?? false;
   }
+
+  bool isStripeActive() {
+    return tagAlongUser?.isStripeActive() ?? false;
+  }
 }

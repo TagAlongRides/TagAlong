@@ -4,12 +4,10 @@ import 'package:tagalong/data/models/location.dart';
 import 'package:tagalong/data/models/ta_data_model.dart';
 import 'package:tagalong/data/models/vehicle.dart';
 
-
 /// [Ride] data model.
 class Ride implements TADataModel {
-
   final DateTime createdAt;
-  final String rideId;          // UUID
+  final String rideId; // UUID
   final String driverId;
   final String university;
   String status;
@@ -30,6 +28,7 @@ class Ride implements TADataModel {
   String driverProfilePictureUrl;
   List<String> riderIds;
   Vehicle vehicle;
+  String stripeAccountId;
 
   Ride({
     required this.createdAt,
@@ -50,7 +49,8 @@ class Ride implements TADataModel {
     required this.driverFullName,
     required this.driverProfilePictureUrl,
     required this.riderIds,
-    required this.vehicle
+    required this.vehicle,
+    required this.stripeAccountId,
   });
 
   /// A Map<String, dynamic> into a [Ride] instance.
@@ -62,8 +62,7 @@ class Ride implements TADataModel {
     var createdAt = json['created_at'];
     if (createdAt == null) {
       throw UnsupportedError('Invalid - createdAt is $createdAt');
-    }
-    else if (createdAt is Timestamp) {
+    } else if (createdAt is Timestamp) {
       createdAt = createdAt.toDate();
     }
     var rideId = json['ride_id'] as String?;
@@ -108,27 +107,28 @@ class Ride implements TADataModel {
     }
     var departureDateTime = json['departure_date_time'];
     if (departureDateTime == null) {
-      throw UnsupportedError('Invalid - departureDateTime is $departureDateTime');
-    }
-    else if (departureDateTime is Timestamp) {
+      throw UnsupportedError(
+          'Invalid - departureDateTime is $departureDateTime');
+    } else if (departureDateTime is Timestamp) {
       departureDateTime = departureDateTime.toDate();
     }
     var departureTimeOfDay = json['departure_time_of_day'];
     if (departureTimeOfDay == null) {
-      throw UnsupportedError('Invalid - departureTimeOfDay is $departureTimeOfDay');
+      throw UnsupportedError(
+          'Invalid - departureTimeOfDay is $departureTimeOfDay');
     }
     var pickupLocation = json['pickup_location'];
     if (pickupLocation == null) {
-      throw UnsupportedError('Invalid - pickupLocation is ${pickupLocation.toString()}');
-    }
-    else {
+      throw UnsupportedError(
+          'Invalid - pickupLocation is ${pickupLocation.toString()}');
+    } else {
       pickupLocation = Location.fromJson(json['pickup_location']);
     }
     var dropoffLocation = json['dropoff_location'];
     if (dropoffLocation == null) {
-      throw UnsupportedError('Invalid - dropoffLocation is ${dropoffLocation.toString()}');
-    }
-    else {
+      throw UnsupportedError(
+          'Invalid - dropoffLocation is ${dropoffLocation.toString()}');
+    } else {
       dropoffLocation = Location.fromJson(dropoffLocation);
     }
     var driverFullName = json['driver_full_name'] as String?;
@@ -137,7 +137,8 @@ class Ride implements TADataModel {
     }
     var driverProfilePictureUrl = json['driver_profile_picture_url'] as String?;
     if (driverProfilePictureUrl == null) {
-      throw UnsupportedError('Invalid - driverProfilePictureUrl is $driverProfilePictureUrl');
+      throw UnsupportedError(
+          'Invalid - driverProfilePictureUrl is $driverProfilePictureUrl');
     }
     var riders = json['rider_ids'];
     if (riders == null) {
@@ -147,33 +148,33 @@ class Ride implements TADataModel {
     var vehicle = json['vehicle'];
     if (vehicle == null) {
       throw UnsupportedError('Invalid - vehicle is ${vehicle.toString()}');
-    }
-    else {
+    } else {
       vehicle = Vehicle.fromJson(vehicle);
     }
 
+    final stripeAccountId =
+        json['stripe_account_Id'] ?? 'acct_1LHRUfQUCQt1xzQg';
     return Ride(
-      createdAt: createdAt,
-      rideId: rideId,
-      driverId: driverId,
-      university: university,
-      status: status,
-      pickupLocation: pickupLocation,
-      dropoffLocation: dropoffLocation,
-      notes: notes,
-      noPassengers: noPassengers,
-      noBags: noBags,
-      price: price,
-      vaccinationCard: vaccinationCard,
-      toCampus: toCampus,
-      departureDateTime: departureDateTime,
-      departureTimeOfDay: departureTimeOfDay,
-      driverFullName: driverFullName,
-      driverProfilePictureUrl: driverProfilePictureUrl,
-      riderIds: riderIds,
-      vehicle: vehicle
-    );
-
+        createdAt: createdAt,
+        rideId: rideId,
+        driverId: driverId,
+        university: university,
+        status: status,
+        pickupLocation: pickupLocation,
+        dropoffLocation: dropoffLocation,
+        notes: notes,
+        noPassengers: noPassengers,
+        noBags: noBags,
+        price: price,
+        vaccinationCard: vaccinationCard,
+        toCampus: toCampus,
+        departureDateTime: departureDateTime,
+        departureTimeOfDay: departureTimeOfDay,
+        driverFullName: driverFullName,
+        driverProfilePictureUrl: driverProfilePictureUrl,
+        riderIds: riderIds,
+        vehicle: vehicle,
+        stripeAccountId: stripeAccountId);
   }
 
   /// A [Ride] instance into a Map<String, dynamic>, typically used
@@ -181,7 +182,7 @@ class Ride implements TADataModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'created_at': createdAt,    // DateTime -> Timestamp
+      'created_at': createdAt, // DateTime -> Timestamp
       'ride_id': rideId,
       'driver_id': driverId,
       'university': university,
@@ -194,12 +195,14 @@ class Ride implements TADataModel {
       'price': price,
       'vaccination_card': vaccinationCard,
       'to_campus': toCampus,
-      'departure_date_time': departureDateTime,   // DateTime -> Timestamp
-      'departure_time_of_day': departureTimeOfDay.toString(), // TimeOfDay -> String,
+      'departure_date_time': departureDateTime, // DateTime -> Timestamp
+      'departure_time_of_day':
+          departureTimeOfDay.toString(), // TimeOfDay -> String,
       'driver_full_name': driverFullName,
       'driver_profile_picture_url': driverProfilePictureUrl,
       'rider_ids': riderIds,
-      'vehicle': vehicle.toJson()
+      'vehicle': vehicle.toJson(),
+      'stripe_account_Id': stripeAccountId,
     };
   }
 
@@ -212,20 +215,16 @@ class Ride implements TADataModel {
   static TimeOfDay timeOfDayFromString(String str) {
     return TimeOfDay(
         hour: int.parse(str.split(':')[0]),
-        minute: int.parse(str.split(':')[1].substring(0, 2))
-    );
+        minute: int.parse(str.split(':')[1].substring(0, 2)));
   }
 
   /// Returns a string First Name and last initial for a driver.
   ///
   /// eg. Steven P.
   String getFirstNameAndInitial() {
-    return driverFullName.split(" ")[0]
-        + " "
-        + driverFullName.split(" ")[1][0]
-        + ".";
+    return driverFullName.split(" ")[0] +
+        " " +
+        driverFullName.split(" ")[1][0] +
+        ".";
   }
-
-
-
 }

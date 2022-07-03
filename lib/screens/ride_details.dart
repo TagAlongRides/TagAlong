@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/data/models/ride.dart';
-import 'package:tagalong/viewmodels/ride_details_view_model.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:tagalong/screens/stripe_payment/stripe_payment_screen.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
 class RideDetails extends StatelessWidget {
   const RideDetails({Key? key}) : super(key: key);
@@ -219,9 +220,10 @@ class RideDetails extends StatelessWidget {
     var rideDetailsViewModel =
         Provider.of<RideDetailsViewModel>(context, listen: false);
     return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(16),
-        child: Column(children: [
+      color: Colors.white,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
           // Subtotal
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -257,14 +259,27 @@ class RideDetails extends StatelessWidget {
           // "Continue" Button
           const SizedBox(height: 16),
           ElevatedButton(
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 const Text('Continue'),
                 Align(
                     alignment: Alignment.centerRight,
                     child: Text('\$${rideDetailsViewModel.getTotalPrice()}'))
-              ]),
-              onPressed: () {})
-        ]));
+              ],
+            ),
+            onPressed: () {
+              // Navigator.of(context).pushNamed('/stripe-payment');
+
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return StripePaymentScreen(ride: ride);
+                },
+              ));
+            },
+          )
+        ],
+      ),
+    );
   }
 }

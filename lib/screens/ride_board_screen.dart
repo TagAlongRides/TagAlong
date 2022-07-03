@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/themes/tagalong_theme.dart';
+import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'package:tagalong/widgets/rideboard/rideboard.dart';
 import 'package:tagalong/widgets/rideboard/account.dart';
-import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/widgets/rideboard/rideboard.dart';
 
 import '../widgets/rideboard/myrides.dart';
 
@@ -33,12 +32,10 @@ class _RideBoardScreenState extends State<RideBoardScreen>
     logger.log.fine('RideboardScreen Build');
 
     return Scaffold(
-      appBar: _getAppBar(context),
-      body: _getBody(context),
-      bottomNavigationBar: _getBottomNavBar(context)
-    );
+        appBar: _getAppBar(context),
+        body: _getBody(context),
+        bottomNavigationBar: _getBottomNavBar(context));
   }
-
 
   /// UI for the filter Modal Bottom Sheet and its corresponding functionality.
   ///
@@ -235,10 +232,10 @@ class _RideBoardScreenState extends State<RideBoardScreen>
     ]);
   }
 
-
   /// Returns the [RideBoardScreen] BottomNavigationBar
   Widget _getBottomNavBar(BuildContext context) {
-    var tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    var tagAlongUserViewModel =
+        Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     return BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -275,10 +272,35 @@ class _RideBoardScreenState extends State<RideBoardScreen>
           // 2. User tapped on "Post Ride" (index 1)
           else {
             bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
+            bool isStripeActive = tagAlongUserViewModel.isStripeActive();
             logger.log
                 .fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
-            // If Active Driver, go to `Offer Ride Page`
-            if (isActiveDriver) {
+            if (!isStripeActive) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Not a Driver'),
+                    content: const Text(
+                        'You have some issue with stripe registration, Please register again'),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel')),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/register_driver');
+                            // Navigator.of(context)
+                            //     .popUntil((route) => route.isFirst);
+                            // Navigator.pushReplacementNamed(
+                            //     context, '/register_driver');
+                          },
+                          child: const Text('OK')),
+                    ],
+                  );
+                },
+              );
+            } else if (isActiveDriver) {
               logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
               Navigator.pushNamed(context, '/offer_ride_campus');
             }

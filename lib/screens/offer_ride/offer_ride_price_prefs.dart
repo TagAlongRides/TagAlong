@@ -19,7 +19,8 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
   @override
   Widget build(BuildContext context) {
     var vm = Provider.of<OfferRideViewModel>(context, listen: false);
-    var uploadRideViewModel = Provider.of<UploadRideViewModel>(context, listen: false);
+    var uploadRideViewModel =
+        Provider.of<UploadRideViewModel>(context, listen: false);
     logger.log.fine('HERE: ${vm.runtimeType}');
     var buttonWidth = MediaQuery.of(context).size.width * .35;
 
@@ -236,10 +237,15 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                                       onPressed: () async {
                                         offerRideViewModel
                                             .updateNotes(notesController.text);
-                                        await offerRideViewModel.createNewRide();
+
+                                        await offerRideViewModel
+                                            .createNewRide();
+
                                         uploadRideViewModel.uploadedRide();
+
                                         logger.log.fine(
                                             'Posting OfferRidePricePrefs');
+
                                         Navigator.popUntil(context,
                                             ModalRoute.withName('/ride_board'));
                                       },
@@ -267,19 +273,18 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
   }
 
   Widget _getProgressBar() {
-    return Row(
-        children: const [
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-        ]);
+    return Row(children: const [
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+    ]);
   }
 }

@@ -1,5 +1,5 @@
-import 'package:tagalong/data/models/driver.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/ta_data_model.dart';
 import 'package:tagalong/util/user_data.dart';
 
@@ -15,31 +15,31 @@ class TagAlongUser implements TADataModel {
   String? graduationYear;
   String phoneNumber;
   String emailAddress;
+  String stripeCustomerId;
   Driver? driverData;
   bool registered;
   String signInMethod;
-
 
   /// Initializes an Unregistered User.
   ///
   /// The minimum definition for a valid user requires an ID, a creation date,
   /// and a sign-in method. This is used when a user successfully logs in with
   /// Facebook, but never completes user registration.
-  TagAlongUser({
-    required this.id,
-    required this.profilePictureUrl,
-    required this.createdAt,
-    required this.updatedAt,
-    this.signInMethod=SignInMethod.FACEBOOK,
-    this.institution="",
-    this.firstName="",
-    this.lastName="",
-    this.phoneNumber="",
-    this.emailAddress="",
-    this.registered=false,
-    this.graduationYear=null,
-    this.driverData=null
-  });
+  TagAlongUser(
+      {required this.id,
+      required this.profilePictureUrl,
+      required this.createdAt,
+      required this.updatedAt,
+      this.signInMethod = SignInMethod.FACEBOOK,
+      this.institution = "",
+      this.firstName = "",
+      this.lastName = "",
+      this.phoneNumber = "",
+      this.emailAddress = "",
+      this.stripeCustomerId = "",
+      this.registered = false,
+      this.graduationYear = null,
+      this.driverData = null});
 
   /// A Map<String, dynamic> into a [TagAlongUser] instance.
   ///
@@ -49,20 +49,19 @@ class TagAlongUser implements TADataModel {
   factory TagAlongUser.fromJson(Map<String, dynamic> json) {
     var profilePictureUrl = json['profile_picture_url'];
     if (profilePictureUrl == null) {
-      throw UnsupportedError('Invalid - profilePictureUrl is $profilePictureUrl');
+      throw UnsupportedError(
+          'Invalid - profilePictureUrl is $profilePictureUrl');
     }
     var createdAt = json['created_at'];
     if (createdAt == null) {
       throw UnsupportedError('Invalid - createdAt is $createdAt');
-    }
-    else if (createdAt is Timestamp) {
+    } else if (createdAt is Timestamp) {
       createdAt = createdAt.toDate();
     }
     var updatedAt = json['updated_at'];
     if (updatedAt == null) {
       throw UnsupportedError('Invalid - updatedAt is $updatedAt');
-    }
-    else if (updatedAt is Timestamp) {
+    } else if (updatedAt is Timestamp) {
       updatedAt = updatedAt.toDate();
     }
     final id = json['id'] as String?;
@@ -89,6 +88,7 @@ class TagAlongUser implements TADataModel {
     if (phoneNumber == null) {
       throw UnsupportedError('Invalid - phoneNumber is $phoneNumber');
     }
+
     final emailAddress = json['email_address'] as String?;
     if (emailAddress == null) {
       throw UnsupportedError('Invalid - emailAddress is $emailAddress');
@@ -101,22 +101,22 @@ class TagAlongUser implements TADataModel {
     }
 
     return TagAlongUser(
-      id: id,
-      profilePictureUrl: profilePictureUrl,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      signInMethod: signInMethod,
-      institution: institution,
-      firstName: firstName,
-      lastName: lastName,
-      phoneNumber: phoneNumber,
-      emailAddress: emailAddress,
-      registered: registered,
-      graduationYear: graduationYear,
-      driverData: driverData
-    );
-
+        id: id,
+        profilePictureUrl: profilePictureUrl,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        signInMethod: signInMethod,
+        institution: institution,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        emailAddress: emailAddress,
+        stripeCustomerId: json['stripe_customer_id'],
+        registered: registered,
+        graduationYear: graduationYear,
+        driverData: driverData);
   }
+
   /// A named constructor to create a [TagAlongUser] from a Map<String, dynamic>
   // TagAlongUser.fromJson(Map<String, dynamic> json):
   //   this.id = json['id'],
@@ -134,7 +134,6 @@ class TagAlongUser implements TADataModel {
   //     this.driverData = Driver.fromJson(json['driver_data']);
   //   }
   // }
-
 
   // /// Registers a User.
   // ///
@@ -175,6 +174,7 @@ class TagAlongUser implements TADataModel {
     graduationYear = data['graduation_year'] ?? graduationYear;
     phoneNumber = data['phone_number'] ?? phoneNumber;
     emailAddress = data['email_address'] ?? emailAddress;
+    stripeCustomerId = data['stripe_customer_id'] ?? stripeCustomerId;
     driverData = data['driver_data'] ?? driverData;
   }
 
@@ -194,6 +194,7 @@ class TagAlongUser implements TADataModel {
       'graduation_year': graduationYear,
       'phone_number': phoneNumber,
       'email_address': emailAddress,
+      'stripe_customer_id': stripeCustomerId,
       'driver_data': driverData?.toJson()
     };
   }
@@ -202,7 +203,6 @@ class TagAlongUser implements TADataModel {
   String toString() {
     return toJson().toString();
   }
-
 
   /// Returns the result of whether a [TagAlongUser] is an active driver.
   bool isActiveDriver() {
@@ -214,4 +214,12 @@ class TagAlongUser implements TADataModel {
     return false;
   }
 
+  bool isStripeActive() {
+    if (driverData != null) {
+      if (driverData!.isStripeActive) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

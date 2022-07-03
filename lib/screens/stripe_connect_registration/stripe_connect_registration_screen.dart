@@ -78,10 +78,16 @@ class _StripeConnectRegistrationScreenState
       completer: completer,
       message: 'Loading',
     );
+    final StripeAccountCreateResponse accountCreateResponse =
+        await StripeAccountRepository.instance
+            .createAccount(StripeAccountCreateRequest(
+      email: _tagAlongUser!.emailAddress,
+    ));
 
-    StripeRepository.instance
+    StripeConnectRepository.instance
         .getStripeConnectLink(StripeConnectRequest(
-            email: 'sorbh.kd@gmail.com',
+            email: _tagAlongUser!.emailAddress,
+            accountId: accountCreateResponse.data.id,
             refreshUrl: stripeConnectRefreshUrl,
             returnUrl: stripeConnectReturnUrl))
         .then((value) {

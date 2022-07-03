@@ -21,14 +21,14 @@ class StripeConnectResponse {
   final int status;
   final bool success;
   final String message;
-  final Data data;
+  final _Data data;
 
   factory StripeConnectResponse.fromJson(Map<String, dynamic> json) =>
       StripeConnectResponse(
         status: json["status"],
         success: json["success"],
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: _Data.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,8 +39,8 @@ class StripeConnectResponse {
       };
 }
 
-class Data {
-  Data({
+class _Data {
+  _Data({
     required this.created,
     required this.expiresAt,
     required this.url,
@@ -52,7 +52,7 @@ class Data {
   final String url;
   final String accountId;
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory _Data.fromJson(Map<String, dynamic> json) => _Data(
         created: json["created"],
         expiresAt: json["expires_at"],
         url: json["url"],

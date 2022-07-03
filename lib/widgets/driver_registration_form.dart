@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
@@ -24,6 +25,7 @@ class DriverRegistrationForm extends StatefulWidget {
 
 class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
+  StripeConnectResponse? _connectResponse;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +45,9 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
         (_showYearDropDownButton && _registerDriverViewModel.year != null);
 
     return Form(
-        key: _formKey,
-        child: Column(children: [
+      key: _formKey,
+      child: Column(
+        children: [
           Expanded(
             flex: 5,
             child: SingleChildScrollView(
@@ -76,9 +79,30 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
                   ]),
             ),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('Connect Stripe Account'),
+          SizedBox(
+            width: 220,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed('/stripe-registration')
+                    .then((value) {
+                  if (value != null) {
+                    setState(() {
+                      _connectResponse = value as StripeConnectResponse;
+                    });
+                  }
+                });
+              },
+              icon: _connectResponse == null
+                  ? const Icon(Icons.payment_rounded)
+                  : const Icon(Icons.check_rounded),
+              label: const Text('Connect To Stripe'),
+              style: ElevatedButton.styleFrom(
+                primary: _connectResponse == null
+                    ? Colors.red.withOpacity(.9)
+                    : Colors.green.withOpacity(.9),
+              ),
+            ),
           ),
           Text(
             'Stripe is our Payment Processer',
@@ -93,10 +117,14 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
                 if (_formKey.currentState!.validate()) {
                   // 1. Create [Driver] instance
                   Driver? driver = _registerDriverViewModel.createDriver();
+
                   if (driver == null) {
                     logger.log
                         .fine('DriverRegistrationForm - Driver not valid?');
                   } else {
+                    // 0. added driver account id to drive data doc
+                    driver.stripeAccountId = _connectResponse!.data.accountId;
+
                     // 1. Update our [TagAlongUser] in-memory
                     Map<String, dynamic> data = {'driver_data': driver};
                     tagAlongUserViewModel.updateTagAlongUserInternal(data);
@@ -112,6 +140,8 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
               child: const Text('Let\'s Go!'),
             )),
           )
-        ]));
+        ],
+      ),
+    );
   }
 }

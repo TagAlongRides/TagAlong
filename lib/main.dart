@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/driver_registration_prompt_screen.dart';
 import 'package:tagalong/screens/login_screen.dart';
@@ -42,6 +43,10 @@ void main() async {
 
   // Set up logging
   logger.setupLogger();
+
+  Stripe.publishableKey =
+      'pk_test_51KrmEeHOJhcBOg6eRUYQ0r274bFJuDrXl87YoDf32FiU3KozWxYtUi5sgxBJfmw8ZvZQM9SjzWkgmYJMbnHTekEK00HyDQBaBU';
+  await Stripe.instance.applySettings();
 
   // Run the TagAlong Application
   runApp(const TagAlongApp());
@@ -116,6 +121,8 @@ class _TagAlongAppState extends State<TagAlongApp> {
             '/ride_details': (BuildContext context) => const RideDetails(),
             '/stripe-registration': (BuildContext context) =>
                 const StripeConnectRegistrationScreen(),
+            // '/stripe-payment': (BuildContext context) =>
+            //     const StripePaymentScreen(ride: ,),
           }),
     );
   }

@@ -69,6 +69,8 @@ dependencies:
   # 4/12/22 - Added us_states - get US state data
   us_states: ^1.1.5
   sign_in_with_apple: ^4.0.0
+  flutter_stripe: ^3.2.0
+  flutter_credit_card: ^3.0.1
 
   stripe_repo:
     path: packages/stripe_repo/
