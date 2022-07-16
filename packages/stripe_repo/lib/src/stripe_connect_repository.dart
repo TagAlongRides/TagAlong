@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:stripe_repo/src/model/response/stripe_payment_intent_create_response.dart';
 
 import 'model/model.dart';
 
@@ -45,11 +44,25 @@ class StripeConnectRepository {
     }
   }
 
-  Future<StripePaymentIntentCreateResponse> createPayemntIntent(
+  Future<StripePaymentIntentCreateResponse> createDestinationPayemntIntent(
       StripePaymentIntentRequest request) async {
     try {
       final data = await HttpApiClient.instance
           .post('payment/stripeConnect/paymentintent', data: request.toJson());
+      return StripePaymentIntentCreateResponse.fromJson(data);
+    } on HttpApiException catch (error) {
+      throw StripeConnectException(error.error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<StripePaymentIntentCreateResponse> createSeparatePayemntIntent(
+      StripePaymentIntentRequest request) async {
+    try {
+      final data = await HttpApiClient.instance.post(
+          'payment/stripeConnect/charge/separate/paymentintent',
+          data: request.toJson());
       return StripePaymentIntentCreateResponse.fromJson(data);
     } on HttpApiException catch (error) {
       throw StripeConnectException(error.error);

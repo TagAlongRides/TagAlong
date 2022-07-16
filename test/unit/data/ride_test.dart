@@ -1,13 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tagalong/data/models/location.dart';
-import 'package:tagalong/data/models/ride.dart';
-import 'package:flutter/material.dart';
-import 'package:tagalong/data/models/vehicle.dart';
-
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ride_repo/ride_repo.dart';
 
 void main() {
-  test('Ride should be created from a Map - Creating Ride from Firestore query', () {
+  test('Ride should be created from a Map - Creating Ride from Firestore query',
+      () {
     var loc = {
       'address': '1234 Example Lane',
       'city': 'SomeCity',
@@ -23,8 +20,7 @@ void main() {
     };
     final locationB = Location.fromJson(loc);
 
-    Map<String, dynamic> car_map =
-    {
+    Map<String, dynamic> car_map = {
       'created_at': DateTime.now(),
       'make': 'Make',
       'model': 'model',
@@ -51,14 +47,16 @@ void main() {
       'departure_date_time': Timestamp(1, 1),
       'departure_time_of_day': "12:30 PM",
       'driver_full_name': 'fullName',
-      'driver_profile_picture_url': 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
+      'driver_profile_picture_url':
+          'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       'rider_ids': [],
       'vehicle': car.toJson()
     };
-    final ride = Ride.fromJson(map);
+    final ride = RideModel.fromJson(map);
   });
 
-  test('Ride should NOT be created from a Map - Creating Ride from bad Map', () {
+  test('Ride should NOT be created from a Map - Creating Ride from bad Map',
+      () {
     var loc = {
       'address': '1234 Example Lane',
       'city': 'SomeCity',
@@ -91,10 +89,11 @@ void main() {
       'departure_date_time': Timestamp(1, 1),
       'departure_time_of_day': "12:30 PM"
     };
-    expect(() => Ride.fromJson(map), throwsUnsupportedError);
+    expect(() => RideModel.fromJson(map), throwsUnsupportedError);
   });
 
-  test('Ride should NOT be created from a Map - Creating Ride from bad Map', () {
+  test('Ride should NOT be created from a Map - Creating Ride from bad Map',
+      () {
     var loc = {
       'address': '1234 Example Lane',
       'city': 'SomeCity',
@@ -111,7 +110,7 @@ void main() {
     final locationB = Location.fromJson(loc);
 
     final map = {
-      'created_at': Timestamp(1,1),
+      'created_at': Timestamp(1, 1),
       'ride_id': null,
       'driver_id': 'SOMEID',
       'university': 'university',
@@ -127,6 +126,6 @@ void main() {
       'departure_date_time': Timestamp(1, 1),
       'departure_time_of_day': "12:30 PM"
     };
-    expect(() => Ride.fromJson(map), throwsUnsupportedError);
+    expect(() => RideModel.fromJson(map), throwsUnsupportedError);
   });
 }

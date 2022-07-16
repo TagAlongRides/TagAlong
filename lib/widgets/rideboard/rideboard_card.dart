@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/data/models/ride.dart';
+import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
@@ -12,7 +12,7 @@ import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 class RideBoardCard extends StatelessWidget {
   const RideBoardCard({required this.ride, Key? key}) : super(key: key);
 
-  final Ride ride;
+  final RideModel ride;
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +65,11 @@ class RideBoardCard extends StatelessWidget {
   }
 
   /// Returns an Expanded Column widget which details the "To-From" Locations
-  /// of a given [Ride]. This Widget MUST be used within a Row/Column.
-  /// The [Ride] fields this utilizes is:
+  /// of a given [RideModel]. This Widget MUST be used within a Row/Column.
+  /// The [RideModel] fields this utilizes is:
   /// 1. Pickup Location
   /// 2. Dropoff Location
-  Widget _getLocations(Ride ride) {
+  Widget _getLocations(RideModel ride) {
     // Column parent
     return Expanded(
         flex: 4,
@@ -126,7 +126,7 @@ class RideBoardCard extends StatelessWidget {
   /// 1. First Name, last initial
   /// 2. Facebook Profile Picture
   /// This widget MUST be used within a Column/Row.
-  Widget _getDriverData(Ride ride) {
+  Widget _getDriverData(RideModel ride) {
     var firstNameWithInitial = ride.getFirstNameAndInitial();
     return Expanded(
       flex: 1,
@@ -148,7 +148,7 @@ class RideBoardCard extends StatelessWidget {
     );
   }
 
-  Widget _getPrice(Ride ride) {
+  Widget _getPrice(RideModel ride) {
     return Expanded(
       child: Container(
         child: Text(
@@ -161,7 +161,7 @@ class RideBoardCard extends StatelessWidget {
     );
   }
 
-  Widget _getDepartureDate(Ride ride) {
+  Widget _getDepartureDate(RideModel ride) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -180,7 +180,7 @@ class RideBoardCard extends StatelessWidget {
     );
   }
 
-  Widget _getDepartureTime(Ride ride) {
+  Widget _getDepartureTime(RideModel ride) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -200,7 +200,7 @@ class RideBoardCard extends StatelessWidget {
     );
   }
 
-  Widget _getRemainingSeats(Ride ride) {
+  Widget _getRemainingSeats(RideModel ride) {
     var seatsRemaining = ride.noPassengers - ride.riderIds.length;
     if (seatsRemaining > 1) {
       return Expanded(

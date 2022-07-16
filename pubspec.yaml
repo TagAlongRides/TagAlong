@@ -72,10 +72,12 @@ dependencies:
   flutter_stripe: ^3.2.0
   flutter_credit_card: ^3.0.1
 
-  stripe_repo:
-    path: packages/stripe_repo/
   core:
     path: packages/core/
+  stripe_repo:
+    path: packages/stripe_repo/
+  ride_repo:
+    path: packages/ride_repo/
 
   webview_flutter: ^3.0.4
 

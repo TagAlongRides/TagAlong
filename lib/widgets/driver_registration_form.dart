@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stripe_repo/stripe_repo.dart';
@@ -111,7 +112,7 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
           Expanded(
             flex: 1,
             child: Center(
-                child: ElevatedButton(
+                child: LoadingButton(
               onPressed: () async {
                 // Form is VALID
                 if (_formKey.currentState!.validate()) {
@@ -125,6 +126,11 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
                     // 0. added driver account id to drive data doc
                     driver.stripeAccountId = _connectResponse!.data.accountId;
 
+                    //0.1 - Check of Stripe Account dont have any required action
+                    final stripeAccount = await StripeAccountRepository.instance
+                        .getAccount(_connectResponse!.data.accountId);
+                    driver.isStripeActive = stripeAccount.data.chargesEnabled;
+
                     // 1. Update our [TagAlongUser] in-memory
                     Map<String, dynamic> data = {'driver_data': driver};
                     tagAlongUserViewModel.updateTagAlongUserInternal(data);
@@ -137,7 +143,8 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
                   }
                 }
               },
-              child: const Text('Let\'s Go!'),
+              text: 'Let\'s Go!',
+              // child: const Text(''),
             )),
           )
         ],

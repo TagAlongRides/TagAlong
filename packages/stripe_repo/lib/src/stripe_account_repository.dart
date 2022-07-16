@@ -32,11 +32,23 @@ class StripeAccountRepository {
     }
   }
 
-  Future<StripePaymentMethodResponse> getAccount(String id) async {
+  Future<StripeAccountCreateResponse> getAccount(String id) async {
     try {
       final data =
           await HttpApiClient.instance.get('payment/stripeConnect/account/$id');
-      return StripePaymentMethodResponse.fromJson(data);
+      return StripeAccountCreateResponse.fromJson(data);
+    } on HttpApiException catch (error) {
+      throw StripeAccountException(error.error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<StripeAccountBalanceResponse> getAccountBalance(String id) async {
+    try {
+      final data = await HttpApiClient.instance
+          .get('payment/stripeConnect/account/balance/$id');
+      return StripeAccountBalanceResponse.fromJson(data);
     } on HttpApiException catch (error) {
       throw StripeAccountException(error.error);
     } catch (error) {

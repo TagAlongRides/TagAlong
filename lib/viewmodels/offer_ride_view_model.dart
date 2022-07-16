@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/data/globals.dart';
-import 'package:tagalong/data/models/location.dart';
-import 'package:tagalong/data/models/ride.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
-import 'package:tagalong/util/ride_status.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
@@ -199,10 +197,10 @@ class OfferRideViewModel with ChangeNotifier {
     notes = ''; // Default
   }
 
-  /// Will create a new [Ride] instance and upload the [Ride]
+  /// Will create a new [RideModel] instance and upload the [RideModel]
   /// to the "rides" collection in Firestore.
   Future<bool> createNewRide() async {
-    late Ride ride;
+    late RideModel ride;
     late Location pickupLocation;
     late Location dropoffLocation;
 
@@ -243,12 +241,12 @@ class OfferRideViewModel with ChangeNotifier {
     final driverFullName = tagAlongUserViewModel.tagAlongUser!.firstName +
         " " +
         tagAlongUserViewModel.tagAlongUser!.lastName;
-    ride = Ride(
+    ride = RideModel(
       createdAt: DateTime.now(),
       rideId: ride_id,
       driverId: tagAlongUserViewModel.tagAlongUser!.id,
       university: Institution.VIRGINIA_TECH,
-      status: RideStatus.SCHEDULED,
+      status: RideStatus.scheduled,
       toCampus: toCampus,
       pickupLocation: pickupLocation,
       dropoffLocation: dropoffLocation,
@@ -263,6 +261,7 @@ class OfferRideViewModel with ChangeNotifier {
       driverProfilePictureUrl:
           tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
       riderIds: [],
+      rideBookingIds: [],
       vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle,
       stripeAccountId:
           tagAlongUserViewModel.tagAlongUser!.driverData!.stripeAccountId!,
@@ -302,7 +301,7 @@ class OfferRideViewModel with ChangeNotifier {
 }
 
 /// A ViewModel that represents a subset of the "Offer Ride" user flow.
-/// This is used for the last step of actually uploading the [Ride] to the
+/// This is used for the last step of actually uploading the [RideModel] to the
 /// "rides" Firestore Collection.
 /// This is solely separated from [OfferRideViewModel] because we want to
 /// alert the [RideBoard] to rebuild when the user uploads a ride,

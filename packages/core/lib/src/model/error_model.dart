@@ -31,4 +31,11 @@ class ErrorModel {
         "success": success,
         "message": message,
       };
+
+  /// Error in case Firebase operation have some error
+  /// Status code 600 -  custom
+  /// success - false
+  factory ErrorModel.firebaseError(String message) {
+    return ErrorModel(status: 600, success: false, message: message);
+  }
 }

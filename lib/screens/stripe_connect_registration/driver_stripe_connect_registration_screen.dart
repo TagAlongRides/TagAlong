@@ -10,16 +10,16 @@ import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class StripeConnectRegistrationScreen extends StatefulWidget {
-  const StripeConnectRegistrationScreen({Key? key}) : super(key: key);
+class DriverStripeConnectRegistrationScreen extends StatefulWidget {
+  const DriverStripeConnectRegistrationScreen({Key? key}) : super(key: key);
 
   @override
-  State<StripeConnectRegistrationScreen> createState() =>
-      _StripeConnectRegistrationScreenState();
+  State<DriverStripeConnectRegistrationScreen> createState() =>
+      _DriverStripeConnectRegistrationScreenState();
 }
 
-class _StripeConnectRegistrationScreenState
-    extends State<StripeConnectRegistrationScreen> {
+class _DriverStripeConnectRegistrationScreenState
+    extends State<DriverStripeConnectRegistrationScreen> {
   StripeConnectResponse? _connectResponse;
 
   TagAlongUser? _tagAlongUser;
@@ -78,6 +78,7 @@ class _StripeConnectRegistrationScreenState
       completer: completer,
       message: 'Loading',
     );
+
     final StripeAccountCreateResponse accountCreateResponse =
         await StripeAccountRepository.instance
             .createAccount(StripeAccountCreateRequest(

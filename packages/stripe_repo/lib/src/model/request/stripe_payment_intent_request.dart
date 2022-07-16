@@ -19,6 +19,7 @@ class StripePaymentIntentRequest {
     required this.returnUrl,
     required this.applicationFee,
     required this.destination,
+    this.transferGroup,
   });
 
   final String email;
@@ -28,6 +29,7 @@ class StripePaymentIntentRequest {
   final String returnUrl;
   final String applicationFee;
   final String destination;
+  final String? transferGroup;
 
   factory StripePaymentIntentRequest.fromJson(Map<String, dynamic> json) =>
       StripePaymentIntentRequest(
@@ -38,6 +40,7 @@ class StripePaymentIntentRequest {
         returnUrl: json["return_url"],
         applicationFee: json["application_fee"],
         destination: json["destination"],
+        transferGroup: json["transfer_group"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -48,5 +51,6 @@ class StripePaymentIntentRequest {
         "return_url": returnUrl,
         "application_fee": applicationFee,
         "destination": destination,
+        "transfer_group": transferGroup,
       }..removeWhere((key, value) => value == null);
 }

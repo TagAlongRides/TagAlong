@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:tagalong/data/models/ride.dart';
-import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
-import 'package:tagalong/widgets/offer_ride/question_widget.dart';
-import 'package:tagalong/util/log.dart' as logger;
+import 'package:provider/provider.dart';
+import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 
 class OfferRideDeparture extends StatefulWidget {
   const OfferRideDeparture({Key? key}) : super(key: key);
@@ -185,7 +184,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
 
                 // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
                 if (offerRideViewModel.departureTimeOfDay != null) {
-                  chosenTime = Ride.timeOfDayFromString(
+                  chosenTime = RideModel.timeOfDayFromString(
                       offerRideViewModel.departureTimeOfDay!);
                 }
                 // User HAS NOT chosen a TimeOfDay to leave - default to current time
@@ -271,19 +270,18 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
   }
 
   Widget _getProgressBar() {
-    return Row(
-        children: const [
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle_outlined),
-          SizedBox(width: 10),
-          Icon(Icons.circle_outlined),
-        ]);
+    return Row(children: const [
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle_outlined),
+      SizedBox(width: 10),
+      Icon(Icons.circle_outlined),
+    ]);
   }
 }

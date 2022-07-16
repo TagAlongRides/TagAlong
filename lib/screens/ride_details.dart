@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/data/models/ride.dart';
-import 'package:tagalong/screens/stripe_payment/stripe_payment_screen.dart';
+import 'package:ride_repo/ride_repo.dart';
+import 'package:tagalong/screens/stripe_payment/ride_stripe_payment_screen.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
@@ -45,7 +45,7 @@ class RideDetails extends StatelessWidget {
         ])));
   }
 
-  Widget _getDepartureData(BuildContext context, Ride ride) {
+  Widget _getDepartureData(BuildContext context, RideModel ride) {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
@@ -70,7 +70,7 @@ class RideDetails extends StatelessWidget {
     );
   }
 
-  Widget _getLocationData(BuildContext context, Ride ride) {
+  Widget _getLocationData(BuildContext context, RideModel ride) {
     return Container(
         color: Colors.white,
         padding: const EdgeInsets.all(16),
@@ -109,7 +109,7 @@ class RideDetails extends StatelessWidget {
         ]));
   }
 
-  Widget _getProfileAndNotes(BuildContext context, Ride ride) {
+  Widget _getProfileAndNotes(BuildContext context, RideModel ride) {
     return Container(
         color: Colors.white,
         padding: const EdgeInsets.only(top: 16, left: 24, right: 24),
@@ -160,7 +160,7 @@ class RideDetails extends StatelessWidget {
         ]));
   }
 
-  Widget _getRideDetails(BuildContext context, Ride ride) {
+  Widget _getRideDetails(BuildContext context, RideModel ride) {
     return Container(
         color: Colors.white,
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -216,7 +216,7 @@ class RideDetails extends StatelessWidget {
         ]));
   }
 
-  Widget _getPricing(BuildContext context, Ride ride) {
+  Widget _getPricing(BuildContext context, RideModel ride) {
     var rideDetailsViewModel =
         Provider.of<RideDetailsViewModel>(context, listen: false);
     return Container(
@@ -273,7 +273,7 @@ class RideDetails extends StatelessWidget {
 
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) {
-                  return StripePaymentScreen(ride: ride);
+                  return RideStripePaymentScreen(ride: ride);
                 },
               ));
             },

@@ -17,7 +17,7 @@ import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/screens/ride_details.dart';
-import 'package:tagalong/screens/stripe_connect_registration/stripe_connect_registration_screen.dart';
+import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_connect_registration_screen.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -120,7 +120,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
                 const OfferRidePricePrefs(),
             '/ride_details': (BuildContext context) => const RideDetails(),
             '/stripe-registration': (BuildContext context) =>
-                const StripeConnectRegistrationScreen(),
+                const DriverStripeConnectRegistrationScreen(),
             // '/stripe-payment': (BuildContext context) =>
             //     const StripePaymentScreen(ride: ,),
           }),
