@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ride_repo/src/enum/ride_booking_status.dart';
 import 'package:uuid/uuid.dart';
 
 class RideBookingModel {
@@ -29,14 +30,19 @@ class RideBookingModel {
   /// Payment Intent Id from Stripe payment
   final String paymentIntentId;
 
-  RideBookingModel(
-      {required this.rideId,
-      required this.userId,
-      required this.creatadAt,
-      this.updatedAt,
-      this.isCanceled = false,
-      required this.chargeId,
-      required this.paymentIntentId});
+  /// Status
+  RideBookingStatus status;
+
+  RideBookingModel({
+    required this.rideId,
+    required this.userId,
+    required this.creatadAt,
+    this.updatedAt,
+    this.isCanceled = false,
+    required this.chargeId,
+    required this.paymentIntentId,
+    this.status = RideBookingStatus.active,
+  });
 
   String get rideBookingId => _rideBookingId ??= const Uuid().v4();
 
@@ -54,6 +60,7 @@ class RideBookingModel {
       'isCanceled': isCanceled,
       'chargeId': chargeId,
       'paymentIntentId': paymentIntentId,
+      "status": status.name.toLowerCase(),
     };
   }
 
@@ -68,6 +75,8 @@ class RideBookingModel {
       isCanceled: map['isCanceled'],
       chargeId: map['chargeId'] ?? '',
       paymentIntentId: map['paymentIntentId'] ?? '',
+      status: RideBookingStatus.values
+          .byName(map["status"].toString().toLowerCase()),
     )..rideBookingId = map['rideBookingId'];
   }
 
