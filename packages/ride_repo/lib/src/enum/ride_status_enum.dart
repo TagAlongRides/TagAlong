@@ -1,1 +1,1 @@
-enum RideStatus { scheduled, canceled, completed }
+enum RideStatus { scheduled, canceled, completed, paid }
