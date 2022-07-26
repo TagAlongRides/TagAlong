@@ -29,6 +29,8 @@ class StripePaymentIntentRequest {
   final String returnUrl;
   final String applicationFee;
   final String destination;
+
+  /// used in separate charge
   final String? transferGroup;
 
   factory StripePaymentIntentRequest.fromJson(Map<String, dynamic> json) =>

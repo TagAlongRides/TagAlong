@@ -159,7 +159,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
 
       // 3. call API to create PaymentIntent
       final paymentIntentResult =
-          await StripeConnectRepository.instance.createSeparatePayemntIntent(
+          await StripeConnectRepository.instance.createDestinationPayemntIntent(
         StripePaymentIntentRequest(
           email: email,
           customerId: customerId,
