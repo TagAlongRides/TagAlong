@@ -58,11 +58,14 @@ class _MyRideScreenState extends State<MyRideScreen> {
                                         positivePress: () async {
                                       /// 1. Init the refund from the stripe side
                                       final refund =
-                                          await StripeRefundRepository
-                                              .instance
-                                              .refund(StripeRefundRequest(
-                                                  charge:
-                                                      rideBooking.chargeId));
+                                          await StripeRefundRepository.instance
+                                              .refundDestinationCharge(
+                                        StripeRefundRequest(
+                                          charge: rideBooking.chargeId,
+                                          reverseTransfer: true,
+                                          refundApplicationFee: true,
+                                        ),
+                                      );
 
                                       /// 2. Update the firebase collection to cancel the ride booking
                                       final ridebookingUpdated =
@@ -143,13 +146,19 @@ class _MyRideScreenState extends State<MyRideScreen> {
                                               isCanceled: false);
 
                                   /// Refund for all active ride booking
-                                  Stream.fromIterable(rideBookings)
-                                      .asyncMap((event) async {
-                                    final refund = await StripeRefundRepository
-                                        .instance
-                                        .refund(StripeRefundRequest(
-                                            charge: event.chargeId));
-                                  });
+                                  Stream.fromIterable(rideBookings).asyncMap(
+                                    (event) async {
+                                      final refund =
+                                          await StripeRefundRepository.instance
+                                              .refundDestinationCharge(
+                                        StripeRefundRequest(
+                                          charge: event.chargeId,
+                                          reverseTransfer: true,
+                                          refundApplicationFee: true,
+                                        ),
+                                      );
+                                    },
+                                  );
 
                                   /// Cancel the ride
                                   await RideRepository.instance
