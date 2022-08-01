@@ -66,7 +66,7 @@ class RegistrationWrapper extends StatefulWidget {
 
 class _RegistrationWrapperState extends State<RegistrationWrapper> {
   Future<void> _setUpUser(TagAlongUserViewModel vm) async {
-    await vm.setUpUser(vm.getUid()!);
+    await vm.setUpUser(vm.getUid() ?? '');
     bool? isRegistered = vm.isRegistered();
 
     if (isRegistered == true) {

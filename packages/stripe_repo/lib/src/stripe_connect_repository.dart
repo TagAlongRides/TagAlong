@@ -47,8 +47,9 @@ class StripeConnectRepository {
   Future<StripePaymentIntentCreateResponse> createDestinationPayemntIntent(
       StripePaymentIntentRequest request) async {
     try {
-      final data = await HttpApiClient.instance
-          .post('payment/stripeConnect/paymentintent', data: request.toJson());
+      final data = await HttpApiClient.instance.post(
+          'payment/stripeConnect/charge/destination/paymentintent',
+          data: request.toJson());
       return StripePaymentIntentCreateResponse.fromJson(data);
     } on HttpApiException catch (error) {
       throw StripeConnectException(error.error);

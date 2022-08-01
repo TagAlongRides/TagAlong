@@ -145,6 +145,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
 
+    checkAuthState();
+  }
+
+  void checkAuthState() async {
+    // await FirebaseAuth.instance.signOut();
     // Check if the user is signed-in or signed-out
     AuthService authService = Provider.of<AuthService>(context, listen: false);
     _streamSubscription = authService.userStatus.listen((User? user) {

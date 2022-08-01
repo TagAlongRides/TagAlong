@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 /// [AuthService] is the main service for our Firebase authentication.
@@ -60,37 +61,58 @@ class AuthService {
     }
   }
 
-  /// Returns a Future<UserCredential?> that if the Facebook login is
+  /// Returns a Future<UserCredential?> that if the Apple login is
   /// successful, will create a user within the FirebaseAuth system and return
   /// a UserCredential. If login fails, returns null.
   Future<UserCredential?> appleLogin() async {
-    final provider = OAuthProvider("apple.com")
-      ..addScope('email')
-      ..addScope('name');
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
 
-    // Sign in the user with Firebase.
-    var userCreds = await FirebaseAuth.instance.signInWithPopup(provider);
-    // UserModel user = UserModel();
+      // Create an `OAuthCredential` from the credential returned by Apple.
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: credential.identityToken,
+        // rawNonce: rawNonce,
+      );
 
-    // //Creating user first and last name
-    // String userDisplayName = userCreds.user!.displayName!;
-    // List<String> userFirstLastNameList =
-    //     userCreds.user!.displayName!.split(" ").toList();
+      UserCredential? user_cred =
+          await _auth.signInWithCredential(oauthCredential);
+      return user_cred;
+    } catch (error) {
+      return null;
+    }
 
-    // user.firstName = userFirstLastNameList[0];
-    // user.lastName = userFirstLastNameList.last;
-    // user.email = userCreds.user!.email;
-    // user.imageUrl = userCreds.user!.photoURL;
-    // user.userId = userCreds.user!.uid;
+    // final LoginResult result = await _fb.login();
 
-    // else {
-    //   queryResult.docs[0].reference.set(user.toJson());
+    // // Log-in was successful
+    // if (result.status == LoginStatus.success && result.accessToken != null) {
+    //   final OAuthCredential facebookAuthCredential =
+    //       FacebookAuthProvider.credential(result.accessToken!.token);
+    //   try {
+    //     UserCredential? user_cred =
+    //         await _auth.signInWithCredential(facebookAuthCredential);
+    //     return user_cred;
+    //   }
+    //   // Log-in failed
+    //   on FirebaseAuthException catch (e) {
+    //     logger.log.fine('DEBUG: User could NOT log-in due to ${e.message}');
+    //     return null;
+    //   }
     // }
-
-    //*****************Saved user to local */
-
-    ///
+    // // Log-in failed
+    // else {
+    //   logger.log.fine('DEBUG: User could NOT log-in!');
+    //   return null;
+    // }
   }
+
+  /// Returns a Future<UserCredential?> that if the Facebook login is
+  /// successful, will create a user within the FirebaseAuth system and return
+  /// a UserCredential. If login fails, returns null.
 
   /// Queries for the User's Facebook Profile picture and returns
   /// the JSON GraphAPI result.

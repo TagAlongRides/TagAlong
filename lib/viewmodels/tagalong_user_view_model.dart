@@ -88,35 +88,30 @@ class TagAlongUserViewModel {
         // Extract the `uid` from the `UserCredential.User?`
         String uid = userCred.user!.uid;
         // Set up our [TagAlongUser] instance
-        await setUpUser(uid);
+        await setUpUser(uid, signInMethod: SignInMethod.FACEBOOK);
       }
     }
-
     // 2. User unsuccessful in Facebook Login
     else {
       return;
     }
   }
 
-  ///
-  ///
-  ///
-  Future<void> createOrSignInAppleUser() async {
-    // Perform the Facebook login
+  Future<void> createOrSignInApple() async {
+    // Perform the Apple login
     UserCredential? userCred = await _authService.appleLogin();
 
-    // 1. User successfully logged into Facebook and
+    // 1. User successfully logged into Apple and
     // has created or has an entry in FirebaseAuth
     if (userCred != null) {
       if (userCred.user != null) {
         // Extract the `uid` from the `UserCredential.User?`
         String uid = userCred.user!.uid;
         // Set up our [TagAlongUser] instance
-        await setUpUser(uid);
+        await setUpUser(uid, signInMethod: SignInMethod.APPLE);
       }
     }
-
-    // 2. User unsuccessful in Facebook Login
+    // 2. User unsuccessful in Apple Login
     else {
       return;
     }
@@ -134,6 +129,10 @@ class TagAlongUserViewModel {
     // 1. [user] exists in memory
     if (tagAlongUser != null) {
       logger.log.fine('setUpUser() - TagAlongUser instance already in memory.');
+      return;
+    }
+    if (uid.isEmpty) {
+      logger.log.fine('setUpUser() - TagAlongUser uid is null');
       return;
     }
 
@@ -157,16 +156,26 @@ class TagAlongUserViewModel {
         logger.log.fine('setUpUser() - User did not exist!');
         final time = DateTime.now();
 
-        // Get the User's Facebook profile picture
-        Map<String, dynamic> json =
-            await authService.getFacebookProfilePicture();
-        String url = json['picture']?['data']?['url']; // Should always exist?
-        tagAlongUser = TagAlongUser(
-          id: uid,
-          profilePictureUrl: url,
-          createdAt: time,
-          updatedAt: time,
-        );
+        if (signInMethod == SignInMethod.FACEBOOK) {
+          // Get the User's Facebook profile picture
+          Map<String, dynamic> json =
+              await authService.getFacebookProfilePicture();
+          String url = json['picture']?['data']?['url']; // Should always exist?
+          tagAlongUser = TagAlongUser(
+            id: uid,
+            profilePictureUrl: url,
+            createdAt: time,
+            updatedAt: time,
+          );
+        } else {
+          // Get the User's Facebook profile picture
+          tagAlongUser = TagAlongUser(
+            id: uid,
+            profilePictureUrl: '',
+            createdAt: time,
+            updatedAt: time,
+          );
+        }
       }
       logger.log.fine('setUpUser() - TagAlongUser was initialized.');
       logger.log.fine('setUpUser() - The TagAlongUser is: $tagAlongUser}');
