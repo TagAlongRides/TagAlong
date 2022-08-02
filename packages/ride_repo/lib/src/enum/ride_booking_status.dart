@@ -1,1 +1,1 @@
-enum RideBookingStatus { active, canceled, completed, paid }
+enum RideBookingStatus { active, canceled, complete, paid }
