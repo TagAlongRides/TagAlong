@@ -35,7 +35,7 @@ class StripeRefundRepository {
       StripeRefundRequest request) async {
     try {
       final data = await HttpApiClient.instance.post(
-          'payment/stripeConnect/refundDirectCharge',
+          'payment/stripeConnect/refundDestinationCharge',
           data: request.toJson());
       return StripeRefundResponse.fromJson(data);
     } on HttpApiException catch (error) {
