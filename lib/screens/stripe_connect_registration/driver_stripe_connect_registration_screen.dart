@@ -14,18 +14,15 @@ class DriverStripeConnectRegistrationScreen extends StatefulWidget {
   const DriverStripeConnectRegistrationScreen({Key? key}) : super(key: key);
 
   @override
-  State<DriverStripeConnectRegistrationScreen> createState() =>
-      _DriverStripeConnectRegistrationScreenState();
+  State<DriverStripeConnectRegistrationScreen> createState() => _DriverStripeConnectRegistrationScreenState();
 }
 
-class _DriverStripeConnectRegistrationScreenState
-    extends State<DriverStripeConnectRegistrationScreen> {
+class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConnectRegistrationScreen> {
   StripeConnectResponse? _connectResponse;
 
   TagAlongUser? _tagAlongUser;
 
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
 
   @override
   void initState() {
@@ -41,8 +38,7 @@ class _DriverStripeConnectRegistrationScreenState
   @override
   Widget build(BuildContext context) {
     final _themeData = Theme.of(context);
-    final _tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    final _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     _tagAlongUser = _tagAlongUserViewModel.tagAlongUser;
 
     return _connectResponse != null
@@ -80,13 +76,15 @@ class _DriverStripeConnectRegistrationScreenState
     );
 
     final StripeAccountCreateResponse accountCreateResponse =
-        await StripeAccountRepository.instance
-            .createAccount(StripeAccountCreateRequest(
+        await StripeAccountRepository.instance.createAccount(StripeAccountCreateRequest(
       email: _tagAlongUser!.emailAddress,
     ));
 
     StripeConnectRepository.instance
         .getStripeConnectLink(StripeConnectRequest(
+            firstName: _tagAlongUser!.firstName,
+            lastName: _tagAlongUser!.lastName,
+            phoneNumber: _tagAlongUser!.phoneNumber,
             email: _tagAlongUser!.emailAddress,
             accountId: accountCreateResponse.data.id,
             refreshUrl: stripeConnectRefreshUrl,

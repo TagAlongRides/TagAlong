@@ -15,8 +15,7 @@ class MyRideScreen extends StatefulWidget {
 class _MyRideScreenState extends State<MyRideScreen> {
   @override
   Widget build(BuildContext context) {
-    final _tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    final _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     final tagAlongUser = _tagAlongUserViewModel.tagAlongUser!;
     return Container(
       padding: const EdgeInsets.all(12),
@@ -28,8 +27,7 @@ class _MyRideScreenState extends State<MyRideScreen> {
                 setState(() {});
               },
               child: FutureBuilder<List<RideBookingModel>>(
-                future: RideBookingRepository.instance
-                    .getRideBookingForUser(tagAlongUser.id),
+                future: RideBookingRepository.instance.getRideBookingForUser(tagAlongUser.id),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -50,22 +48,13 @@ class _MyRideScreenState extends State<MyRideScreen> {
                               Text(rideBooking.rideBookingId),
                               LoadingButton(
                                   onPressed: () async {
-                                    final ride = await RideRepository.instance
-                                        .getRideById(rideBooking.rideId);
-                                    if (ride.departureDateTime
-                                            .difference(DateTime.now())
-                                            .inHours >
-                                        6) {
+                                    final ride = await RideRepository.instance.getRideById(rideBooking.rideId);
+                                    if (ride.departureDateTime.difference(DateTime.now()).inHours > 6) {
                                       InfoDialog.show(context,
-                                          message:
-                                              'Are you sure you want to cancel the ride ? Refund = true',
-                                          positiveLabel: 'Continue',
-                                          positivePress: () async {
+                                          message: 'Are you sure you want to cancel the ride ? Refund = true',
+                                          positiveLabel: 'Continue', positivePress: () async {
                                         /// 1. Init the refund from the stripe side
-                                        final refund =
-                                            await StripeRefundRepository
-                                                .instance
-                                                .refundDestinationCharge(
+                                        final refund = await StripeRefundRepository.instance.refundDestinationCharge(
                                           StripeRefundRequest(
                                             charge: rideBooking.chargeId,
                                             reverseTransfer: true,
@@ -75,8 +64,7 @@ class _MyRideScreenState extends State<MyRideScreen> {
 
                                         /// 2. Update the firebase collection to cancel the ride booking
                                         final ridebookingUpdated =
-                                            await RideBookingRepository.instance
-                                                .cancelRideBooking(rideBooking);
+                                            await RideBookingRepository.instance.cancelRideBooking(rideBooking);
 
                                         setState(() {});
 
@@ -84,14 +72,11 @@ class _MyRideScreenState extends State<MyRideScreen> {
                                       });
                                     } else {
                                       InfoDialog.show(context,
-                                          message:
-                                              'Are you sure you want to cancel the ride ? Refund = false',
-                                          positiveLabel: 'Continue',
-                                          positivePress: () async {
+                                          message: 'Are you sure you want to cancel the ride ? Refund = false',
+                                          positiveLabel: 'Continue', positivePress: () async {
                                         /// 1. Update the firebase collection to cancel the ride booking
                                         final ridebookingUpdated =
-                                            await RideBookingRepository.instance
-                                                .cancelRideBooking(rideBooking);
+                                            await RideBookingRepository.instance.cancelRideBooking(rideBooking);
 
                                         setState(() {});
 
@@ -124,8 +109,7 @@ class _MyRideScreenState extends State<MyRideScreen> {
                 setState(() {});
               },
               child: FutureBuilder<List<RideModel>>(
-                future:
-                    RideRepository.instance.getMyOfferedRides(tagAlongUser.id),
+                future: RideRepository.instance.getMyOfferedRides(tagAlongUser.id),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -149,35 +133,24 @@ class _MyRideScreenState extends State<MyRideScreen> {
                                   InfoDialog.show(context,
                                       message:
                                           'Are you sure you want to cancel the ride ? This action will cancel the ride and refund to all riders',
-                                      positiveLabel: 'Continue',
-                                      positivePress: () async {
+                                      positiveLabel: 'Continue', positivePress: () async {
                                     /// Get all active(cancel=false) ride booking from hte ride
-                                    final rideBookings =
-                                        await RideBookingRepository
-                                            .instance
-                                            .getRideBookingForRideId(
-                                                ride.rideId,
-                                                isCanceled: false);
+                                    final rideBookings = await RideBookingRepository.instance
+                                        .getRideBookingForRideId(ride.rideId, isCanceled: false);
 
                                     /// Refund for all active ride booking
-                                    Stream.fromIterable(rideBookings).asyncMap(
-                                      (event) async {
-                                        final refund =
-                                            await StripeRefundRepository
-                                                .instance
-                                                .refundDestinationCharge(
-                                          StripeRefundRequest(
-                                            charge: event.chargeId,
-                                            reverseTransfer: true,
-                                            refundApplicationFee: true,
-                                          ),
-                                        );
-                                      },
-                                    );
+                                    rideBookings.forEach((element) async {
+                                      final refund = await StripeRefundRepository.instance.refundDestinationCharge(
+                                        StripeRefundRequest(
+                                          charge: element.chargeId,
+                                          reverseTransfer: true,
+                                          refundApplicationFee: true,
+                                        ),
+                                      );
+                                    });
 
                                     /// Cancel the ride
-                                    await RideRepository.instance
-                                        .cancelRide(ride);
+                                    await RideRepository.instance.cancelRide(ride);
                                     setState(() {});
 
                                     Navigator.of(context).pop();
