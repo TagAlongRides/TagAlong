@@ -81,7 +81,8 @@ class _DriverStripeConnectRegistrationScreenState
     );
 
     String? stripeAccountId;
-    if (_tagAlongUser?.stripeAccountId == null) {
+    if (_tagAlongUser?.stripeAccountId == null ||
+        _tagAlongUser!.stripeAccountId!.isEmpty) {
       final StripeAccountCreateResponse accountCreateResponse =
           await StripeAccountRepository.instance.createAccount(
         StripeAccountCreateRequest(
