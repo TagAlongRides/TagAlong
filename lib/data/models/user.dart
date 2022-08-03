@@ -16,6 +16,7 @@ class TagAlongUser implements TADataModel {
   String phoneNumber;
   String emailAddress;
   String stripeCustomerId;
+  String? stripeAccountId;
   Driver? driverData;
   bool registered;
   String signInMethod;
@@ -37,6 +38,7 @@ class TagAlongUser implements TADataModel {
       this.phoneNumber = "",
       this.emailAddress = "",
       this.stripeCustomerId = "",
+      this.stripeAccountId = "",
       this.registered = false,
       this.graduationYear = null,
       this.driverData = null});
@@ -112,6 +114,7 @@ class TagAlongUser implements TADataModel {
         phoneNumber: phoneNumber,
         emailAddress: emailAddress,
         stripeCustomerId: json['stripe_customer_id'],
+        stripeAccountId: json['stripe_account_id'],
         registered: registered,
         graduationYear: graduationYear,
         driverData: driverData);
@@ -175,6 +178,7 @@ class TagAlongUser implements TADataModel {
     phoneNumber = data['phone_number'] ?? phoneNumber;
     emailAddress = data['email_address'] ?? emailAddress;
     stripeCustomerId = data['stripe_customer_id'] ?? stripeCustomerId;
+    stripeAccountId = data['stripe_account_id'] ?? stripeAccountId;
     driverData = data['driver_data'] ?? driverData;
   }
 
@@ -195,6 +199,7 @@ class TagAlongUser implements TADataModel {
       'phone_number': phoneNumber,
       'email_address': emailAddress,
       'stripe_customer_id': stripeCustomerId,
+      'stripe_account_id': stripeAccountId,
       'driver_data': driverData?.toJson()
     };
   }

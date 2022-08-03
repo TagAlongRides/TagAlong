@@ -13,7 +13,7 @@ String stripePaymentIntentRequestToJson(StripePaymentIntentRequest data) =>
 class StripePaymentIntentRequest {
   StripePaymentIntentRequest({
     required this.email,
-    required this.customerId,
+    this.customerId,
     required this.amount,
     required this.paymentMethodId,
     required this.returnUrl,
@@ -23,7 +23,7 @@ class StripePaymentIntentRequest {
   });
 
   final String email;
-  final String customerId;
+  final String? customerId;
   final String amount;
   final String paymentMethodId;
   final String returnUrl;

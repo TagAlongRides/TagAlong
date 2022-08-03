@@ -23,6 +23,7 @@ class _DriverStripeConnectRegistrationScreenState
   StripeConnectResponse? _connectResponse;
 
   TagAlongUser? _tagAlongUser;
+  late TagAlongUserViewModel _tagAlongUserViewModel;
 
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
@@ -41,7 +42,7 @@ class _DriverStripeConnectRegistrationScreenState
   @override
   Widget build(BuildContext context) {
     final _themeData = Theme.of(context);
-    final _tagAlongUserViewModel =
+    _tagAlongUserViewModel =
         Provider.of<TagAlongUserViewModel>(context, listen: false);
     _tagAlongUser = _tagAlongUserViewModel.tagAlongUser;
 
@@ -79,23 +80,54 @@ class _DriverStripeConnectRegistrationScreenState
       message: 'Loading',
     );
 
-    final StripeAccountCreateResponse accountCreateResponse =
-        await StripeAccountRepository.instance
-            .createAccount(StripeAccountCreateRequest(
-      email: _tagAlongUser!.emailAddress,
-    ));
+    String? stripeAccountId;
+    if (_tagAlongUser?.stripeAccountId == null) {
+      final StripeAccountCreateResponse accountCreateResponse =
+          await StripeAccountRepository.instance.createAccount(
+        StripeAccountCreateRequest(
+            email: _tagAlongUser!.emailAddress,
+            firstName: _tagAlongUser!.firstName,
+            lastName: _tagAlongUser!.lastName,
+            phone: _tagAlongUser!.phoneNumber,
+            type: 'custom'),
+      );
+      _tagAlongUserViewModel
+          .updateDriverAccountId(accountCreateResponse.data.id);
+      await _tagAlongUserViewModel.updateTagAlongUserFirestore();
+      stripeAccountId = accountCreateResponse.data.id;
+    } else {
+      stripeAccountId = _tagAlongUser!.stripeAccountId;
+    }
 
     StripeConnectRepository.instance
-        .getStripeConnectLink(StripeConnectRequest(
-            email: _tagAlongUser!.emailAddress,
-            accountId: accountCreateResponse.data.id,
-            refreshUrl: stripeConnectRefreshUrl,
-            returnUrl: stripeConnectReturnUrl))
+        .getStripeConnectLink(
+      StripeConnectRequest(
+        email: _tagAlongUser!.emailAddress,
+        accountId: stripeAccountId!,
+        refreshUrl: stripeConnectRefreshUrl,
+        returnUrl: stripeConnectReturnUrl,
+        type: stripeAccountId == null ? 'account_onboarding' : 'account_update',
+      ),
+    )
         .then((value) {
-      completer.complete();
       setState(() {
         _connectResponse = value;
       });
-    });
+    }).onError((error, stackTrace) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text(error.toString()),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Ok')),
+            ],
+          );
+        },
+      );
+    }).then((value) => completer.complete());
   }
 }

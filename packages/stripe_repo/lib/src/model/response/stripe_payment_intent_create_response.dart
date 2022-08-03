@@ -61,7 +61,7 @@ class _Data {
     required this.confirmationMethod,
     required this.created,
     required this.currency,
-    required this.customer,
+    this.customer,
     required this.description,
     required this.invoice,
     required this.lastPaymentError,
@@ -102,7 +102,7 @@ class _Data {
   final String confirmationMethod;
   final int created;
   final String currency;
-  final String customer;
+  final String? customer;
   final dynamic description;
   final dynamic invoice;
   final dynamic lastPaymentError;
@@ -305,7 +305,7 @@ class Datum {
   final bool captured;
   final int created;
   final String currency;
-  final String customer;
+  final String? customer;
   final dynamic description;
   final String? destination;
   final dynamic dispute;

@@ -53,7 +53,6 @@ class _Data {
     required this.detailsSubmitted,
     required this.email,
     required this.externalAccounts,
-    required this.loginLinks,
     required this.metadata,
     required this.payoutsEnabled,
     required this.settings,
@@ -73,7 +72,6 @@ class _Data {
   final bool detailsSubmitted;
   final String email;
   final ExternalAccounts externalAccounts;
-  final ExternalAccounts loginLinks;
   final Metadata metadata;
   final bool payoutsEnabled;
   final Settings settings;
@@ -93,7 +91,6 @@ class _Data {
         detailsSubmitted: json["details_submitted"],
         email: json["email"],
         externalAccounts: ExternalAccounts.fromJson(json["external_accounts"]),
-        loginLinks: ExternalAccounts.fromJson(json["login_links"]),
         metadata: Metadata.fromJson(json["metadata"]),
         payoutsEnabled: json["payouts_enabled"],
         settings: Settings.fromJson(json["settings"]),
@@ -114,7 +111,6 @@ class _Data {
         "details_submitted": detailsSubmitted,
         "email": email,
         "external_accounts": externalAccounts.toJson(),
-        "login_links": loginLinks.toJson(),
         "metadata": metadata.toJson(),
         "payouts_enabled": payoutsEnabled,
         "settings": settings.toJson(),

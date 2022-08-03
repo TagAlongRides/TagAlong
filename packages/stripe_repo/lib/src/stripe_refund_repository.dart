@@ -19,18 +19,6 @@ class StripeRefundRepository {
 
   StripeRefundRepository._internal();
 
-  // Future<StripeRefundResponse> refund(StripeRefundRequest request) async {
-  //   try {
-  //     final data = await HttpApiClient.instance
-  //         .post('payment/stripeConnect/refund', data: request.toJson());
-  //     return StripeRefundResponse.fromJson(data);
-  //   } on HttpApiException catch (error) {
-  //     throw StripeRefundException(error.error);
-  //   } catch (error) {
-  //     rethrow;
-  //   }
-  // }
-
   Future<StripeRefundResponse> refundDestinationCharge(
       StripeRefundRequest request) async {
     try {

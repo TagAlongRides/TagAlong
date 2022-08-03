@@ -190,6 +190,13 @@ class TagAlongUserViewModel {
     } else {}
   }
 
+  /// Updates our TagAlongUser instance's `driverData`
+  void updateDriverAccountId(String accountId) {
+    if (userExists()) {
+      tagAlongUser!.stripeAccountId = accountId;
+    } else {}
+  }
+
   /// Adds a [TagAlongUser] to the Firestore `users` collection.
   Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {

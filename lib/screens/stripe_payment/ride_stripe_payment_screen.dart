@@ -21,6 +21,8 @@ class RideStripePaymentScreen extends StatefulWidget {
 class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
   final controller = CardFormEditController();
   late TagAlongUser tagAlongUser;
+
+  bool _saveCard = true;
   @override
   void initState() {
     controller.addListener(update);
@@ -53,6 +55,17 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
                   fontSize: 24,
                   placeholderColor: Colors.black,
                 ),
+              ),
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                controlAffinity: ListTileControlAffinity.leading,
+                title: const Text('Save Card'),
+                value: _saveCard,
+                onChanged: (value) {
+                  setState(() {
+                    _saveCard = value ?? false;
+                  });
+                },
               ),
               const SizedBox(height: 12),
               LoadingButton(
@@ -162,7 +175,9 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
           await StripeConnectRepository.instance.createDestinationPayemntIntent(
         StripePaymentIntentRequest(
           email: email,
-          customerId: customerId,
+          customerId: _saveCard
+              ? customerId
+              : null, //only pass customer Id in case of save card
           amount: amount,
           paymentMethodId: paymentMethodId,
           returnUrl: stripeConnectReturnUrl,

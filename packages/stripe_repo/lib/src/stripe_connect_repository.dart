@@ -19,17 +19,17 @@ class StripeConnectRepository {
 
   StripeConnectRepository._internal();
 
-  ///Test API
-  Future getUsers() async {
-    try {
-      final data = await HttpApiClient.instance.get('users');
-    } on HttpApiException catch (error) {
-      throw StripeConnectException(error.error);
-    } catch (error) {
-      //Rethrow the error from API Core
-      rethrow;
-    }
-  }
+  // ///Test API
+  // Future getUsers() async {
+  //   try {
+  //     final data = await HttpApiClient.instance.get('users');
+  //   } on HttpApiException catch (error) {
+  //     throw StripeConnectException(error.error);
+  //   } catch (error) {
+  //     //Rethrow the error from API Core
+  //     rethrow;
+  //   }
+  // }
 
   Future<StripeConnectResponse> getStripeConnectLink(
       StripeConnectRequest request) async {
