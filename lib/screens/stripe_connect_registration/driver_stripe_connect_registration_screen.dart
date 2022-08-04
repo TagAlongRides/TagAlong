@@ -86,12 +86,15 @@ class _DriverStripeConnectRegistrationScreenState
       final StripeAccountCreateResponse accountCreateResponse =
           await StripeAccountRepository.instance.createAccount(
         StripeAccountCreateRequest(
-            email: _tagAlongUser!.emailAddress,
-            firstName: _tagAlongUser!.firstName,
-            lastName: _tagAlongUser!.lastName,
-            phone: _tagAlongUser!.phoneNumber,
-            type: 'custom'),
+          email: _tagAlongUser!.emailAddress,
+          firstName: _tagAlongUser!.firstName,
+          lastName: _tagAlongUser!.lastName,
+          phone: _tagAlongUser!.phoneNumber,
+          type: 'express',
+        ),
       );
+
+      ///save the account_id in the user profile
       _tagAlongUserViewModel
           .updateDriverAccountId(accountCreateResponse.data.id);
       await _tagAlongUserViewModel.updateTagAlongUserFirestore();
@@ -107,7 +110,7 @@ class _DriverStripeConnectRegistrationScreenState
         accountId: stripeAccountId!,
         refreshUrl: stripeConnectRefreshUrl,
         returnUrl: stripeConnectReturnUrl,
-        type: stripeAccountId == null ? 'account_onboarding' : 'account_update',
+        type: 'account_onboarding',
       ),
     )
         .then((value) {
