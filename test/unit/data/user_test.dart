@@ -1,27 +1,28 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
-import 'package:tagalong/data/models/vehicle.dart';
 import 'package:tagalong/util/user_data.dart';
 
-
 void main() {
-  test('Creation of unregistered user (successfully logging in with Facebook)', () {
+  test('Creation of unregistered user (successfully logging in with Facebook)',
+      () {
     final time = DateTime.now();
     final user = TagAlongUser(
-      id: "RANDOMID",
-      profilePictureUrl: 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
-      createdAt: time,
-      updatedAt: time
-    );
+        id: "RANDOMID",
+        profilePictureUrl:
+            'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
+        createdAt: time,
+        updatedAt: time);
   });
 
   test('Creation of unregistered user from Map', () {
     final time = DateTime.now();
     Map<String, dynamic> map = {
       "id": "RANDOMID",
-      "profile_picture_url": 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
+      "profile_picture_url":
+          'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       "created_at": time,
       "updated_at": time,
       "sign_in_method": SignInMethod.FACEBOOK,
@@ -41,7 +42,8 @@ void main() {
     final time = DateTime.now();
     Map<String, dynamic> map = {
       "id": "RANDOMID",
-      "profile_picture_url": 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
+      "profile_picture_url":
+          'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       "created_at": time,
       "updated_at": null,
       "sign_in_method": SignInMethod.FACEBOOK,
@@ -70,14 +72,15 @@ void main() {
     final vehicle = Vehicle.fromJson(vehicle_map);
 
     final driver_map = {
-      'created_at': Timestamp(1,1),
+      'created_at': Timestamp(1, 1),
       'vehicle': vehicle.toJson(),
       'is_active': true
     };
     final driver = Driver.fromJson(driver_map);
     Map<String, dynamic> map = {
       "id": "RANDOMID",
-      "profile_picture_url": 'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
+      "profile_picture_url":
+          'https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=104151888806758&width=200&ext=1650304041&hash=AeSWscYVpfwy66I8C9M',
       "created_at": time,
       "updated_at": time,
       "sign_in_method": SignInMethod.FACEBOOK,
@@ -92,5 +95,4 @@ void main() {
     };
     final user = TagAlongUser.fromJson(map);
   });
-
 }

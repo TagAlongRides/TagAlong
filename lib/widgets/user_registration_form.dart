@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
@@ -22,8 +23,8 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'US');
   String? gradValue;
   String? universityValue = Institution.VIRGINIA_TECH;
-  String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
-  List<String> affiliations = Affiliation.values;
+  // String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
+  // List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
   List<String> gradYears = [
     '2022',
@@ -58,11 +59,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
         child: TextFormField(
             controller: firstName,
             decoration: const InputDecoration(
-              icon: Icon(Icons.account_circle_outlined),
-              border: UnderlineInputBorder(),
-              labelText: 'First Name*',
-              helperText: "* Required"
-            ),
+                icon: Icon(Icons.account_circle_outlined),
+                border: UnderlineInputBorder(),
+                labelText: 'First Name*',
+                helperText: "* Required"),
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.name,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -80,11 +80,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
         child: TextFormField(
             controller: lastName,
             decoration: const InputDecoration(
-              icon: Icon(Icons.account_circle),
-              border: UnderlineInputBorder(),
-              labelText: 'Last Name*',
-              helperText: "* Required"
-            ),
+                icon: Icon(Icons.account_circle),
+                border: UnderlineInputBorder(),
+                labelText: 'Last Name*',
+                helperText: "* Required"),
             keyboardType: TextInputType.name,
             textInputAction: TextInputAction.next,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -102,11 +101,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
         child: TextFormField(
             controller: emailController,
             decoration: const InputDecoration(
-              icon: Icon(Icons.email_outlined),
-              border: UnderlineInputBorder(),
-              labelText: 'University Email (.edu)*',
-              helperText: "* Required"
-            ),
+                icon: Icon(Icons.email_outlined),
+                border: UnderlineInputBorder(),
+                labelText: 'University Email (.edu)*',
+                helperText: "* Required"),
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -115,7 +113,8 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid .edu email';
               }
-              if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu")
+              if (!RegExp(
+                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu")
                   .hasMatch(value)) {
                 return 'Please enter a valid @vt.edu email address';
               }
@@ -139,17 +138,15 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           validator: (String? phoneNumber) {
             if (phoneNumber == null || phoneNumber.isEmpty) {
               return 'Please enter a phone number';
-            }
-            else if (phoneNumber.length != 12) {
+            } else if (phoneNumber.length != 12) {
               return 'Please enter a valid phone number';
             }
           },
           inputDecoration: const InputDecoration(
-            icon: Icon(Icons.phone),
-            border: UnderlineInputBorder(),
-            labelText: 'Phone Number*',
-            helperText: "* Required"
-          ),
+              icon: Icon(Icons.phone),
+              border: UnderlineInputBorder(),
+              labelText: 'Phone Number*',
+              helperText: "* Required"),
         ),
       ),
 
@@ -159,10 +156,9 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: DropdownButtonFormField<String>(
             value: universityValue,
             decoration: const InputDecoration(
-              icon: Icon(Icons.school_outlined),
-              labelText: "University*",
-              helperText: '* Required'
-            ),
+                icon: Icon(Icons.school_outlined),
+                labelText: "University*",
+                helperText: '* Required'),
             // icon: const Icon(Icons.school_outlined),
             items: institutions
                 .map<DropdownMenuItem<String>>((String institution) {
@@ -182,9 +178,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
             value: gradValue,
+
             decoration: const InputDecoration(
-              icon: Icon(Icons.school_rounded),
-              labelText: "Graduation Year (Optional)"),
+                icon: Icon(Icons.school_rounded),
+                labelText: "Graduation Year (Optional)"),
             // icon: const Icon(Icons.school_outlined),
             items: gradYears.map<DropdownMenuItem<String>>((String grad) {
               return DropdownMenuItem<String>(value: grad, child: Text(grad));
@@ -217,12 +214,15 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: Center(
             child: ElevatedButton(
               onPressed: () async {
-                logger.log.fine('UserRegistrationForm - onPressed() Register Button');
+                logger.log
+                    .fine('UserRegistrationForm - onPressed() Register Button');
                 final form = _formKey.currentState;
                 if (form != null) {
                   if (form.validate()) {
-                    logger.log.fine('UserRegistrationForm - User registration was valid');
-                    logger.log.fine('UserRegistrationForm -Attempting to write the following user data');
+                    logger.log.fine(
+                        'UserRegistrationForm - User registration was valid');
+                    logger.log.fine(
+                        'UserRegistrationForm -Attempting to write the following user data');
                     Map<String, dynamic> registrationData = {
                       'first_name': firstName.text,
                       'last_name': lastName.text,
@@ -232,21 +232,33 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                       'graduation_year': gradValue,
                       'is_registered': true
                     };
+
+                    // 0. Create Stripe Account and add Account id in user doc
+                    final response =
+                        await StripeCustomerRepository.instance.createCustomer(
+                      StripeCustomerCreateRequest(
+                        email: emailController.text,
+                        name: firstName.text,
+                      ),
+                    );
+                    registrationData['stripe_customer_id'] = response.data.id;
+
                     // 1. Update our [TagAlongUser] in-memory
-                    tagAlongUserViewModel.updateTagAlongUserInternal(registrationData);
+                    tagAlongUserViewModel
+                        .updateTagAlongUserInternal(registrationData);
 
                     // 2. Update the Registered TagAlongUser in Firestore
                     await tagAlongUserViewModel.updateTagAlongUserFirestore();
-                    logger.log.fine('UserRegistrationForm - Updated user with registration information!');
+                    logger.log.fine(
+                        'UserRegistrationForm - Updated user with registration information!');
 
                     // 3. Send an email verification to `email_address`.
-                    await tagAlongUserViewModel.sendEmailVerificationToUser();
+                    // FIXME:
+                    // await tagAlongUserViewModel.sendEmailVerificationToUser();
 
                     // 4. Navigate to `WelcomeScreen`
                     Navigator.pushReplacementNamed(context, '/welcome_screen');
-
-                  }
-                  else {
+                  } else {
                     logger.log.fine('User registration was NOT valid.');
                   }
                 }

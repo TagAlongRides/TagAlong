@@ -1,14 +1,15 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/data/models/ride.dart';
+import 'package:ride_repo/ride_repo.dart';
+import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/widgets/rideboard/rideboard_card.dart';
 
 class RideBoard extends StatelessWidget {
-
   const RideBoard({Key? key}) : super(key: key);
 
   @override
@@ -16,53 +17,54 @@ class RideBoard extends StatelessWidget {
     logger.log.fine('RideBoardList Build');
     // Listening to RideBoardViewModel so when user "updates filters", we
     // rebuild this RideBoard Widget, hence re-querying data with filters
-    var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen:true);
+    var rideBoardViewModel =
+        Provider.of<RideBoardViewModel>(context, listen: true);
 
     // // Listening to OfferRideViewModel for the case when a Driver posts a ride -
     // // The RideBoard should rebuild to show that ride.
     // var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
-    var uploadedRideViewModel = Provider.of<UploadRideViewModel>(context, listen: true);
+    var uploadedRideViewModel =
+        Provider.of<UploadRideViewModel>(context, listen: true);
 
     // The "RefreshIndicator" will allow us to refresh the Rideboard to get the
     // most up-to-date Rides based on set filters within RideBoardViewModel
+    RideRepository.instance
+        .getMyOfferedRides('qPL64AIflCfwXKMQ5OV5zDvnY4I2')
+        .then((value) {
+      log(value.toString());
+    });
     return RefreshIndicator(
       onRefresh: rideBoardViewModel.getRidesBasedOnFilters,
       child: FutureBuilder<void>(
         future: rideBoardViewModel.getRidesBasedOnFilters(),
-        builder: (
-            BuildContext context,
-            AsyncSnapshot snapshot) {
-              // Case 1: Future has NOT completed yet and asynchronous
-              // computation has begun
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                    child: CircularProgressIndicator()
-                );
-              }
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          // Case 1: Future has NOT completed yet and asynchronous
+          // computation has begun
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              // Case 2: Future has completed and is no longer computing
-              else if (snapshot.connectionState == ConnectionState.done) {
-
-                // Case 2a: Error
-                if (snapshot.hasError) {
-                  return const Text('Error has occur');
-                }
-                // Case 2b: Data has returned - cannot occur because Future
-                // does not return data, but updates ViewModel
-                else if (snapshot.hasData) {
-                  logger.log.fine('RideBoard - Data has return but how!');
-                  return getListViewOfRides(rideBoardViewModel.querySnapshot!);
-                }
-                // Case 2c: Future has completed, and ViewModel has hopefully
-                // been updated with updated data
-                else {
-                  return getListViewOfRides(rideBoardViewModel.querySnapshot!);
-                }
-              }
-              else {
-                return const Text('af');
-              }
-            },
+          // Case 2: Future has completed and is no longer computing
+          else if (snapshot.connectionState == ConnectionState.done) {
+            // Case 2a: Error
+            if (snapshot.hasError) {
+              return Text('Error has occur ${snapshot.error.toString()}');
+            }
+            // Case 2b: Data has returned - cannot occur because Future
+            // does not return data, but updates ViewModel
+            else if (snapshot.hasData) {
+              logger.log.fine('RideBoard - Data has return but how!');
+              return getListViewOfRides(rideBoardViewModel.querySnapshot!);
+            }
+            // Case 2c: Future has completed, and ViewModel has hopefully
+            // been updated with updated data
+            else {
+              return getListViewOfRides(rideBoardViewModel.querySnapshot!);
+            }
+          } else {
+            return const Text('af');
+          }
+        },
       ),
     );
   }
@@ -73,11 +75,11 @@ class RideBoard extends StatelessWidget {
   /// calling [getRidesBasedOnFilters] method.
   ListView getListViewOfRides(QuerySnapshot<Object?> querySnapshot) {
     return ListView.builder(
-      itemCount: querySnapshot.docs.length,
-      itemBuilder: (context, i) {
-        Ride ride = Ride.fromJson(querySnapshot.docs[i].data() as Map<String, dynamic>);
-        return RideBoardCard(ride:ride);
-      }
-    );
+        itemCount: querySnapshot.docs.length,
+        itemBuilder: (context, i) {
+          RideModel ride = RideModel.fromJson(
+              querySnapshot.docs[i].data() as Map<String, dynamic>);
+          return RideBoardCard(ride: ride);
+        });
   }
 }

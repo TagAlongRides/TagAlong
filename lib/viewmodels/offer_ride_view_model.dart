@@ -1,12 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tagalong/data/models/location.dart';
-import 'package:tagalong/data/models/ride.dart';
-import 'package:tagalong/services/data_service.dart';
-import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/data/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:ride_repo/ride_repo.dart';
+import 'package:tagalong/data/globals.dart';
+import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/util/user_data.dart';
-import 'package:tagalong/util/ride_status.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 import '../util/university_locations.dart';
@@ -200,10 +197,10 @@ class OfferRideViewModel with ChangeNotifier {
     notes = ''; // Default
   }
 
-  /// Will create a new [Ride] instance and upload the [Ride]
+  /// Will create a new [RideModel] instance and upload the [RideModel]
   /// to the "rides" collection in Firestore.
   Future<bool> createNewRide() async {
-    late Ride ride;
+    late RideModel ride;
     late Location pickupLocation;
     late Location dropoffLocation;
 
@@ -244,27 +241,31 @@ class OfferRideViewModel with ChangeNotifier {
     final driverFullName = tagAlongUserViewModel.tagAlongUser!.firstName +
         " " +
         tagAlongUserViewModel.tagAlongUser!.lastName;
-    ride = Ride(
-        createdAt: DateTime.now(),
-        rideId: ride_id,
-        driverId: tagAlongUserViewModel.tagAlongUser!.id,
-        university: Institution.VIRGINIA_TECH,
-        status: RideStatus.SCHEDULED,
-        toCampus: toCampus,
-        pickupLocation: pickupLocation,
-        dropoffLocation: dropoffLocation,
-        departureDateTime: departureDateTime!,
-        departureTimeOfDay: departureTimeOfDay!,
-        noPassengers: noPassengers,
-        noBags: noBags,
-        price: price,
-        vaccinationCard: vaccinationCard,
-        notes: notes.trim(),
-        driverFullName: driverFullName,
-        driverProfilePictureUrl:
-            tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
-        riderIds: [],
-        vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle);
+    ride = RideModel(
+      createdAt: DateTime.now(),
+      rideId: ride_id,
+      driverId: tagAlongUserViewModel.tagAlongUser!.id,
+      university: Institution.VIRGINIA_TECH,
+      status: RideStatus.scheduled,
+      toCampus: toCampus,
+      pickupLocation: pickupLocation,
+      dropoffLocation: dropoffLocation,
+      departureDateTime: departureDateTime!,
+      departureTimeOfDay: departureTimeOfDay!,
+      noPassengers: noPassengers,
+      noBags: noBags,
+      price: price,
+      vaccinationCard: vaccinationCard,
+      notes: notes.trim(),
+      driverFullName: driverFullName,
+      driverProfilePictureUrl:
+          tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
+      riderIds: [],
+      rideBookingIds: [],
+      vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle,
+      stripeAccountId:
+          tagAlongUserViewModel.tagAlongUser!.driverData!.stripeAccountId!,
+    );
 
     // Get corresponding [Map] data from [Ride]
     Map<String, dynamic> map = ride.toJson();
@@ -297,18 +298,15 @@ class OfferRideViewModel with ChangeNotifier {
     };
     return map.toString();
   }
-
 }
 
-
 /// A ViewModel that represents a subset of the "Offer Ride" user flow.
-/// This is used for the last step of actually uploading the [Ride] to the
+/// This is used for the last step of actually uploading the [RideModel] to the
 /// "rides" Firestore Collection.
 /// This is solely separated from [OfferRideViewModel] because we want to
 /// alert the [RideBoard] to rebuild when the user uploads a ride,
 /// not everytime an update occurs in the "Offer Ride" flow.
 class UploadRideViewModel with ChangeNotifier {
-
   void uploadedRide() {
     notifyListeners();
   }

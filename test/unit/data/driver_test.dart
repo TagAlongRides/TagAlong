@@ -1,8 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/data/models/driver.dart';
-import 'package:tagalong/data/models/vehicle.dart';
-
 
 void main() {
   test('Driver should be created from Map', () {
@@ -17,7 +16,7 @@ void main() {
     final vehicle = Vehicle.fromJson(vehicle_map);
 
     final driver_map = {
-      'created_at': Timestamp(1,1),
+      'created_at': Timestamp(1, 1),
       'vehicle': vehicle.toJson(),
       'is_active': true
     };

@@ -4,12 +4,11 @@ import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
-import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/util/user_data.dart';
 
 /// [TagAlongUser] ViewModel which contains business logic.
 class TagAlongUserViewModel {
-
   TagAlongUser? tagAlongUser;
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
@@ -45,11 +44,12 @@ class TagAlongUserViewModel {
         await user.reload();
         await user.updateEmail(studentEmail);
         await user.sendEmailVerification();
-        logger.log.fine('sendEmailVerificationToUser() - Sent verification email to $studentEmail');
+        logger.log.fine(
+            'sendEmailVerificationToUser() - Sent verification email to $studentEmail');
       }
-    }
-    else {
-      logger.log.fine('sendEmailVerificationToUser() - User does NOT exist, how is this possible?');
+    } else {
+      logger.log.fine(
+          'sendEmailVerificationToUser() - User does NOT exist, how is this possible?');
     }
   }
 
@@ -57,8 +57,7 @@ class TagAlongUserViewModel {
   bool? isRegistered() {
     if (userExists()) {
       return tagAlongUser!.registered;
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -67,8 +66,7 @@ class TagAlongUserViewModel {
   bool userExists() {
     if (tagAlongUser == null) {
       return false;
-    }
-    else {
+    } else {
       return true;
     }
   }
@@ -90,11 +88,30 @@ class TagAlongUserViewModel {
         // Extract the `uid` from the `UserCredential.User?`
         String uid = userCred.user!.uid;
         // Set up our [TagAlongUser] instance
-        await setUpUser(uid);
+        await setUpUser(uid, signInMethod: SignInMethod.FACEBOOK);
       }
     }
-
     // 2. User unsuccessful in Facebook Login
+    else {
+      return;
+    }
+  }
+
+  Future<void> createOrSignInApple() async {
+    // Perform the Apple login
+    UserCredential? userCred = await _authService.appleLogin();
+
+    // 1. User successfully logged into Apple and
+    // has created or has an entry in FirebaseAuth
+    if (userCred != null) {
+      if (userCred.user != null) {
+        // Extract the `uid` from the `UserCredential.User?`
+        String uid = userCred.user!.uid;
+        // Set up our [TagAlongUser] instance
+        await setUpUser(uid, signInMethod: SignInMethod.APPLE);
+      }
+    }
+    // 2. User unsuccessful in Apple Login
     else {
       return;
     }
@@ -106,11 +123,16 @@ class TagAlongUserViewModel {
   /// user must exist within the FirebaseAuth system.
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
-  Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
+  Future<void> setUpUser(String uid,
+      {String signInMethod = SignInMethod.FACEBOOK}) async {
     logger.log.fine('setUpUser()');
     // 1. [user] exists in memory
     if (tagAlongUser != null) {
       logger.log.fine('setUpUser() - TagAlongUser instance already in memory.');
+      return;
+    }
+    if (uid.isEmpty) {
+      logger.log.fine('setUpUser() - TagAlongUser uid is null');
       return;
     }
 
@@ -134,15 +156,26 @@ class TagAlongUserViewModel {
         logger.log.fine('setUpUser() - User did not exist!');
         final time = DateTime.now();
 
-        // Get the User's Facebook profile picture
-        Map<String, dynamic> json = await authService.getFacebookProfilePicture();
-        String url = json['picture']?['data']?['url'];   // Should always exist?
-        tagAlongUser = TagAlongUser(
-          id: uid,
-          profilePictureUrl: url,
-          createdAt: time,
-          updatedAt: time,
-        );
+        if (signInMethod == SignInMethod.FACEBOOK) {
+          // Get the User's Facebook profile picture
+          Map<String, dynamic> json =
+              await authService.getFacebookProfilePicture();
+          String url = json['picture']?['data']?['url']; // Should always exist?
+          tagAlongUser = TagAlongUser(
+            id: uid,
+            profilePictureUrl: url,
+            createdAt: time,
+            updatedAt: time,
+          );
+        } else {
+          // Get the User's Facebook profile picture
+          tagAlongUser = TagAlongUser(
+            id: uid,
+            profilePictureUrl: '',
+            createdAt: time,
+            updatedAt: time,
+          );
+        }
       }
       logger.log.fine('setUpUser() - TagAlongUser was initialized.');
       logger.log.fine('setUpUser() - The TagAlongUser is: $tagAlongUser}');
@@ -154,28 +187,34 @@ class TagAlongUserViewModel {
   void updateDriverData(Driver driverData) {
     if (userExists()) {
       tagAlongUser!.driverData = driverData;
-    }
-    else {
+    } else {}
+  }
 
-    }
+  /// Updates our TagAlongUser instance's `driverData`
+  void updateDriverAccountId(String accountId) {
+    if (userExists()) {
+      tagAlongUser!.stripeAccountId = accountId;
+    } else {}
   }
 
   /// Adds a [TagAlongUser] to the Firestore `users` collection.
   Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
       await databaseService.users.doc(uid).set(tagAlongUser!.toJson());
-      logger.log.fine('addTagAlongUserToFirestore() - Added TagAlongUser $uid.');
-    }
-    else {
-      logger.log.fine('addTagAlongUserToFirestore() - TagAlongUser instance does not exist in ViewModel; cannot happen');
+      logger.log
+          .fine('addTagAlongUserToFirestore() - Added TagAlongUser $uid.');
+    } else {
+      logger.log.fine(
+          'addTagAlongUserToFirestore() - TagAlongUser instance does not exist in ViewModel; cannot happen');
     }
   }
 
   /// Updates this instance's [TagAlongUser] in-memory only
   void updateTagAlongUserInternal(Map<String, dynamic> data) {
     tagAlongUser?.updateTagAlongUser(data);
-    logger.log.fine('updateTagAlongUserInternal() - TagAlongUser after update:\n'
-        '$tagAlongUser');
+    logger.log
+        .fine('updateTagAlongUserInternal() - TagAlongUser after update:\n'
+            '$tagAlongUser');
   }
 
   /// Updates the Firebase with this ViewModel's current instance of [user]
@@ -185,14 +224,14 @@ class TagAlongUserViewModel {
     Map<String, dynamic> tagAlongUserData = tagAlongUser!.toJson();
     await _databaseService.users.doc(getUid()).update(tagAlongUserData);
     logger.log.fine('updateTagAlongUser(): jsonData - $tagAlongUserData');
-
   }
-
 
   /// Checks whether the current user is an 1. Active 2. Driver.
   bool isActiveDriver() {
     return tagAlongUser?.isActiveDriver() ?? false;
   }
 
-
+  bool isStripeActive() {
+    return tagAlongUser?.isStripeActive() ?? false;
+  }
 }

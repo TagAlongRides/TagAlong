@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>296547975151-n8ss6n1uov178etjtjrer3mkit38kiem.apps.googleusercontent.com</string>
+	<string>296547975151-cvh9n6m58lhbakss3gd8rp3i625amsnl.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.296547975151-n8ss6n1uov178etjtjrer3mkit38kiem</string>
+	<string>com.googleusercontent.apps.296547975151-cvh9n6m58lhbakss3gd8rp3i625amsnl</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBXCKsYgxGNpEjvGC3nQPeAATigcUhh550</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.tagalong.tagalong</string>
+	<string>in.unicodelabs.tagalong</string>
 	<key>PROJECT_ID</key>
 	<string>tagalong-1c5fb</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:296547975151:ios:1f78afe0dd6c87252d401a</string>
+	<string>1:296547975151:ios:173695d2cca677482d401a</string>
 </dict>
 </plist>

@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tagalong/data/models/location.dart';
+import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/util/university_locations.dart';
 
-
 void main() {
-  test('Location should be created from a Map - Creating Location from Firestore query', () {
+  test(
+      'Location should be created from a Map - Creating Location from Firestore query',
+      () {
     final map = {
       'address': '1234 Example Lane',
       'city': 'SomeCity',
@@ -14,7 +15,9 @@ void main() {
     final location = Location.fromJson(map);
   });
 
-  test('Location should be created from a Map with label - Creating Location from Firestore query', () {
+  test(
+      'Location should be created from a Map with label - Creating Location from Firestore query',
+      () {
     final map = {
       'address': '1234 Example Lane',
       'city': 'SomeCity',
@@ -25,7 +28,9 @@ void main() {
     final location = Location.fromJson(map);
   });
 
-  test('Location should NOT be created from a Map - Creating Location from a bad Map', () {
+  test(
+      'Location should NOT be created from a Map - Creating Location from a bad Map',
+      () {
     final map = {
       'address': '1234 Example Lane',
       'city': null,
@@ -35,7 +40,9 @@ void main() {
     expect(() => Location.fromJson(map), throwsUnsupportedError);
   });
 
-  test('Location should NOT be created from a Map - Creating Location from a bad Map', () {
+  test(
+      'Location should NOT be created from a Map - Creating Location from a bad Map',
+      () {
     final map = {
       'address': null,
       'city': 'SomeCity',
@@ -45,7 +52,9 @@ void main() {
     expect(() => Location.fromJson(map), throwsUnsupportedError);
   });
 
-  test('Location should NOT be created from a Map - Creating Location from a bad Map', () {
+  test(
+      'Location should NOT be created from a Map - Creating Location from a bad Map',
+      () {
     final map = {
       'address': '1234 Example Lane',
       'city': 'SomeCity',
@@ -58,11 +67,10 @@ void main() {
   test('Location creation for every "VirginiaTechLocation"', () {
     for (int i = 0; i < VirginiaTechLocation.locationNames.length; i++) {
       Location loc = VirginiaTechLocation.transformAddressIntoLocation(
-        address:VirginiaTechLocation.mappings[VirginiaTechLocation.locationNames[i]]!,
-        label: VirginiaTechLocation.locationNames[i]
-      );
+          address: VirginiaTechLocation
+              .mappings[VirginiaTechLocation.locationNames[i]]!,
+          label: VirginiaTechLocation.locationNames[i]);
       print(loc.toString());
     }
   });
-
 }

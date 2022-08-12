@@ -1,6 +1,7 @@
 class SignInMethod {
   static const String INVALID = 'Invalid';
   static const String FACEBOOK = 'Facebook';
+  static const String APPLE = 'Apple';
 
   static List<String> values = [FACEBOOK];
 }

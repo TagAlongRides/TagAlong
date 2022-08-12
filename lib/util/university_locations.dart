@@ -1,4 +1,4 @@
-import 'package:tagalong/data/models/location.dart';
+import 'package:ride_repo/ride_repo.dart';
 
 /// String Enums for university locations.
 /// Note: This will most likely change in the future because if we wanted to

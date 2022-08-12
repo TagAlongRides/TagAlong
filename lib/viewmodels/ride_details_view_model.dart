@@ -1,16 +1,14 @@
 import 'package:flutter/foundation.dart';
-import 'package:tagalong/data/models/ride.dart';
 import 'package:intl/intl.dart';
+import 'package:ride_repo/ride_repo.dart';
 
 /// The Viewmodel for the "Ride Details" Page
 class RideDetailsViewModel with ChangeNotifier {
+  late RideModel ride;
 
-  late Ride ride;
-
-
-  /// Will instantiate this ViewModel's [Ride] instance.
+  /// Will instantiate this ViewModel's [RideModel] instance.
   /// This MUST be called before user fully navigates to the [RideDetails]
-  void instantiateRide({required Ride ride}) {
+  void instantiateRide({required RideModel ride}) {
     this.ride = ride;
   }
 

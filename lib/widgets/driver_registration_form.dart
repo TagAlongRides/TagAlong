@@ -1,14 +1,16 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/driver.dart';
+import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+
 import 'driver_registration/color_drop_down_button.dart';
 import 'driver_registration/make_drop_down_button.dart';
 import 'driver_registration/model_drop_down_button.dart';
 import 'driver_registration/year_drop_down_button.dart';
-import 'package:tagalong/util/log.dart' as logger;
-
 
 /// This widget will be in charge of checking the [RegisterDriverViewModel] to
 /// determine the current state/progress of the driver registration process.
@@ -24,16 +26,24 @@ class DriverRegistrationForm extends StatefulWidget {
 
 class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
+  StripeConnectResponse? _connectResponse;
 
   @override
   Widget build(BuildContext context) {
-    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    final _themeData = Theme.of(context);
+
+    TagAlongUserViewModel tagAlongUserViewModel =
+        Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     // Will rebuild on any state change from the ViewModel
-    RegisterDriverViewModel _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: true);
+    RegisterDriverViewModel _registerDriverViewModel =
+        Provider.of<RegisterDriverViewModel>(context, listen: true);
+
     bool _showModelDropDownButton = (_registerDriverViewModel.make != null);
-    bool _showYearDropDownButton = (_showModelDropDownButton && _registerDriverViewModel.model != null);
-    bool _showColorDropDownButton = (_showYearDropDownButton && _registerDriverViewModel.year != null);
+    bool _showYearDropDownButton =
+        (_showModelDropDownButton && _registerDriverViewModel.model != null);
+    bool _showColorDropDownButton =
+        (_showYearDropDownButton && _registerDriverViewModel.year != null);
 
     return Form(
       key: _formKey,
@@ -43,71 +53,102 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
             flex: 5,
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Make
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: MakeDropDownButtonWidget()
-                  ),
-
-                  // 2. Model - dependant on Make
-                  if (_showModelDropDownButton)
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1. Make
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: ModelDropDownButton()
-                    ),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: MakeDropDownButtonWidget()),
 
-                  // 3. Year - dependant on Make & Model
-                  if (_showYearDropDownButton)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: YearDropDownButton()
-                    ),
+                    // 2. Model - dependant on Make
+                    if (_showModelDropDownButton)
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: ModelDropDownButton()),
 
-                  // 4. Color - A static enum list therefore no async
-                  if (_showColorDropDownButton)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: ColorDropDownButton()
-                    )
-                ]
+                    // 3. Year - dependant on Make & Model
+                    if (_showYearDropDownButton)
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: YearDropDownButton()),
+
+                    // 4. Color - A static enum list therefore no async
+                    if (_showColorDropDownButton)
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: ColorDropDownButton())
+                  ]),
+            ),
+          ),
+          SizedBox(
+            width: 220,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed('/stripe-registration')
+                    .then((value) {
+                  if (value != null) {
+                    setState(() {
+                      _connectResponse = value as StripeConnectResponse;
+                    });
+                  }
+                });
+              },
+              icon: _connectResponse == null
+                  ? const Icon(Icons.payment_rounded)
+                  : const Icon(Icons.check_rounded),
+              label: const Text('Connect To Stripe'),
+              style: ElevatedButton.styleFrom(
+                primary: _connectResponse == null
+                    ? Colors.red.withOpacity(.9)
+                    : Colors.green.withOpacity(.9),
               ),
             ),
           ),
-
+          Text(
+            'Stripe is our Payment Processer',
+            style: _themeData.textTheme.caption,
+          ),
           Expanded(
             flex: 1,
             child: Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  // Form is VALID
-                  if (_formKey.currentState!.validate()) {
-                    // 1. Create [Driver] instance
-                    Driver? driver = _registerDriverViewModel.createDriver();
-                    if (driver == null) {
-                      logger.log.fine('DriverRegistrationForm - Driver not valid?');
-                    }
-                    else {
-                      // 1. Update our [TagAlongUser] in-memory
-                      Map<String, dynamic> data = {'driver_data': driver};
-                      tagAlongUserViewModel.updateTagAlongUserInternal(data);
+                child: LoadingButton(
+              onPressed: () async {
+                // Form is VALID
+                if (_formKey.currentState!.validate()) {
+                  // 1. Create [Driver] instance
+                  Driver? driver = _registerDriverViewModel.createDriver();
 
-                      // 2. Update [TagAlongUser] in Firestore
-                      tagAlongUserViewModel.updateTagAlongUserFirestore();
+                  if (driver == null) {
+                    logger.log
+                        .fine('DriverRegistrationForm - Driver not valid?');
+                  } else {
+                    // 0. added driver account id to drive data doc
+                    driver.stripeAccountId = _connectResponse!.data.accountId;
 
-                      // 3. Navigate to Rideboard
-                      Navigator.pushReplacementNamed(context, '/ride_board');
-                    }
+                    //0.1 - Check of Stripe Account dont have any required action
+                    final stripeAccount = await StripeAccountRepository.instance
+                        .getAccount(_connectResponse!.data.accountId);
+                    driver.isStripeActive = stripeAccount.data.chargesEnabled;
+
+                    // 1. Update our [TagAlongUser] in-memory
+                    Map<String, dynamic> data = {'driver_data': driver};
+                    tagAlongUserViewModel.updateTagAlongUserInternal(data);
+
+                    // 2. Update [TagAlongUser] in Firestore
+                    tagAlongUserViewModel.updateTagAlongUserFirestore();
+
+                    // 3. Navigate to Rideboard
+                    Navigator.pushReplacementNamed(context, '/ride_board');
                   }
-                },
-                child: const Text('Let\'s Go!'),
-              )
-            ),
-
+                }
+              },
+              text: 'Let\'s Go!',
+              // child: const Text(''),
+            )),
           )
-        ]
-      )
+        ],
+      ),
     );
   }
 }
