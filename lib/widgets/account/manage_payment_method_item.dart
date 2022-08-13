@@ -62,7 +62,7 @@ class ManagePaymentMethodItem extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       // TODO - Call Stripe to remove this payment method from account
-                      Navigator.of(context).pop(false);
+                      Navigator.of(context).pop(true);
                     },
                     child: const Text('Confirm'),
                   ),

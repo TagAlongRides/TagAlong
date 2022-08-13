@@ -20,35 +20,44 @@ class PaymentMethodsScreen extends StatelessWidget {
       body: FutureBuilder<StripePaymentMethodResponse>(
         future: StripeCustomerRepository.instance.getPaymentMethod(_user!.stripeCustomerId),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              padding: const EdgeInsets.all(12),
+              child: const CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData) {
             final data = snapshot.data!.data.data;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PaymentPrefHeader('Saved Payment Methods'),
+                const PaymentPrefHeader('Saved Payment Methods'),
                 Flexible(
                   fit: FlexFit.loose,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      return ManagePaymentMethodItem(data[index]);
-                    },
-                  ),
+                  child: data.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            'You haven' 't saved any payment methods yet. Try adding one!',
+                            style: TextStyle(fontStyle: FontStyle.italic),
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return ManagePaymentMethodItem(data[index]);
+                          },
+                        ),
                 ),
                 const SizedBox(height: 12),
-                PaymentPrefHeader('Add a Payment Method'),
-                NewPaymentMethod(),
+                const PaymentPrefHeader('Add a Payment Method'),
+                const NewPaymentMethod(),
               ],
             );
-          }
-          if (snapshot.hasError) {
+          } else {
             print(snapshot.error);
+            throw snapshot.error!;
           }
-          return Container(
-            padding: const EdgeInsets.all(12),
-            child: const CircularProgressIndicator(),
-          );
         },
       ),
     );
