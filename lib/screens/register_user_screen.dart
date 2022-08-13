@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
@@ -9,6 +10,7 @@ import 'package:tagalong/widgets/user_registration_form.dart';
 
 class RegisterUserScreen extends StatefulWidget {
   const RegisterUserScreen({Key? key}) : super(key: key);
+  static const routeName = '/register_user';
 
   @override
   _RegisterUserScreenState createState() => _RegisterUserScreenState();
@@ -38,9 +40,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
               children: const [
                 SizedBox(height: 16),
                 Text('School Information', style: TextStyle(fontSize: 24.0)),
-                Text('Nice to meet you!',
-                    style:
-                        TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+                Text('Nice to meet you!', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
               ])),
       body: const SafeArea(
         child: Center(
@@ -59,6 +59,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
 /// account in the [users] collection within Cloud Firestore.
 class RegistrationWrapper extends StatefulWidget {
   const RegistrationWrapper({Key? key}) : super(key: key);
+  static const routeName = '/registration_wrapper';
 
   @override
   _RegistrationWrapperState createState() => _RegistrationWrapperState();
@@ -70,18 +71,16 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
     bool? isRegistered = vm.isRegistered();
 
     if (isRegistered == true) {
-      logger.log.fine(
-          '_setUpUser() - User is registered in register_user_screen. To Rideboard');
+      logger.log.fine('_setUpUser() - User is registered in register_user_screen. To Rideboard');
       Timer(const Duration(seconds: 1), () {
-        Navigator.pushReplacementNamed(context, '/ride_board');
+        Navigator.pushReplacementNamed(context, RideBoardScreen.routeName);
       });
     }
     // 2. User is NOT registered
     else {
-      logger.log.fine(
-          '_setUpUser() - User is NOT registered in register_user_screen. To User Registration');
+      logger.log.fine('_setUpUser() - User is NOT registered in register_user_screen. To User Registration');
       Timer(const Duration(seconds: 1), () {
-        Navigator.pushReplacementNamed(context, '/register_user');
+        Navigator.pushReplacementNamed(context, RegisterUserScreen.routeName);
       });
     }
   }
@@ -89,16 +88,12 @@ class _RegistrationWrapperState extends State<RegistrationWrapper> {
   @override
   void initState() {
     super.initState();
-    TagAlongUserViewModel tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     _setUpUser(tagAlongUserViewModel);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        body:
-            const SafeArea(child: Center(child: CircularProgressIndicator())));
+    return Scaffold(appBar: AppBar(), body: const SafeArea(child: Center(child: CircularProgressIndicator())));
   }
 }

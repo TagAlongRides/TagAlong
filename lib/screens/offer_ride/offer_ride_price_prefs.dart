@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -8,6 +9,7 @@ import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
 class OfferRidePricePrefs extends StatefulWidget {
   const OfferRidePricePrefs({Key? key}) : super(key: key);
+  static const routeName = '/offer_ride_price_prefs';
 
   @override
   State<OfferRidePricePrefs> createState() => _OfferRidePricePrefsState();
@@ -19,8 +21,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
   @override
   Widget build(BuildContext context) {
     var vm = Provider.of<OfferRideViewModel>(context, listen: false);
-    var uploadRideViewModel =
-        Provider.of<UploadRideViewModel>(context, listen: false);
+    var uploadRideViewModel = Provider.of<UploadRideViewModel>(context, listen: false);
     logger.log.fine('HERE: ${vm.runtimeType}');
     var buttonWidth = MediaQuery.of(context).size.width * .35;
 
@@ -38,8 +39,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
             }),
         title: _getProgressBar(),
       ),
-      body: SingleChildScrollView(child: Consumer<OfferRideViewModel>(
-          builder: (context, offerRideViewModel, child) {
+      body: SingleChildScrollView(child: Consumer<OfferRideViewModel>(builder: (context, offerRideViewModel, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -87,8 +87,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                           ),
                         ),
                       ),
-                      child: Text('\$${offerRideViewModel.price}',
-                          style: Theme.of(context).textTheme.headline2),
+                      child: Text('\$${offerRideViewModel.price}', style: Theme.of(context).textTheme.headline2),
                     ),
                     IconButton(
                         icon: Icon(
@@ -110,8 +109,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
               ),
             ),
             Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 child: TextField(
                   maxLength: 280,
                   controller: notesController,
@@ -120,8 +118,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                     hintText: 'Are you on the talkative or quiet side?'
                         ' Are there some car rules? Any specific music you like listening to?'
                         ' If there\'s anything you\'d like people to know, this is the place to put it.',
-                    hintStyle:
-                        theme.TagAlongTheme.lightTextTheme.bodyText1!.copyWith(
+                    hintStyle: theme.TagAlongTheme.lightTextTheme.bodyText1!.copyWith(
                       fontStyle: FontStyle.italic,
                       color: theme.TagAlongTheme.colorMediumEmphasis,
                     ),
@@ -144,8 +141,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                       style: Theme.of(context).textTheme.caption,
                       children: const [
                         TextSpan(
-                          text:
-                              'If you require proof of vaccination or wearing a mask, check the box.',
+                          text: 'If you require proof of vaccination or wearing a mask, check the box.',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
@@ -160,105 +156,92 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
             ),
             Padding(
                 padding: const EdgeInsets.only(bottom: 24),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: OutlinedButton(
-                          child: const Text('Cancel'),
-                          onPressed: () async {
-                            return showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('Cancel Ride'),
-                                  content: const Text(
-                                      'Are you sure you want to cancel your ride posting?'
-                                      '\nThis will reset your progress and take you back to the Rideboard.'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: const Text('Back')),
-                                    TextButton(
-                                      onPressed: () {
-                                        offerRideViewModel.resetAll();
-                                        logger.log.fine(
-                                            'Canceling OfferRidePricePrefs');
-                                        Navigator.popUntil(context,
-                                            ModalRoute.withName('/ride_board'));
-                                      },
-                                      child: const Text('Cancel'),
-                                    )
-                                  ],
-                                );
-                              },
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                  SizedBox(
+                    width: buttonWidth,
+                    height: 50,
+                    child: OutlinedButton(
+                      child: const Text('Cancel'),
+                      onPressed: () async {
+                        return showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Cancel Ride'),
+                              content: const Text('Are you sure you want to cancel your ride posting?'
+                                  '\nThis will reset your progress and take you back to the Rideboard.'),
+                              actions: <Widget>[
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Back')),
+                                TextButton(
+                                  onPressed: () {
+                                    offerRideViewModel.resetAll();
+                                    logger.log.fine('Canceling OfferRidePricePrefs');
+                                    Navigator.popUntil(context, ModalRoute.withName(RideBoardScreen.routeName));
+                                  },
+                                  child: const Text('Cancel'),
+                                )
+                              ],
                             );
                           },
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: buttonWidth,
+                    height: 50,
+                    child: OutlinedButton(
+                      child: Text(
+                        'Post Ride',
+                        style: theme.TagAlongTheme.lightTextTheme.button!.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: OutlinedButton(
-                          child: Text(
-                            'Post Ride',
-                            style: theme.TagAlongTheme.lightTextTheme.button!
-                                .copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: theme.TagAlongTheme.outlinedButtonTheme.style!
-                              .copyWith(
-                            backgroundColor: MaterialStateProperty.all(
-                                theme.TagAlongTheme.primarySwatch),
-                          ),
-                          onPressed: () async {
-                            return showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('Post Ride'),
-                                  content: const Text(
-                                      'Are you sure you want to post your ride?'
-                                      '\nThis ride will available on the Rideboard as soon as you post!'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Back'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        offerRideViewModel
-                                            .updateNotes(notesController.text);
+                      style: theme.TagAlongTheme.outlinedButtonTheme.style!.copyWith(
+                        backgroundColor: MaterialStateProperty.all(theme.TagAlongTheme.primarySwatch),
+                      ),
+                      onPressed: () async {
+                        return showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Post Ride'),
+                              content: const Text('Are you sure you want to post your ride?'
+                                  '\nThis ride will available on the Rideboard as soon as you post!'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Back'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    offerRideViewModel.updateNotes(notesController.text);
 
-                                        await offerRideViewModel
-                                            .createNewRide();
+                                    await offerRideViewModel.createNewRide();
 
-                                        uploadRideViewModel.uploadedRide();
+                                    uploadRideViewModel.uploadedRide();
 
-                                        logger.log.fine(
-                                            'Posting OfferRidePricePrefs');
+                                    logger.log.fine('Posting OfferRidePricePrefs');
 
-                                        Navigator.popUntil(context,
-                                            ModalRoute.withName('/ride_board'));
-                                      },
-                                      child: const Text('Post'),
-                                    )
-                                  ],
-                                );
-                              },
+                                    Navigator.popUntil(context, ModalRoute.withName(RideBoardScreen.routeName));
+                                  },
+                                  child: const Text('Post'),
+                                )
+                              ],
                             );
                           },
-                        ),
-                      ),
-                    ]))
+                        );
+                      },
+                    ),
+                  ),
+                ]))
           ],
         );
       })),

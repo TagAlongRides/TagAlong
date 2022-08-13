@@ -3,6 +3,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
@@ -28,15 +29,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   // String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
   // List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
-  List<String> gradYears = [
-    '2022',
-    '2023',
-    '2024',
-    '2025',
-    '2026',
-    '2027',
-    '2028'
-  ];
+  List<String> gradYears = ['2022', '2023', '2024', '2025', '2026', '2027', '2028'];
 
   @override
   void dispose() {
@@ -50,8 +43,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
   @override
   Widget build(BuildContext context) {
-    final _isNewUser =
-        widget._user!.firstName == null || widget._user!.firstName.isEmpty;
+    final _isNewUser = widget._user!.firstName == null || widget._user!.firstName.isEmpty;
 
     var _updatedUser = TagAlongUser(
       id: widget._user!.id,
@@ -65,8 +57,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
       institution: widget._user!.institution,
       graduationYear: widget._user!.graduationYear,
     );
-    TagAlongUserViewModel tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     // Keep TextFormFields on top, DropdownMenus below
     List<Widget> childrenList = [
@@ -163,9 +154,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             if (value == null || value.isEmpty) {
               return 'Please enter a valid .edu email';
             }
-            if (!RegExp(
-                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu")
-                .hasMatch(value)) {
+            if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu").hasMatch(value)) {
               return 'Please enter a valid @vt.edu email address';
             }
             return null;
@@ -241,14 +230,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             child: DropdownButtonFormField<String>(
               value: _isNewUser ? universityValue : widget._user!.institution,
               decoration: const InputDecoration(
-                  icon: Icon(Icons.school_outlined),
-                  labelText: "University*",
-                  helperText: '* Required'),
+                  icon: Icon(Icons.school_outlined), labelText: "University*", helperText: '* Required'),
               // icon: const Icon(Icons.school_outlined),
-              items: institutions
-                  .map<DropdownMenuItem<String>>((String institution) {
-                return DropdownMenuItem<String>(
-                    value: institution, child: Text(institution));
+              items: institutions.map<DropdownMenuItem<String>>((String institution) {
+                return DropdownMenuItem<String>(value: institution, child: Text(institution));
               }).toList(),
               onChanged: (String? value) {
                 // Call setState() to rebuild the widget with the current value
@@ -264,9 +249,8 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: DropdownButtonFormField<String>(
             value: _isNewUser ? gradValue : widget._user!.graduationYear,
 
-            decoration: const InputDecoration(
-                icon: Icon(Icons.school_rounded),
-                labelText: "Graduation Year (Optional)"),
+            decoration:
+                const InputDecoration(icon: Icon(Icons.school_rounded), labelText: "Graduation Year (Optional)"),
             // icon: const Icon(Icons.school_outlined),
             items: gradYears.map<DropdownMenuItem<String>>((String grad) {
               return DropdownMenuItem<String>(value: grad, child: Text(grad));
@@ -313,17 +297,14 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: Center(
             child: ElevatedButton(
               onPressed: () async {
-                logger.log
-                    .fine('UserRegistrationForm - onPressed() Register Button');
+                logger.log.fine('UserRegistrationForm - onPressed() Register Button');
                 final form = _formKey.currentState;
                 logger.log.fine('form is null? ${form == null}');
                 if (form != null) {
                   if (form.validate()) {
                     form.save();
-                    logger.log.fine(
-                        'UserRegistrationForm - User registration was valid');
-                    logger.log.fine(
-                        'UserRegistrationForm -Attempting to write the following user data');
+                    logger.log.fine('UserRegistrationForm - User registration was valid');
+                    logger.log.fine('UserRegistrationForm -Attempting to write the following user data');
                     Map<String, dynamic> registrationData = {
                       'first_name': _updatedUser.firstName,
                       'last_name': _updatedUser.lastName,
@@ -337,8 +318,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
                     if (_isNewUser) {
                       // 0. Create Stripe Account and add Account id in user doc
-                      final response = await StripeCustomerRepository.instance
-                          .createCustomer(
+                      final response = await StripeCustomerRepository.instance.createCustomer(
                         StripeCustomerCreateRequest(
                           email: emailController.text,
                           name: firstName.text,
@@ -348,13 +328,11 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                     }
 
                     // 1. Update our [TagAlongUser] in-memory
-                    tagAlongUserViewModel
-                        .updateTagAlongUserInternal(registrationData);
+                    tagAlongUserViewModel.updateTagAlongUserInternal(registrationData);
 
                     // 2. Update the Registered TagAlongUser in Firestore
                     await tagAlongUserViewModel.updateTagAlongUserFirestore();
-                    logger.log.fine(
-                        'UserRegistrationForm - Updated user with registration information!');
+                    logger.log.fine('UserRegistrationForm - Updated user with registration information!');
 
                     // 3. Send an email verification to `email_address`.
                     // FIXME:
@@ -362,8 +340,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
                     // 4. Navigate to `WelcomeScreen`
                     if (_isNewUser) {
-                      Navigator.pushReplacementNamed(
-                          context, '/welcome_screen');
+                      Navigator.pushReplacementNamed(context, WelcomeScreen.routeName);
                     } else {
                       FocusManager.instance.primaryFocus?.unfocus();
                       Navigator.of(context).pop();
@@ -373,9 +350,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                   }
                 }
               },
-              child: _isNewUser
-                  ? const Text("Register")
-                  : const Text("Apply Changes"),
+              child: _isNewUser ? const Text("Register") : const Text("Apply Changes"),
             ),
           ),
         )

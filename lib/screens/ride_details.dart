@@ -9,18 +9,16 @@ import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
 class RideDetails extends StatelessWidget {
   const RideDetails({Key? key}) : super(key: key);
+  static const routeName = '/ride_details';
 
   @override
   Widget build(BuildContext context) {
-    var rideDetailsViewModel =
-        Provider.of<RideDetailsViewModel>(context, listen: false);
+    var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
 
     return Scaffold(
         appBar: AppBar(
           title: const Text("Ride Details"),
-          leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () => Navigator.pop(context)),
+          leading: IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () => Navigator.pop(context)),
         ),
         body: SingleChildScrollView(
             child: Column(children: [
@@ -53,18 +51,14 @@ class RideDetails extends StatelessWidget {
         child: Row(children: [
           Expanded(
               flex: 2,
-              child: Text(
-                  DateFormat('EEEE MMM d').format(ride.departureDateTime),
+              child: Text(DateFormat('EEEE MMM d').format(ride.departureDateTime),
                   style: Theme.of(context).textTheme.headline6)),
           const Expanded(
               flex: 1,
               child: VerticalDivider(
                 thickness: 1,
               )),
-          Expanded(
-              flex: 1,
-              child: Text(ride.departureTimeOfDay,
-                  style: Theme.of(context).textTheme.headline6))
+          Expanded(flex: 1, child: Text(ride.departureTimeOfDay, style: Theme.of(context).textTheme.headline6))
         ]),
       ),
     );
@@ -83,8 +77,7 @@ class RideDetails extends StatelessWidget {
           ]),
           Row(children: [
             Expanded(
-                child: Text(
-                    ride.pickupLocation.label ?? ride.pickupLocation.city,
+                child: Text(ride.pickupLocation.label ?? ride.pickupLocation.city,
                     style: Theme.of(context).textTheme.headline6)),
             Expanded(
                 child: Text(
@@ -124,8 +117,7 @@ class RideDetails extends StatelessWidget {
                   backgroundImage: NetworkImage(ride.driverProfilePictureUrl),
                 ),
               ),
-              Text(ride.getFirstNameAndInitial(),
-                  style: Theme.of(context).textTheme.headline6),
+              Text(ride.getFirstNameAndInitial(), style: Theme.of(context).textTheme.headline6),
             ])),
             OutlinedButton.icon(
               onPressed: () {
@@ -166,31 +158,22 @@ class RideDetails extends StatelessWidget {
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         child: Column(children: [
           Row(children: [
-            const Padding(
-                padding: EdgeInsets.only(right: 16),
-                child: Icon(Icons.directions_car_outlined)),
+            const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.directions_car_outlined)),
             Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(ride.vehicle.toString()),
-                  Text(ride.vehicle.color)
-                ]),
+                children: [Text(ride.vehicle.toString()), Text(ride.vehicle.color)]),
           ]),
           const SizedBox(height: 16),
           Row(children: [
-            const Padding(
-                padding: EdgeInsets.only(right: 16),
-                child: Icon(Icons.backpack_outlined)),
+            const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.backpack_outlined)),
             Text('${ride.noBags} bags per person'),
           ]),
           // IF covid precautions were required, introduce INFO (i) button
           if (ride.vaccinationCard) const SizedBox(height: 16),
           if (ride.vaccinationCard)
             Row(children: [
-              const Padding(
-                  padding: EdgeInsets.only(right: 16),
-                  child: Icon(Icons.masks)),
+              const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.masks)),
               const Text('COVID safety precautions required'),
               const SizedBox(width: 16),
               IconButton(
@@ -206,9 +189,7 @@ class RideDetails extends StatelessWidget {
                               content: const Text(
                                   'This Driver has indicated proof of vaccination or wearing a mask is required. Please ensure you bring your vaccination card and a mask to wear. Failure to do so, Drivers reserve the right to refuse providing a ride.'),
                               actions: <Widget>[
-                                TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () => Navigator.pop(context))
+                                TextButton(child: const Text('OK'), onPressed: () => Navigator.pop(context))
                               ]);
                         });
                   })
@@ -217,8 +198,7 @@ class RideDetails extends StatelessWidget {
   }
 
   Widget _getPricing(BuildContext context, RideModel ride) {
-    var rideDetailsViewModel =
-        Provider.of<RideDetailsViewModel>(context, listen: false);
+    var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
@@ -247,9 +227,7 @@ class RideDetails extends StatelessWidget {
                             content: const Text(
                                 'This fee helps support TagAlong’s platform and covers a broad range of operating costs including app maintenance and support.'),
                             actions: <Widget>[
-                              TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () => Navigator.pop(context))
+                              TextButton(child: const Text('OK'), onPressed: () => Navigator.pop(context))
                             ]);
                       });
                 }),
@@ -263,9 +241,7 @@ class RideDetails extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text('Continue'),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: Text('\$${rideDetailsViewModel.getTotalPrice()}'))
+                Align(alignment: Alignment.centerRight, child: Text('\$${rideDetailsViewModel.getTotalPrice()}'))
               ],
             ),
             onPressed: () {

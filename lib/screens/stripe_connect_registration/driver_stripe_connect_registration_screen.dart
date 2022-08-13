@@ -12,21 +12,19 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class DriverStripeConnectRegistrationScreen extends StatefulWidget {
   const DriverStripeConnectRegistrationScreen({Key? key}) : super(key: key);
+  static const routeName = '/stripe-registration';
 
   @override
-  State<DriverStripeConnectRegistrationScreen> createState() =>
-      _DriverStripeConnectRegistrationScreenState();
+  State<DriverStripeConnectRegistrationScreen> createState() => _DriverStripeConnectRegistrationScreenState();
 }
 
-class _DriverStripeConnectRegistrationScreenState
-    extends State<DriverStripeConnectRegistrationScreen> {
+class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConnectRegistrationScreen> {
   StripeConnectResponse? _connectResponse;
 
   TagAlongUser? _tagAlongUser;
   late TagAlongUserViewModel _tagAlongUserViewModel;
 
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
 
   @override
   void initState() {
@@ -42,8 +40,7 @@ class _DriverStripeConnectRegistrationScreenState
   @override
   Widget build(BuildContext context) {
     final _themeData = Theme.of(context);
-    _tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     _tagAlongUser = _tagAlongUserViewModel.tagAlongUser;
 
     return _connectResponse != null
@@ -81,10 +78,8 @@ class _DriverStripeConnectRegistrationScreenState
     );
 
     String? stripeAccountId;
-    if (_tagAlongUser?.stripeAccountId == null ||
-        _tagAlongUser!.stripeAccountId!.isEmpty) {
-      final StripeAccountCreateResponse accountCreateResponse =
-          await StripeAccountRepository.instance.createAccount(
+    if (_tagAlongUser?.stripeAccountId == null || _tagAlongUser!.stripeAccountId!.isEmpty) {
+      final StripeAccountCreateResponse accountCreateResponse = await StripeAccountRepository.instance.createAccount(
         StripeAccountCreateRequest(
           email: _tagAlongUser!.emailAddress,
           firstName: _tagAlongUser!.firstName,
@@ -95,8 +90,7 @@ class _DriverStripeConnectRegistrationScreenState
       );
 
       ///save the account_id in the user profile
-      _tagAlongUserViewModel
-          .updateDriverAccountId(accountCreateResponse.data.id);
+      _tagAlongUserViewModel.updateDriverAccountId(accountCreateResponse.data.id);
       await _tagAlongUserViewModel.updateTagAlongUserFirestore();
       stripeAccountId = accountCreateResponse.data.id;
     } else {
@@ -125,9 +119,7 @@ class _DriverStripeConnectRegistrationScreenState
             title: const Text('Error'),
             content: Text(error.toString()),
             actions: <Widget>[
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Ok')),
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Ok')),
             ],
           );
         },
