@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 import 'package:stripe_repo/stripe_repo.dart';
+import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 class UserRegistrationForm extends StatefulWidget {
-  const UserRegistrationForm({Key? key}) : super(key: key);
+  final TagAlongUser? _user;
+  const UserRegistrationForm(this._user, {Key? key}) : super(key: key);
 
   @override
   _UserRegistrationFormState createState() => _UserRegistrationFormState();
@@ -26,15 +29,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   // String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
   // List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
-  List<String> gradYears = [
-    '2022',
-    '2023',
-    '2024',
-    '2025',
-    '2026',
-    '2027',
-    '2028'
-  ];
+  List<String> gradYears = ['2022', '2023', '2024', '2025', '2026', '2027', '2028'];
 
   @override
   void dispose() {
@@ -48,8 +43,21 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
   @override
   Widget build(BuildContext context) {
-    TagAlongUserViewModel tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    final _isNewUser = widget._user!.firstName == null || widget._user!.firstName.isEmpty;
+
+    var _updatedUser = TagAlongUser(
+      id: widget._user!.id,
+      profilePictureUrl: widget._user!.profilePictureUrl,
+      createdAt: widget._user!.createdAt,
+      updatedAt: widget._user!.updatedAt,
+      firstName: widget._user!.firstName,
+      lastName: widget._user!.lastName,
+      phoneNumber: widget._user!.phoneNumber,
+      emailAddress: widget._user!.emailAddress,
+      institution: widget._user!.institution,
+      graduationYear: widget._user!.graduationYear,
+    );
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     // Keep TextFormFields on top, DropdownMenus below
     List<Widget> childrenList = [
@@ -57,69 +65,115 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
-            controller: firstName,
-            decoration: const InputDecoration(
-                icon: Icon(Icons.account_circle_outlined),
-                border: UnderlineInputBorder(),
-                labelText: 'First Name*',
-                helperText: "* Required"),
-            textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.name,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a first name';
-              }
-              return null;
-            }),
+          controller: _isNewUser ? firstName : null,
+          initialValue: _isNewUser ? null : widget._user!.firstName,
+          decoration: const InputDecoration(
+              icon: Icon(Icons.account_circle_outlined),
+              border: UnderlineInputBorder(),
+              labelText: 'First Name*',
+              helperText: "* Required"),
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.name,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter a first name';
+            }
+            return null;
+          },
+          onSaved: (value) {
+            _updatedUser = TagAlongUser(
+              id: _updatedUser.id,
+              profilePictureUrl: _updatedUser.profilePictureUrl,
+              createdAt: _updatedUser.createdAt,
+              updatedAt: _updatedUser.updatedAt,
+              firstName: value!,
+              lastName: _updatedUser.lastName,
+              phoneNumber: _updatedUser.phoneNumber,
+              emailAddress: _updatedUser.emailAddress,
+              institution: widget._user!.institution,
+              graduationYear: _updatedUser.graduationYear,
+            );
+          },
+        ),
       ),
 
       // 2. Last Name
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
-            controller: lastName,
-            decoration: const InputDecoration(
-                icon: Icon(Icons.account_circle),
-                border: UnderlineInputBorder(),
-                labelText: 'Last Name*',
-                helperText: "* Required"),
-            keyboardType: TextInputType.name,
-            textInputAction: TextInputAction.next,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a last name';
-              }
-              return null;
-            }),
+          controller: _isNewUser ? lastName : null,
+          initialValue: _isNewUser ? null : widget._user!.lastName,
+          decoration: const InputDecoration(
+              icon: Icon(Icons.account_circle),
+              border: UnderlineInputBorder(),
+              labelText: 'Last Name*',
+              helperText: "* Required"),
+          keyboardType: TextInputType.name,
+          textInputAction: TextInputAction.next,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter a last name';
+            }
+            return null;
+          },
+          onSaved: (value) {
+            _updatedUser = TagAlongUser(
+              id: _updatedUser.id,
+              profilePictureUrl: _updatedUser.profilePictureUrl,
+              createdAt: _updatedUser.createdAt,
+              updatedAt: _updatedUser.updatedAt,
+              firstName: _updatedUser.firstName,
+              lastName: value!,
+              phoneNumber: _updatedUser.phoneNumber,
+              emailAddress: _updatedUser.emailAddress,
+              institution: widget._user!.institution,
+              graduationYear: _updatedUser.graduationYear,
+            );
+          },
+        ),
       ),
 
       // 3. School Email
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: TextFormField(
-            controller: emailController,
-            decoration: const InputDecoration(
-                icon: Icon(Icons.email_outlined),
-                border: UnderlineInputBorder(),
-                labelText: 'University Email (.edu)*',
-                helperText: "* Required"),
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (String? value) {
-              // TODO: Update email domain validation to be dynamic with institution selection
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid .edu email';
-              }
-              if (!RegExp(
-                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu")
-                  .hasMatch(value)) {
-                return 'Please enter a valid @vt.edu email address';
-              }
-              return null;
-            }),
+          controller: _isNewUser ? emailController : null,
+          initialValue: _isNewUser ? null : widget._user!.emailAddress,
+          decoration: const InputDecoration(
+              icon: Icon(Icons.email_outlined),
+              border: UnderlineInputBorder(),
+              labelText: 'University Email (.edu)*',
+              helperText: "* Required"),
+          keyboardType: TextInputType.emailAddress,
+          textInputAction: TextInputAction.next,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (String? value) {
+            // TODO: Update email domain validation to be dynamic with institution selection
+            if (value == null || value.isEmpty) {
+              return 'Please enter a valid .edu email';
+            }
+            if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu").hasMatch(value)) {
+              return 'Please enter a valid @vt.edu email address';
+            }
+            return null;
+          },
+          onSaved: (value) {
+            _updatedUser = TagAlongUser(
+              id: _updatedUser.id,
+              profilePictureUrl: _updatedUser.profilePictureUrl,
+              createdAt: _updatedUser.createdAt,
+              updatedAt: _updatedUser.updatedAt,
+              firstName: _updatedUser.firstName,
+              lastName: _updatedUser.lastName,
+              phoneNumber: _updatedUser.phoneNumber,
+              emailAddress: value!,
+              institution: widget._user!.institution,
+              graduationYear: _updatedUser.graduationYear,
+            );
+          },
+        ),
       ),
 
       // 4. Phone Number
@@ -129,7 +183,12 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           onInputChanged: (PhoneNumber inputNumber) {
             phoneNumber = inputNumber;
           },
-          initialValue: phoneNumber,
+          initialValue: _isNewUser
+              ? phoneNumber
+              : PhoneNumber(
+                  phoneNumber: widget._user!.phoneNumber,
+                  isoCode: 'US',
+                ),
           textFieldController: phoneController,
           keyboardType: TextInputType.phone,
           keyboardAction: TextInputAction.next,
@@ -142,6 +201,20 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               return 'Please enter a valid phone number';
             }
           },
+          onSaved: (value) {
+            _updatedUser = TagAlongUser(
+              id: _updatedUser.id,
+              profilePictureUrl: _updatedUser.profilePictureUrl,
+              createdAt: _updatedUser.createdAt,
+              updatedAt: _updatedUser.updatedAt,
+              firstName: _updatedUser.firstName,
+              lastName: _updatedUser.lastName,
+              phoneNumber: value.phoneNumber!,
+              emailAddress: _updatedUser.emailAddress,
+              institution: widget._user!.institution,
+              graduationYear: _updatedUser.graduationYear,
+            );
+          },
           inputDecoration: const InputDecoration(
               icon: Icon(Icons.phone),
               border: UnderlineInputBorder(),
@@ -151,37 +224,33 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
       ),
 
       // 5. College/University
-      Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: DropdownButtonFormField<String>(
-            value: universityValue,
-            decoration: const InputDecoration(
-                icon: Icon(Icons.school_outlined),
-                labelText: "University*",
-                helperText: '* Required'),
-            // icon: const Icon(Icons.school_outlined),
-            items: institutions
-                .map<DropdownMenuItem<String>>((String institution) {
-              return DropdownMenuItem<String>(
-                  value: institution, child: Text(institution));
-            }).toList(),
-            onChanged: (String? value) {
-              // Call setState() to rebuild the widget with the current value
-              setState(() {
-                universityValue = value!;
-              });
-            },
-          )),
+      if (_isNewUser) // For now, do not allow users to change their college
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: DropdownButtonFormField<String>(
+              value: _isNewUser ? universityValue : widget._user!.institution,
+              decoration: const InputDecoration(
+                  icon: Icon(Icons.school_outlined), labelText: "University*", helperText: '* Required'),
+              // icon: const Icon(Icons.school_outlined),
+              items: institutions.map<DropdownMenuItem<String>>((String institution) {
+                return DropdownMenuItem<String>(value: institution, child: Text(institution));
+              }).toList(),
+              onChanged: (String? value) {
+                // Call setState() to rebuild the widget with the current value
+                setState(() {
+                  universityValue = value!;
+                });
+              },
+            )),
 
       // Graduation Year (Optional)
       Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: DropdownButtonFormField<String>(
-            value: gradValue,
+            value: _isNewUser ? gradValue : widget._user!.graduationYear,
 
-            decoration: const InputDecoration(
-                icon: Icon(Icons.school_rounded),
-                labelText: "Graduation Year (Optional)"),
+            decoration:
+                const InputDecoration(icon: Icon(Icons.school_rounded), labelText: "Graduation Year (Optional)"),
             // icon: const Icon(Icons.school_outlined),
             items: gradYears.map<DropdownMenuItem<String>>((String grad) {
               return DropdownMenuItem<String>(value: grad, child: Text(grad));
@@ -191,6 +260,20 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               setState(() {
                 gradValue = value!;
               });
+            },
+            onSaved: (value) {
+              _updatedUser = TagAlongUser(
+                id: _updatedUser.id,
+                profilePictureUrl: _updatedUser.profilePictureUrl,
+                createdAt: _updatedUser.createdAt,
+                updatedAt: _updatedUser.updatedAt,
+                firstName: _updatedUser.firstName,
+                lastName: _updatedUser.lastName,
+                phoneNumber: _updatedUser.phoneNumber,
+                institution: widget._user!.institution,
+                emailAddress: _updatedUser.emailAddress,
+                graduationYear: value,
+              );
             },
           )),
     ];
@@ -214,56 +297,60 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
           child: Center(
             child: ElevatedButton(
               onPressed: () async {
-                logger.log
-                    .fine('UserRegistrationForm - onPressed() Register Button');
+                logger.log.fine('UserRegistrationForm - onPressed() Register Button');
                 final form = _formKey.currentState;
+                logger.log.fine('form is null? ${form == null}');
                 if (form != null) {
                   if (form.validate()) {
-                    logger.log.fine(
-                        'UserRegistrationForm - User registration was valid');
-                    logger.log.fine(
-                        'UserRegistrationForm -Attempting to write the following user data');
+                    form.save();
+                    logger.log.fine('UserRegistrationForm - User registration was valid');
+                    logger.log.fine('UserRegistrationForm -Attempting to write the following user data');
                     Map<String, dynamic> registrationData = {
-                      'first_name': firstName.text,
-                      'last_name': lastName.text,
-                      'email_address': emailController.text,
-                      'phone_number': phoneController.text,
-                      'institution': universityValue,
-                      'graduation_year': gradValue,
+                      'first_name': _updatedUser.firstName,
+                      'last_name': _updatedUser.lastName,
+                      'email_address': _updatedUser.emailAddress,
+                      'phone_number': _updatedUser.phoneNumber,
+                      'institution': _updatedUser.institution,
+                      'graduation_year': _updatedUser.graduationYear,
                       'is_registered': true
                     };
+                    logger.log.fine('REG DATA: ${registrationData.toString()}');
 
-                    // 0. Create Stripe Account and add Account id in user doc
-                    final response =
-                        await StripeCustomerRepository.instance.createCustomer(
-                      StripeCustomerCreateRequest(
-                        email: emailController.text,
-                        name: firstName.text,
-                      ),
-                    );
-                    registrationData['stripe_customer_id'] = response.data.id;
+                    if (_isNewUser) {
+                      // 0. Create Stripe Account and add Account id in user doc
+                      final response = await StripeCustomerRepository.instance.createCustomer(
+                        StripeCustomerCreateRequest(
+                          email: emailController.text,
+                          name: firstName.text,
+                        ),
+                      );
+                      registrationData['stripe_customer_id'] = response.data.id;
+                    }
 
                     // 1. Update our [TagAlongUser] in-memory
-                    tagAlongUserViewModel
-                        .updateTagAlongUserInternal(registrationData);
+                    tagAlongUserViewModel.updateTagAlongUserInternal(registrationData);
 
                     // 2. Update the Registered TagAlongUser in Firestore
                     await tagAlongUserViewModel.updateTagAlongUserFirestore();
-                    logger.log.fine(
-                        'UserRegistrationForm - Updated user with registration information!');
+                    logger.log.fine('UserRegistrationForm - Updated user with registration information!');
 
                     // 3. Send an email verification to `email_address`.
                     // FIXME:
                     // await tagAlongUserViewModel.sendEmailVerificationToUser();
 
                     // 4. Navigate to `WelcomeScreen`
-                    Navigator.pushReplacementNamed(context, '/welcome_screen');
+                    if (_isNewUser) {
+                      Navigator.pushReplacementNamed(context, WelcomeScreen.routeName);
+                    } else {
+                      // FocusManager.instance.primaryFocus?.unfocus();
+                      Navigator.of(context).pop();
+                    }
                   } else {
                     logger.log.fine('User registration was NOT valid.');
                   }
                 }
               },
-              child: const Text("Register"),
+              child: _isNewUser ? const Text("Register") : const Text("Apply Changes"),
             ),
           ),
         )

@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/my_ride/my_ride_screen.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
+import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'package:tagalong/widgets/rideboard/account.dart';
+import 'package:tagalong/screens/account/account_settings_screen.dart';
 import 'package:tagalong/widgets/rideboard/rideboard.dart';
 
 class RideBoardScreen extends StatefulWidget {
   const RideBoardScreen({Key? key}) : super(key: key);
+  static const routeName = '/ride_board';
 
   @override
   _RideBoardScreenState createState() => _RideBoardScreenState();
 }
 
-class _RideBoardScreenState extends State<RideBoardScreen>
-    with SingleTickerProviderStateMixin {
+class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProviderStateMixin {
   // Index for the IndexedStack, representing which Widget to show on the screen
   // based on the BottomNavBar. The initial Widget will be the [RideBoard].
   // Note: The [IndexedStack] maintains state, therefore the build for the
@@ -31,9 +33,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>
     logger.log.fine('RideboardScreen Build');
 
     return Scaffold(
-        appBar: _getAppBar(context),
-        body: _getBody(context),
-        bottomNavigationBar: _getBottomNavBar(context));
+        appBar: _getAppBar(context), body: _getBody(context), bottomNavigationBar: _getBottomNavBar(context));
   }
 
   /// UI for the filter Modal Bottom Sheet and its corresponding functionality.
@@ -44,10 +44,8 @@ class _RideBoardScreenState extends State<RideBoardScreen>
   /// 3. Departure Date [TextFormField] + DatePicker
   /// 4. Row of filter buttons
   Widget _getFilterModalBottomSheet(BuildContext context) {
-    var filterRideViewModel =
-        Provider.of<FilterRideViewModel>(context, listen: false);
-    var rideBoardViewModel =
-        Provider.of<RideBoardViewModel>(context, listen: false);
+    var filterRideViewModel = Provider.of<FilterRideViewModel>(context, listen: false);
+    var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
 
     return DraggableScrollableSheet(
       maxChildSize: 0.75,
@@ -58,8 +56,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>
           children: [
             // 1. AppBar
             AppBar(
-              title: const Text('Filter Rides',
-                  style: TextStyle(color: Colors.black)),
+              title: const Text('Filter Rides', style: TextStyle(color: Colors.black)),
               backgroundColor: Colors.transparent,
               elevation: 0.0,
               leading: IconButton(
@@ -74,40 +71,33 @@ class _RideBoardScreenState extends State<RideBoardScreen>
             ),
 
             // 2. To/From Campus ChoiceChips
-            const Padding(
-                padding: EdgeInsets.all(8),
-                child: Text('Which way are you heading?')),
+            const Padding(padding: EdgeInsets.all(8), child: Text('Which way are you heading?')),
             Padding(
                 padding: const EdgeInsets.all(8),
-                child: Consumer<FilterRideViewModel>(
-                    builder: (context, filterRideViewModel, child) {
-                  return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ChoiceChip(
-                          label: SizedBox(
-                            width: 120,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: const Text('To Campus'),
-                            ),
-                          ),
-                          selected: filterRideViewModel.toCampus,
-                          onSelected: (bool selected) =>
-                              filterRideViewModel.toCampusChoice(),
+                child: Consumer<FilterRideViewModel>(builder: (context, filterRideViewModel, child) {
+                  return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                    ChoiceChip(
+                      label: SizedBox(
+                        width: 120,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: const Text('To Campus'),
                         ),
-                        ChoiceChip(
-                            label: SizedBox(
-                              width: 120,
-                              child: Container(
-                                child: const Text('From Campus'),
-                                alignment: Alignment.center,
-                              ),
-                            ),
-                            selected: !filterRideViewModel.toCampus,
-                            onSelected: (bool selected) =>
-                                filterRideViewModel.fromCampusChoice())
-                      ]);
+                      ),
+                      selected: filterRideViewModel.toCampus,
+                      onSelected: (bool selected) => filterRideViewModel.toCampusChoice(),
+                    ),
+                    ChoiceChip(
+                        label: SizedBox(
+                          width: 120,
+                          child: Container(
+                            child: const Text('From Campus'),
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                        selected: !filterRideViewModel.toCampus,
+                        onSelected: (bool selected) => filterRideViewModel.fromCampusChoice())
+                  ]);
                 })),
 
             const Divider(
@@ -116,30 +106,24 @@ class _RideBoardScreenState extends State<RideBoardScreen>
             ),
 
             // 3. Departure Date [TextFormField] + DatePicker
-            const Padding(
-                padding: EdgeInsets.all(8),
-                child: Text('When are you leaving?')),
+            const Padding(padding: EdgeInsets.all(8), child: Text('When are you leaving?')),
             Padding(
               padding: const EdgeInsets.all(8),
               // "Consumer" listening for FilterRide updates
-              child: Consumer<FilterRideViewModel>(
-                  builder: (context, filterRideViewModel, child) {
+              child: Consumer<FilterRideViewModel>(builder: (context, filterRideViewModel, child) {
                 return TextFormField(
                     enableInteractiveSelection: false,
                     readOnly: true,
                     decoration: InputDecoration(
-                        hintText:
-                            filterRideViewModel.getFormattedDepartureDate(),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0)),
+                        hintText: filterRideViewModel.getFormattedDepartureDate(),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
                         suffixIcon: const Icon(Icons.date_range)),
 
                     // Show the DatePicker
                     onTap: () async {
                       final DateTime? newDate = await showDatePicker(
                         context: context,
-                        initialDate:
-                            filterRideViewModel.departureDate ?? DateTime.now(),
+                        initialDate: filterRideViewModel.departureDate ?? DateTime.now(),
                         firstDate: DateTime.now(),
                         lastDate: DateTime(2022, 12),
                         helpText: 'Select a date to leave',
@@ -162,9 +146,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 // Button to reset ALL filters to default
-                ElevatedButton(
-                    onPressed: () => filterRideViewModel.resetAll(),
-                    child: const Text('Reset Filters')),
+                ElevatedButton(onPressed: () => filterRideViewModel.resetAll(), child: const Text('Reset Filters')),
 
                 // Button to update the user's Ride filters and re-query data,
                 // updating the Rideboard
@@ -196,30 +178,22 @@ class _RideBoardScreenState extends State<RideBoardScreen>
     // TODO: Take out AuthService - only here for quick debugging
     var authService = Provider.of<AuthService>(context, listen: false);
     return AppBar(
-        title: const Text('Ride Board'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          // Filtering Button
-          onPressed: () {
-            showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (BuildContext context) {
-                // Brings up the "BottomModelSheet" for filtering
-                return _getFilterModalBottomSheet(context);
-              },
-            );
-          },
-        ),
-        // TODO: Take out with AuthService
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              authService.signOut();
+      title: const Text('Ride Board'),
+      leading: IconButton(
+        icon: const Icon(Icons.menu),
+        // Filtering Button
+        onPressed: () {
+          showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+              // Brings up the "BottomModelSheet" for filtering
+              return _getFilterModalBottomSheet(context);
             },
-            child: const Text('Sign Out'),
-          )
-        ]);
+          );
+        },
+      ),
+    );
   }
 
   /// Returns the [RideBoardScreen] body
@@ -228,14 +202,13 @@ class _RideBoardScreenState extends State<RideBoardScreen>
       RideBoard(),
       Text(''), // This should never be shown - represents "Post Ride"
       MyRideScreen(),
-      Account()
+      AccountSettingsScreen(),
     ]);
   }
 
   /// Returns the [RideBoardScreen] BottomNavigationBar
   Widget _getBottomNavBar(BuildContext context) {
-    var tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    var tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -280,15 +253,12 @@ class _RideBoardScreenState extends State<RideBoardScreen>
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text('Not a Driver'),
-                  content: const Text(
-                      'You have some issue with stripe registration, Please register again'),
+                  content: const Text('You have some issue with stripe registration, Please register again'),
                   actions: <Widget>[
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel')),
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                     TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/register_driver');
+                          Navigator.pushNamed(context, RegisterDriverScreen.routeName);
                         },
                         child: const Text('OK')),
                   ],
@@ -297,7 +267,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>
             );
           } else if (isStripeActive && isActiveDriver) {
             logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
-            Navigator.pushNamed(context, '/offer_ride_campus');
+            Navigator.pushNamed(context, OfferRideCampus.routeName);
           }
           // If NOT Active Driver, offer option to register as such
           else {
@@ -306,18 +276,13 @@ class _RideBoardScreenState extends State<RideBoardScreen>
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text('Not a Driver'),
-                  content: const Text(
-                      'You’re almost ready to post rides! Create your driver profile to get started.'),
+                  content: const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
                   actions: <Widget>[
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel')),
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                     TextButton(
                         onPressed: () {
-                          Navigator.of(context)
-                              .popUntil((route) => route.isFirst);
-                          Navigator.pushReplacementNamed(
-                              context, '/register_driver');
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                          Navigator.pushReplacementNamed(context, RegisterDriverScreen.routeName);
                         },
                         child: const Text('OK')),
                   ],

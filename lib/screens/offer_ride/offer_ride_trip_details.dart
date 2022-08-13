@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_price_prefs.dart';
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/widgets/offer_ride/question_widget.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -8,6 +9,7 @@ import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
 class OfferRideTripDetails extends StatelessWidget {
   const OfferRideTripDetails({Key? key}) : super(key: key);
+  static const routeName = '/offer_ride_trip_details';
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +27,7 @@ class OfferRideTripDetails extends StatelessWidget {
             }),
         title: _getProgressBar(),
       ),
-      body: Consumer<OfferRideViewModel>(
-          builder: (context, offerRideViewModel, child) {
+      body: Consumer<OfferRideViewModel>(builder: (context, offerRideViewModel, child) {
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,8 +59,7 @@ class OfferRideTripDetails extends StatelessWidget {
                         size: 36,
                         color: theme.TagAlongTheme.primarySwatch.shade400,
                       ),
-                      onPressed: () =>
-                          offerRideViewModel.incrementNoPassengers()),
+                      onPressed: () => offerRideViewModel.incrementNoPassengers()),
                   Container(
                     width: 100,
                     alignment: Alignment.center,
@@ -82,8 +82,7 @@ class OfferRideTripDetails extends StatelessWidget {
                         size: 36,
                         color: theme.TagAlongTheme.primarySwatch.shade400,
                       ),
-                      onPressed: () =>
-                          offerRideViewModel.decrementNoPassengers()),
+                      onPressed: () => offerRideViewModel.decrementNoPassengers()),
                 ],
               ),
               Padding(
@@ -126,8 +125,7 @@ class OfferRideTripDetails extends StatelessWidget {
                           ),
                         ),
                       ),
-                      child: Text('${offerRideViewModel.noBags}',
-                          style: Theme.of(context).textTheme.headline2),
+                      child: Text('${offerRideViewModel.noBags}', style: Theme.of(context).textTheme.headline2),
                     ),
                     IconButton(
                         icon: Icon(
@@ -147,26 +145,25 @@ class OfferRideTripDetails extends StatelessWidget {
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () {
           logger.log.fine('Leaving OfferRideTripDetails');
-          Navigator.pushNamed(context, '/offer_ride_price_prefs');
+          Navigator.pushNamed(context, OfferRidePricePrefs.routeName);
         },
       ),
     );
   }
 
   Widget _getProgressBar() {
-    return Row(
-        children: const [
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle),
-          SizedBox(width: 10),
-          Icon(Icons.circle_outlined),
-        ]);
+    return Row(children: const [
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle),
+      SizedBox(width: 10),
+      Icon(Icons.circle_outlined),
+    ]);
   }
 }

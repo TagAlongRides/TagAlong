@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
+import 'package:tagalong/screens/offer_ride/offer_ride_trip_details.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 
 class OfferRideDeparture extends StatefulWidget {
   const OfferRideDeparture({Key? key}) : super(key: key);
+  static const routeName = '/offer_ride_departure';
 
   @override
   _OfferRideDepartureState createState() => _OfferRideDepartureState();
@@ -31,8 +33,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             }),
         title: _getProgressBar(),
       ),
-      body: Consumer<OfferRideViewModel>(
-          builder: (context, offerRideViewModel, child) {
+      body: Consumer<OfferRideViewModel>(builder: (context, offerRideViewModel, child) {
         return Column(children: [
           Align(
             alignment: Alignment.topLeft,
@@ -83,8 +84,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                 ),
               ),
               onPressed: () async {
-                DateTime chosenDate =
-                    offerRideViewModel.departureDateTime ?? DateTime.now();
+                DateTime chosenDate = offerRideViewModel.departureDateTime ?? DateTime.now();
                 final DateTime? newDate = await showDatePicker(
                   context: context,
                   initialDate: chosenDate,
@@ -107,18 +107,14 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                                   style: Theme.of(context).textTheme.headline4,
                                   children: [
                                     TextSpan(
-                                      text: DateFormat('EEEE').format(
-                                          offerRideViewModel
-                                              .departureDateTime!),
+                                      text: DateFormat('EEEE').format(offerRideViewModel.departureDateTime!),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
                                       ),
                                     ),
                                     TextSpan(
-                                      text: DateFormat(' MMMM dd').format(
-                                          offerRideViewModel
-                                              .departureDateTime!),
+                                      text: DateFormat(' MMMM dd').format(offerRideViewModel.departureDateTime!),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
@@ -129,9 +125,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                               ),
                             )
                           : Text("Choose a date",
-                              style: theme
-                                  .TagAlongTheme.lightTextTheme.headline6!
-                                  .copyWith(
+                              style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(
                                 color: Colors.black45,
                                 fontWeight: FontWeight.normal,
                               )),
@@ -184,8 +178,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
 
                 // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
                 if (offerRideViewModel.departureTimeOfDay != null) {
-                  chosenTime = RideModel.timeOfDayFromString(
-                      offerRideViewModel.departureTimeOfDay!);
+                  chosenTime = RideModel.timeOfDayFromString(offerRideViewModel.departureTimeOfDay!);
                 }
                 // User HAS NOT chosen a TimeOfDay to leave - default to current time
                 else {
@@ -198,8 +191,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                   initialEntryMode: TimePickerEntryMode.input,
                   helpText: 'DEPARTURE TIME',
                 );
-                offerRideViewModel
-                    .updateDepartureTimeOfDay(newTime?.format(context));
+                offerRideViewModel.updateDepartureTimeOfDay(newTime?.format(context));
               },
               child: Row(
                 children: [
@@ -223,9 +215,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                               ),
                             )
                           : Text("Choose a time",
-                              style: theme
-                                  .TagAlongTheme.lightTextTheme.headline6!
-                                  .copyWith(
+                              style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(
                                 color: Colors.black45,
                               )),
                     ),
@@ -252,18 +242,13 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             await showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Not Completed'),
-                        content: const Text(
-                            'Please make sure to input a valid departure date & time'),
-                        actions: <Widget>[
-                          TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('OK'))
-                        ]));
+                    title: const Text('Not Completed'),
+                    content: const Text('Please make sure to input a valid departure date & time'),
+                    actions: <Widget>[TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
             return;
           }
           logger.log.fine('Leaving OfferRideDeparture');
-          Navigator.pushNamed(context, '/offer_ride_trip_details');
+          Navigator.pushNamed(context, OfferRideTripDetails.routeName);
         },
       ),
     );

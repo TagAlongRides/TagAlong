@@ -6,6 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/account/account_settings_screen.dart';
+import 'package:tagalong/screens/account/add_payment_method_screen.dart';
+import 'package:tagalong/screens/account/contact_us_screen.dart';
+import 'package:tagalong/screens/account/notification_prefs_screen.dart';
+import 'package:tagalong/screens/account/payment_prefs_screen.dart';
+import 'package:tagalong/screens/account/privacy_policy_screen.dart';
+import 'package:tagalong/screens/account/update_personal_info_screen.dart';
 import 'package:tagalong/screens/driver_registration_prompt_screen.dart';
 import 'package:tagalong/screens/login_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
@@ -71,23 +78,15 @@ class _TagAlongAppState extends State<TagAlongApp> {
       providers: [
         Provider<AuthService>(create: (BuildContext context) => AuthService()),
         // TODO: May need `lazy: false`
-        Provider<TagAlongUserViewModel>(
-            create: (BuildContext context) => TagAlongUserViewModel()),
-        ChangeNotifierProvider<RegisterDriverViewModel>(
-            create: (BuildContext context) => RegisterDriverViewModel()),
-        ChangeNotifierProvider<RideBoardViewModel>(
-            create: (BuildContext context) => RideBoardViewModel()),
+        Provider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
+        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
+        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
         ChangeNotifierProvider<OfferRideViewModel>(
-            create: (BuildContext context) => OfferRideViewModel(
-                tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(
-                    context,
-                    listen: false))),
-        ChangeNotifierProvider<FilterRideViewModel>(
-            create: (BuildContext context) => FilterRideViewModel()),
-        ChangeNotifierProvider<RideDetailsViewModel>(
-            create: (BuildContext context) => RideDetailsViewModel()),
-        ChangeNotifierProvider<UploadRideViewModel>(
-            create: (BuildContext context) => UploadRideViewModel())
+            create: (BuildContext context) =>
+                OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
+        ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
+        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel()),
+        ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: true,
@@ -95,32 +94,29 @@ class _TagAlongAppState extends State<TagAlongApp> {
           title: 'TagAlong App',
           home: const AuthWrapper(),
           routes: <String, WidgetBuilder>{
-            '/register_user': (BuildContext context) =>
-                const RegisterUserScreen(),
-            '/register_driver': (BuildContext context) =>
-                const RegisterDriverScreen(),
-            '/ride_board': (BuildContext context) => const RideBoardScreen(),
-            '/driver_registration_prompt': (BuildContext context) =>
-                const DriverRegistrationPromptScreen(),
-            '/login_screen': (BuildContext context) => LoginScreen(),
-            '/welcome_screen': (BuildContext context) => const WelcomeScreen(),
-            '/registration_wrapper': (BuildContext context) =>
-                const RegistrationWrapper(),
-            '/offer_ride_campus': (BuildContext context) =>
-                const OfferRideCampus(),
-            '/offer_ride_pickup': (BuildContext context) =>
-                const OfferRidePickup(),
-            '/offer_ride_dropoff': (BuildContext context) =>
-                const OfferRideDropoff(),
-            '/offer_ride_departure': (BuildContext context) =>
-                const OfferRideDeparture(),
-            '/offer_ride_trip_details': (BuildContext context) =>
-                const OfferRideTripDetails(),
-            '/offer_ride_price_prefs': (BuildContext context) =>
-                const OfferRidePricePrefs(),
-            '/ride_details': (BuildContext context) => const RideDetails(),
-            '/stripe-registration': (BuildContext context) =>
+            RegisterUserScreen.routeName: (BuildContext context) => const RegisterUserScreen(),
+            RegisterDriverScreen.routeName: (BuildContext context) => const RegisterDriverScreen(),
+            RideBoardScreen.routeName: (BuildContext context) => const RideBoardScreen(),
+            DriverRegistrationPromptScreen.routeName: (BuildContext context) => const DriverRegistrationPromptScreen(),
+            LoginScreen.routeName: (BuildContext context) => LoginScreen(),
+            WelcomeScreen.routeName: (BuildContext context) => const WelcomeScreen(),
+            RegistrationWrapper.routeName: (BuildContext context) => const RegistrationWrapper(),
+            OfferRideCampus.routeName: (BuildContext context) => const OfferRideCampus(),
+            OfferRidePickup.routeName: (BuildContext context) => const OfferRidePickup(),
+            OfferRideDropoff.routeName: (BuildContext context) => const OfferRideDropoff(),
+            OfferRideDeparture.routeName: (BuildContext context) => const OfferRideDeparture(),
+            OfferRideTripDetails.routeName: (BuildContext context) => const OfferRideTripDetails(),
+            OfferRidePricePrefs.routeName: (BuildContext context) => const OfferRidePricePrefs(),
+            RideDetails.routeName: (BuildContext context) => const RideDetails(),
+            DriverStripeConnectRegistrationScreen.routeName: (BuildContext context) =>
                 const DriverStripeConnectRegistrationScreen(),
+            AccountSettingsScreen.routeName: (context) => const AccountSettingsScreen(),
+            UpdatePersonalInfoScreen.routeName: (context) => UpdatePersonalInfoScreen(),
+            ContactUsScreen.routeName: (context) => const ContactUsScreen(),
+            NotificationPrefsScreen.routeName: (context) => const NotificationPrefsScreen(),
+            PaymentMethodsScreen.routeName: (context) => const PaymentMethodsScreen(),
+            PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
+            AddPaymentMethodScreen.routeName: (context) => const AddPaymentMethodScreen(),
             // '/stripe-payment': (BuildContext context) =>
             //     const StripePaymentScreen(ride: ,),
           }),
@@ -155,15 +151,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _streamSubscription = authService.userStatus.listen((User? user) {
       // 1. User is signed-in; Go to RegistrationWrapper
       if (user != null) {
-        logger.log.fine(
-            'User is logged-in in AuthWrapper. - Go to /registration_wrapper');
-        Navigator.pushReplacementNamed(context, '/registration_wrapper');
+        logger.log.fine('User is logged-in in AuthWrapper. - Go to /registration_wrapper');
+        Navigator.pushReplacementNamed(context, RegistrationWrapper.routeName);
       }
       // 2. User is signed-out; Go to LoginScreen
       else {
-        logger.log
-            .fine('User is logged-out in AuthWrapper. - Go to /login_screen');
-        Navigator.pushReplacementNamed(context, '/login_screen');
+        logger.log.fine('User is logged-out in AuthWrapper. - Go to /login_screen');
+        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
       }
     });
   }
@@ -178,9 +172,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        body:
-            const SafeArea(child: Center(child: CircularProgressIndicator())));
+    return Scaffold(appBar: AppBar(), body: const SafeArea(child: Center(child: CircularProgressIndicator())));
   }
 }

@@ -6,16 +6,15 @@ import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 class RideStripePaymentScreen extends StatefulWidget {
-  const RideStripePaymentScreen({Key? key, required this.ride})
-      : super(key: key);
+  const RideStripePaymentScreen({Key? key, required this.ride}) : super(key: key);
 
   final RideModel ride;
   @override
-  State<RideStripePaymentScreen> createState() =>
-      _RideStripePaymentScreenState();
+  State<RideStripePaymentScreen> createState() => _RideStripePaymentScreenState();
 }
 
 class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
@@ -32,8 +31,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final _themeData = Theme.of(context);
-    final _tagAlongUserViewModel =
-        Provider.of<TagAlongUserViewModel>(context, listen: false);
+    final _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     tagAlongUser = _tagAlongUserViewModel.tagAlongUser!;
 
     return Scaffold(
@@ -69,9 +67,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
               ),
               const SizedBox(height: 12),
               LoadingButton(
-                onPressed: controller.details.complete == true
-                    ? _handlePayPress
-                    : null,
+                onPressed: controller.details.complete == true ? _handlePayPress : null,
                 text: 'Pay',
               ),
               Container(
@@ -83,8 +79,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
                 ),
               ),
               FutureBuilder<StripePaymentMethodResponse>(
-                future: StripeCustomerRepository.instance
-                    .getPaymentMethod(tagAlongUser.stripeCustomerId),
+                future: StripeCustomerRepository.instance.getPaymentMethod(tagAlongUser.stripeCustomerId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     final data = snapshot.data!.data.data;
@@ -97,16 +92,14 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
                           },
                           child: CreditCardWidget(
                             cardNumber: data[index].card.last4,
-                            expiryDate:
-                                '${data[index].card.expMonth}/${data[index].card.expYear}',
+                            expiryDate: '${data[index].card.expMonth}/${data[index].card.expYear}',
                             cardHolderName: '',
                             cvvCode: '',
                             showBackView: false,
                             isHolderNameVisible: false,
                             isSwipeGestureEnabled: false,
                             isChipVisible: false,
-                            onCreditCardWidgetChange:
-                                (CreditCardBrand) {}, //true when you want to show cvv(back) view
+                            onCreditCardWidgetChange: (CreditCardBrand) {}, //true when you want to show cvv(back) view
                           ),
                         );
                       }),
@@ -149,10 +142,8 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       String email = tagAlongUser.emailAddress;
       String customerId = tagAlongUser.stripeCustomerId;
       String driverAccountID = widget.ride.stripeAccountId;
-      String amount =
-          (widget.ride.price * 1.20 * 100).toStringAsFixed(0); //Charges in cent
-      String applicationFee =
-          (widget.ride.price * .20 * 100).toStringAsFixed(0); //Charges in cent
+      String amount = (widget.ride.price * 1.20 * 100).toStringAsFixed(0); //Charges in cent
+      String applicationFee = (widget.ride.price * .20 * 100).toStringAsFixed(0); //Charges in cent
 
       final billingDetails = BillingDetails(
         email: email,
@@ -160,24 +151,19 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
 
       // 2. Create payment method
       if (paymentMethodId == null) {
-        final paymentMethod = await Stripe.instance.createPaymentMethod(
-            PaymentMethodParams.card(
-                paymentMethodData: PaymentMethodData(
-                  billingDetails: billingDetails,
-                ),
-                options: const PaymentMethodOptions(
-                    setupFutureUsage: PaymentIntentsFutureUsage.OffSession)));
+        final paymentMethod = await Stripe.instance.createPaymentMethod(PaymentMethodParams.card(
+            paymentMethodData: PaymentMethodData(
+              billingDetails: billingDetails,
+            ),
+            options: const PaymentMethodOptions(setupFutureUsage: PaymentIntentsFutureUsage.OffSession)));
         paymentMethodId = paymentMethod.id;
       }
 
       // 3. call API to create PaymentIntent
-      final paymentIntentResult =
-          await StripeConnectRepository.instance.createDestinationPayemntIntent(
+      final paymentIntentResult = await StripeConnectRepository.instance.createDestinationPayemntIntent(
         StripePaymentIntentRequest(
           email: email,
-          customerId: _saveCard
-              ? customerId
-              : null, //only pass customer Id in case of save card
+          customerId: _saveCard ? customerId : null, //only pass customer Id in case of save card
           amount: amount,
           paymentMethodId: paymentMethodId,
           returnUrl: stripeConnectReturnUrl,
@@ -190,21 +176,17 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       if (paymentIntentResult.data.status == 'succeeded') {
         // Payment succedeed
 
-        await _bookRide(widget.ride, paymentIntentResult.data.id,
-            paymentIntentResult.data.charges.data[0].id);
+        await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content:
-                Text('Success!: The payment was confirmed successfully!')));
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil('/ride_board', (route) => false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Success!: The payment was confirmed successfully!')));
+        Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
         return;
       }
 
       if (paymentIntentResult.data.status == 'requires_action') {
         // 4. if payment requires action calling handleNextAction
-        final paymentIntent = await Stripe.instance
-            .handleNextAction(paymentIntentResult.data.clientSecret);
+        final paymentIntent = await Stripe.instance.handleNextAction(paymentIntentResult.data.clientSecret);
 
         if (paymentIntent.status == PaymentIntentsStatus.RequiresConfirmation) {
           // 5. Call API to confirm intent
@@ -216,34 +198,28 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
           // );
           // await confirmIntent(paymentIntent.id);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text(
-                  'Require Confirmation !: The payment was successfully!, but require confirmation')));
+              content: Text('Require Confirmation !: The payment was successfully!, but require confirmation')));
         } else {
           // Payment succedeed
 
-          await _bookRide(widget.ride, paymentIntentResult.data.id,
-              paymentIntentResult.data.charges.data[0].id);
+          await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
 
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content:
-                  Text('Success!: The payment was confirmed successfully!')));
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/ride_board', (route) => false);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Success!: The payment was confirmed successfully!')));
+          Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
         }
       }
     } catch (error, stacktrace) {
       print(stacktrace);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Payment Failed, Please try again later.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Payment Failed, Please try again later.')));
       rethrow;
     }
   }
 
-  Future _bookRide(
-      RideModel ride, String paymentIntentId, String chargeId) async {
+  Future _bookRide(RideModel ride, String paymentIntentId, String chargeId) async {
     /// Create Ride booking entry
-    final rideBooking =
-        await RideBookingRepository.instance.bookRide(RideBookingModel(
+    final rideBooking = await RideBookingRepository.instance.bookRide(RideBookingModel(
       rideId: ride.rideId,
       userId: tagAlongUser.id,
       creatadAt: DateTime.now(),
