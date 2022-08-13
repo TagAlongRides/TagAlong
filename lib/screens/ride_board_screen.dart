@@ -6,7 +6,7 @@ import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
-import 'package:tagalong/widgets/rideboard/account.dart';
+import 'package:tagalong/screens/account/account_settings_screen.dart';
 import 'package:tagalong/widgets/rideboard/rideboard.dart';
 
 class RideBoardScreen extends StatefulWidget {
@@ -196,30 +196,22 @@ class _RideBoardScreenState extends State<RideBoardScreen>
     // TODO: Take out AuthService - only here for quick debugging
     var authService = Provider.of<AuthService>(context, listen: false);
     return AppBar(
-        title: const Text('Ride Board'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          // Filtering Button
-          onPressed: () {
-            showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (BuildContext context) {
-                // Brings up the "BottomModelSheet" for filtering
-                return _getFilterModalBottomSheet(context);
-              },
-            );
-          },
-        ),
-        // TODO: Take out with AuthService
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              authService.signOut();
+      title: const Text('Ride Board'),
+      leading: IconButton(
+        icon: const Icon(Icons.menu),
+        // Filtering Button
+        onPressed: () {
+          showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (BuildContext context) {
+              // Brings up the "BottomModelSheet" for filtering
+              return _getFilterModalBottomSheet(context);
             },
-            child: const Text('Sign Out'),
-          )
-        ]);
+          );
+        },
+      ),
+    );
   }
 
   /// Returns the [RideBoardScreen] body
@@ -228,7 +220,7 @@ class _RideBoardScreenState extends State<RideBoardScreen>
       RideBoard(),
       Text(''), // This should never be shown - represents "Post Ride"
       MyRideScreen(),
-      Account()
+      AccountSettingsScreen(),
     ]);
   }
 

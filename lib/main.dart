@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/screens/account/account_settings_screen.dart';
+import 'package:tagalong/screens/account/update_personal_info_screen.dart';
 import 'package:tagalong/screens/driver_registration_prompt_screen.dart';
 import 'package:tagalong/screens/login_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
@@ -121,6 +123,10 @@ class _TagAlongAppState extends State<TagAlongApp> {
             '/ride_details': (BuildContext context) => const RideDetails(),
             '/stripe-registration': (BuildContext context) =>
                 const DriverStripeConnectRegistrationScreen(),
+            AccountSettingsScreen.routeName: (context) =>
+                const AccountSettingsScreen(),
+            UpdatePersonalInfoScreen.routeName: (context) =>
+                UpdatePersonalInfoScreen(),
             // '/stripe-payment': (BuildContext context) =>
             //     const StripePaymentScreen(ride: ,),
           }),

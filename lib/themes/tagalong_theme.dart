@@ -177,6 +177,19 @@ class TagAlongTheme {
     ),
   );
 
+  static TextButtonThemeData textButtonTheme = TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: MaterialStateProperty.all(colorHighEmphasis),
+      backgroundColor: MaterialStateProperty.all(Colors.white),
+      textStyle: MaterialStateProperty.all(
+        lightTextTheme.button!.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
+    ),
+  );
+
   static OutlinedButtonThemeData outlinedButtonTheme = OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       alignment: Alignment.center,
@@ -243,6 +256,7 @@ class TagAlongTheme {
       bottomSheetTheme: bottomSheetTheme,
       chipTheme: chipTheme,
       inputDecorationTheme: inputDecorationTheme,
+      textButtonTheme: textButtonTheme,
     );
   }
 }

@@ -46,7 +46,7 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
         child: Center(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: UserRegistrationForm(),
+            child: UserRegistrationForm(null),
           ),
         ),
       ),
