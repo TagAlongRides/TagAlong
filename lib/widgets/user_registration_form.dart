@@ -342,7 +342,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                     if (_isNewUser) {
                       Navigator.pushReplacementNamed(context, WelcomeScreen.routeName);
                     } else {
-                      FocusManager.instance.primaryFocus?.unfocus();
+                      // FocusManager.instance.primaryFocus?.unfocus();
                       Navigator.of(context).pop();
                     }
                   } else {

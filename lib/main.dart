@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/account/account_settings_screen.dart';
+import 'package:tagalong/screens/account/add_payment_method_screen.dart';
 import 'package:tagalong/screens/account/contact_us_screen.dart';
 import 'package:tagalong/screens/account/notification_prefs_screen.dart';
 import 'package:tagalong/screens/account/payment_prefs_screen.dart';
@@ -115,6 +116,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
             NotificationPrefsScreen.routeName: (context) => const NotificationPrefsScreen(),
             PaymentMethodsScreen.routeName: (context) => const PaymentMethodsScreen(),
             PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
+            AddPaymentMethodScreen.routeName: (context) => const AddPaymentMethodScreen(),
             // '/stripe-payment': (BuildContext context) =>
             //     const StripePaymentScreen(ride: ,),
           }),
