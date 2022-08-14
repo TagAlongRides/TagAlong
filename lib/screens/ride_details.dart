@@ -89,12 +89,12 @@ class RideDetails extends StatelessWidget {
           Row(children: [
             Expanded(
                 child: Text(
-              ride.pickupLocation.toString(),
+              '${ride.pickupLocation.address} \n${ride.pickupLocation.city}, ${ride.pickupLocation.state} ${ride.pickupLocation.zip}',
               style: Theme.of(context).textTheme.bodyText2,
             )),
             Expanded(
                 child: Text(
-              ride.dropoffLocation.toString(),
+              '${ride.dropoffLocation.address} \n${ride.dropoffLocation.city}, ${ride.dropoffLocation.state} ${ride.dropoffLocation.zip}',
               style: Theme.of(context).textTheme.bodyText2,
               textAlign: TextAlign.right,
             ))
@@ -162,7 +162,13 @@ class RideDetails extends StatelessWidget {
             Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(ride.vehicle.toString()), Text(ride.vehicle.color)]),
+                children: [
+                  Text(
+                    '${ride.vehicle.year} ${ride.vehicle.make} ${ride.vehicle.model}',
+                    style: theme.TagAlongTheme.lightTextTheme.bodyText2!,
+                  ),
+                  Text(ride.vehicle.color),
+                ]),
           ]),
           const SizedBox(height: 16),
           Row(children: [
@@ -237,11 +243,22 @@ class RideDetails extends StatelessWidget {
           // "Continue" Button
           const SizedBox(height: 16),
           ElevatedButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Stack(
               children: [
-                const Text('Continue'),
-                Align(alignment: Alignment.centerRight, child: Text('\$${rideDetailsViewModel.getTotalPrice()}'))
+                const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '\$${rideDetailsViewModel.getTotalPrice()}',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                )
               ],
             ),
             onPressed: () {
