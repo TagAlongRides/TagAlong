@@ -21,14 +21,6 @@ class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
             elevation: 0,
             centerTitle: false,
             toolbarHeight: 100,
-            actions: [
-              // TODO: STRICTLY DEBUGGING - NEED TO TAKE OUT
-              OutlinedButton(
-                  child: Text('Sign Out'),
-                  onPressed: (() {
-                    auth_service.signOut();
-                  }))
-            ],
             title: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,

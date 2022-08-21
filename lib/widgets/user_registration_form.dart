@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
+import 'package:tagalong/services/auth_service.dart' as auth;
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
@@ -25,7 +26,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
 
   PhoneNumber phoneNumber = PhoneNumber(isoCode: 'US');
   String? gradValue;
-  String? universityValue = Institution.VIRGINIA_TECH;
+  final defaultInstitution = Institution.VIRGINIA_TECH;
   // String? affiliationValue = Affiliation.UNGRADUATE_STUDENT;
   // List<String> affiliations = Affiliation.values;
   List<String> institutions = Institution.values;
@@ -54,7 +55,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
       lastName: widget._user!.lastName,
       phoneNumber: widget._user!.phoneNumber,
       emailAddress: widget._user!.emailAddress,
-      institution: widget._user!.institution,
+      institution: widget._user!.institution, // ?? defaultInstitution,
       graduationYear: widget._user!.graduationYear,
     );
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
@@ -91,7 +92,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               lastName: _updatedUser.lastName,
               phoneNumber: _updatedUser.phoneNumber,
               emailAddress: _updatedUser.emailAddress,
-              institution: widget._user!.institution,
+              institution: _updatedUser.institution,
               graduationYear: _updatedUser.graduationYear,
             );
           },
@@ -128,7 +129,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               lastName: value!,
               phoneNumber: _updatedUser.phoneNumber,
               emailAddress: _updatedUser.emailAddress,
-              institution: widget._user!.institution,
+              institution: _updatedUser.institution,
               graduationYear: _updatedUser.graduationYear,
             );
           },
@@ -154,9 +155,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             if (value == null || value.isEmpty) {
               return 'Please enter a valid .edu email';
             }
-            if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu").hasMatch(value)) {
-              return 'Please enter a valid @vt.edu email address';
-            }
+            // TODO: Uncomment this after testing
+            // if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu").hasMatch(value)) {
+            //   return 'Please enter a valid @vt.edu email address';
+            // }
             return null;
           },
           onSaved: (value) {
@@ -169,7 +171,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               lastName: _updatedUser.lastName,
               phoneNumber: _updatedUser.phoneNumber,
               emailAddress: value!,
-              institution: widget._user!.institution,
+              institution: _updatedUser.institution,
               graduationYear: _updatedUser.graduationYear,
             );
           },
@@ -211,7 +213,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               lastName: _updatedUser.lastName,
               phoneNumber: value.phoneNumber!,
               emailAddress: _updatedUser.emailAddress,
-              institution: widget._user!.institution,
+              institution: _updatedUser.institution,
               graduationYear: _updatedUser.graduationYear,
             );
           },
@@ -228,7 +230,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
         Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: DropdownButtonFormField<String>(
-              value: _isNewUser ? universityValue : widget._user!.institution,
+              value: _isNewUser ? defaultInstitution : widget._user!.institution,
               decoration: const InputDecoration(
                   icon: Icon(Icons.school_outlined), labelText: "University*", helperText: '* Required'),
               // icon: const Icon(Icons.school_outlined),
@@ -236,10 +238,36 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                 return DropdownMenuItem<String>(value: institution, child: Text(institution));
               }).toList(),
               onChanged: (String? value) {
-                // Call setState() to rebuild the widget with the current value
-                setState(() {
-                  universityValue = value!;
-                });
+                print(value);
+                _updatedUser = TagAlongUser(
+                  id: _updatedUser.id,
+                  profilePictureUrl: _updatedUser.profilePictureUrl,
+                  createdAt: _updatedUser.createdAt,
+                  updatedAt: _updatedUser.updatedAt,
+                  firstName: _updatedUser.firstName,
+                  lastName: _updatedUser.lastName,
+                  phoneNumber: _updatedUser.phoneNumber,
+                  emailAddress: _updatedUser.emailAddress,
+                  institution: value!,
+                  graduationYear: _updatedUser.graduationYear,
+                );
+                print('onChanged: ${_updatedUser.toString()}');
+              },
+              onSaved: (String? value) {
+                print(value);
+                _updatedUser = TagAlongUser(
+                  id: _updatedUser.id,
+                  profilePictureUrl: _updatedUser.profilePictureUrl,
+                  createdAt: _updatedUser.createdAt,
+                  updatedAt: _updatedUser.updatedAt,
+                  firstName: _updatedUser.firstName,
+                  lastName: _updatedUser.lastName,
+                  phoneNumber: _updatedUser.phoneNumber,
+                  emailAddress: _updatedUser.emailAddress,
+                  institution: value!,
+                  graduationYear: _updatedUser.graduationYear,
+                );
+                print('onSaved: ${_updatedUser.toString()}');
               },
             )),
 
@@ -256,10 +284,20 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
               return DropdownMenuItem<String>(value: grad, child: Text(grad));
             }).toList(),
             onChanged: (String? value) {
-              // Call setState() to rebuild the widget with the current value
-              setState(() {
-                gradValue = value!;
-              });
+              _updatedUser = TagAlongUser(
+                id: _updatedUser.id,
+                profilePictureUrl: _updatedUser.profilePictureUrl,
+                createdAt: _updatedUser.createdAt,
+                updatedAt: _updatedUser.updatedAt,
+                firstName: _updatedUser.firstName,
+                lastName: _updatedUser.lastName,
+                phoneNumber: _updatedUser.phoneNumber,
+                institution: _updatedUser.institution,
+                emailAddress: _updatedUser.emailAddress,
+                graduationYear: value,
+              );
+              gradValue = value!;
+              print('onChangedYear: ${_updatedUser.toString()}');
             },
             onSaved: (value) {
               _updatedUser = TagAlongUser(
@@ -270,10 +308,11 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                 firstName: _updatedUser.firstName,
                 lastName: _updatedUser.lastName,
                 phoneNumber: _updatedUser.phoneNumber,
-                institution: widget._user!.institution,
+                institution: _updatedUser.institution,
                 emailAddress: _updatedUser.emailAddress,
                 graduationYear: value,
               );
+              print('onSavedYear: ${_updatedUser.toString()}');
             },
           )),
     ];
@@ -298,10 +337,15 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             child: ElevatedButton(
               onPressed: () async {
                 logger.log.fine('UserRegistrationForm - onPressed() Register Button');
+                print('Attempting to save ${_updatedUser.toString()}');
                 final form = _formKey.currentState;
                 logger.log.fine('form is null? ${form == null}');
+
                 if (form != null) {
                   if (form.validate()) {
+                    final _updatedEmailAddress =
+                        tagAlongUserViewModel.tagAlongUser?.institution == _updatedUser.emailAddress;
+                    print('Updating email address? $_updatedEmailAddress');
                     form.save();
                     logger.log.fine('UserRegistrationForm - User registration was valid');
                     logger.log.fine('UserRegistrationForm -Attempting to write the following user data');
@@ -327,18 +371,21 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                       registrationData['stripe_customer_id'] = response.data.id;
                     }
 
-                    // 1. Update our [TagAlongUser] in-memory
+                    // Update our [TagAlongUser] in-memory
                     tagAlongUserViewModel.updateTagAlongUserInternal(registrationData);
 
-                    // 2. Update the Registered TagAlongUser in Firestore
+                    // Update the Registered TagAlongUser in Firestore
                     await tagAlongUserViewModel.updateTagAlongUserFirestore();
                     logger.log.fine('UserRegistrationForm - Updated user with registration information!');
 
-                    // 3. Send an email verification to `email_address`.
-                    // FIXME:
-                    // await tagAlongUserViewModel.sendEmailVerificationToUser();
+                    // Update the logged in user in Firebase Auth
+                    await tagAlongUserViewModel.updateTagAlongUserAuth();
 
-                    // 4. Navigate to `WelcomeScreen`
+                    // Send an email verification to `email_address`.
+                    if (_isNewUser || true) {
+                      await tagAlongUserViewModel.sendEmailVerificationToUser();
+                    }
+                    // Navigate to Welcome screen if new user, or back to previous page if existing
                     if (_isNewUser) {
                       Navigator.pushReplacementNamed(context, WelcomeScreen.routeName);
                     } else {

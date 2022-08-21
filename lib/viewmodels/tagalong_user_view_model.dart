@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
@@ -8,7 +10,7 @@ import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 
 /// [TagAlongUser] ViewModel which contains business logic.
-class TagAlongUserViewModel {
+class TagAlongUserViewModel with ChangeNotifier {
   TagAlongUser? tagAlongUser;
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
@@ -16,7 +18,7 @@ class TagAlongUserViewModel {
   /// Getter for DatabaseService
   DatabaseService get databaseService => _databaseService;
 
-  /// Getter for DatabaseService
+  /// Getter for AuthService
   AuthService get authService => _authService;
 
   /// Returns a unique String UID for a TagAlongUser
@@ -39,17 +41,31 @@ class TagAlongUserViewModel {
       String? studentEmail = tagAlongUser?.emailAddress;
       User? user = getUser();
       if (studentEmail != null && user != null) {
-        // TODO: Need to reauthenticate our Firebase `User` again because updating - Firebase security sensitive.
-        // TODO: For now, just always sign-in AND register..
-        await user.reload();
-        await user.updateEmail(studentEmail);
-        await user.sendEmailVerification();
-        logger.log.fine(
-            'sendEmailVerificationToUser() - Sent verification email to $studentEmail');
+        try {
+          await user.reload();
+          // await user.updateEmail(studentEmail);
+          if (studentEmail == user.email && user.emailVerified) {
+            logger.log.fine('No email verification sent: User already authenticated');
+            return;
+          }
+          if (studentEmail == user.email) {
+            logger.log.fine('Sending email verification');
+            await user.sendEmailVerification();
+          } else {
+            logger.log.fine('Reauthenticating user');
+            final authToken = await FacebookAuth.instance.accessToken;
+            final facebookAuthCredential = FacebookAuthProvider.credential(authToken!.token);
+            await user.reauthenticateWithCredential(facebookAuthCredential);
+            logger.log.fine('Sending email verification to updated email');
+            await user.verifyBeforeUpdateEmail(studentEmail);
+          }
+        } catch (e) {
+          logger.log.fine('Email verification failed: ${e.toString()}');
+        }
+        logger.log.fine('sendEmailVerificationToUser() - Sent verification email to $studentEmail');
       }
     } else {
-      logger.log.fine(
-          'sendEmailVerificationToUser() - User does NOT exist, how is this possible?');
+      logger.log.fine('sendEmailVerificationToUser() - User does NOT exist, how is this possible?');
     }
   }
 
@@ -123,8 +139,7 @@ class TagAlongUserViewModel {
   /// user must exist within the FirebaseAuth system.
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
-  Future<void> setUpUser(String uid,
-      {String signInMethod = SignInMethod.FACEBOOK}) async {
+  Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
     logger.log.fine('setUpUser()');
     // 1. [user] exists in memory
     if (tagAlongUser != null) {
@@ -158,8 +173,7 @@ class TagAlongUserViewModel {
 
         if (signInMethod == SignInMethod.FACEBOOK) {
           // Get the User's Facebook profile picture
-          Map<String, dynamic> json =
-              await authService.getFacebookProfilePicture();
+          Map<String, dynamic> json = await authService.getFacebookProfilePicture();
           String url = json['picture']?['data']?['url']; // Should always exist?
           tagAlongUser = TagAlongUser(
             id: uid,
@@ -201,20 +215,18 @@ class TagAlongUserViewModel {
   Future<void> addTagAlongUserToFirestore(String uid) async {
     if (userExists()) {
       await databaseService.users.doc(uid).set(tagAlongUser!.toJson());
-      logger.log
-          .fine('addTagAlongUserToFirestore() - Added TagAlongUser $uid.');
+      logger.log.fine('addTagAlongUserToFirestore() - Added TagAlongUser $uid.');
     } else {
-      logger.log.fine(
-          'addTagAlongUserToFirestore() - TagAlongUser instance does not exist in ViewModel; cannot happen');
+      logger.log
+          .fine('addTagAlongUserToFirestore() - TagAlongUser instance does not exist in ViewModel; cannot happen');
     }
   }
 
   /// Updates this instance's [TagAlongUser] in-memory only
   void updateTagAlongUserInternal(Map<String, dynamic> data) {
     tagAlongUser?.updateTagAlongUser(data);
-    logger.log
-        .fine('updateTagAlongUserInternal() - TagAlongUser after update:\n'
-            '$tagAlongUser');
+    logger.log.fine('updateTagAlongUserInternal() - TagAlongUser after update: ${tagAlongUser.toString()}');
+    notifyListeners();
   }
 
   /// Updates the Firebase with this ViewModel's current instance of [user]
@@ -224,6 +236,12 @@ class TagAlongUserViewModel {
     Map<String, dynamic> tagAlongUserData = tagAlongUser!.toJson();
     await _databaseService.users.doc(getUid()).update(tagAlongUserData);
     logger.log.fine('updateTagAlongUser(): jsonData - $tagAlongUserData');
+  }
+
+  Future<void> updateTagAlongUserAuth() async {
+    Map<String, dynamic> tagAlongUserData = tagAlongUser!.toJson();
+    await _authService.updateAuthUserName(tagAlongUserData['first_name'], tagAlongUserData['last_name']);
+    logger.log.fine('updateTagAlongUserAuth(): jsonData - $tagAlongUserData');
   }
 
   /// Checks whether the current user is an 1. Active 2. Driver.
