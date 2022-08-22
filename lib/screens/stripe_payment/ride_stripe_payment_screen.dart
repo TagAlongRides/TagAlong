@@ -8,6 +8,7 @@ import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 class RideStripePaymentScreen extends StatefulWidget {
   const RideStripePaymentScreen({Key? key, required this.ride}) : super(key: key);
@@ -210,10 +211,9 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
         }
       }
     } catch (error, stacktrace) {
-      print(stacktrace);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Payment Failed, Please try again later.')));
-      rethrow;
+      logger.log.fine(stacktrace);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment failed, please try again.')));
+      // rethrow;
     }
   }
 

@@ -16,7 +16,7 @@ class AuthService with ChangeNotifier {
   ///
   /// Note: It has an immediate event when first "listened" to about the
   /// current state of the user.
-  Stream<User?> get userStatus => _auth.authStateChanges();
+  Stream<User?> get userStatus => _auth.userChanges();
 
   /// Returns a unique String UID for a FirebaseAuth user OR null if
   /// [user] doesn't exist or somehow [uid] does not exist for [user].
@@ -44,8 +44,8 @@ class AuthService with ChangeNotifier {
     if (result.status == LoginStatus.success && result.accessToken != null) {
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken!.token);
       try {
-        UserCredential? user_cred = await _auth.signInWithCredential(facebookAuthCredential);
-        return user_cred;
+        UserCredential? userCred = await _auth.signInWithCredential(facebookAuthCredential);
+        return userCred;
       }
       // Log-in failed
       on FirebaseAuthException catch (e) {
@@ -78,8 +78,8 @@ class AuthService with ChangeNotifier {
         // rawNonce: rawNonce,
       );
 
-      UserCredential? user_cred = await _auth.signInWithCredential(oauthCredential);
-      return user_cred;
+      UserCredential? userCred = await _auth.signInWithCredential(oauthCredential);
+      return userCred;
     } catch (error) {
       return null;
     }

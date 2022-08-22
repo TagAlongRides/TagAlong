@@ -244,33 +244,41 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
 
         // 2. User tapped on "Post Ride" (index 1)
         else {
+          var userViewModel = tagAlongUserViewModel;
+          bool hasDriverData = userViewModel.tagAlongUser?.driverData != null;
           bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
           bool isStripeActive = tagAlongUserViewModel.isStripeActive();
+          bool isEmailVerified = tagAlongUserViewModel.isEmailVerified();
           logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
-          if (!isStripeActive) {
+
+          // If NOT Active Driver, offer option to register as such
+          if (!isEmailVerified) {
             showDialog<String>(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: const Text('Not a Driver'),
-                  content: const Text('You have some issue with stripe registration, Please register again'),
+                  title: const Text('Verify email'),
+                  content: const Text(
+                      'To keep your travel safe, Tagalong requires every user to verify their email address before posting or booking a ride.'),
                   actions: <Widget>[
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                     TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, RegisterDriverScreen.routeName);
+                          userViewModel.sendEmailVerificationToUser();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Verification email sent to ${userViewModel.tagAlongUser?.emailAddress}'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                          Navigator.of(context).pop();
                         },
-                        child: const Text('OK')),
+                        child: const Text('Resend Verification')),
+                    TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
                   ],
                 );
               },
             );
-          } else if (isStripeActive && isActiveDriver) {
-            logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
-            Navigator.pushNamed(context, OfferRideCampus.routeName);
-          }
-          // If NOT Active Driver, offer option to register as such
-          else {
+          } else if (!hasDriverData) {
             showDialog<String>(
               context: context,
               builder: (BuildContext context) {
@@ -278,17 +286,40 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                   title: const Text('Not a Driver'),
                   content: const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
                   actions: <Widget>[
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not now')),
                     TextButton(
                         onPressed: () {
                           Navigator.of(context).popUntil((route) => route.isFirst);
-                          Navigator.pushReplacementNamed(context, RegisterDriverScreen.routeName);
+                          Navigator.of(context).pushNamed(RegisterDriverScreen.routeName);
                         },
-                        child: const Text('OK')),
+                        child: const Text('Create profile')),
                   ],
                 );
               },
             );
+          } else if (hasDriverData && !isStripeActive) {
+            showDialog<String>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('We couldn' 't collect your payment details'),
+                  content: const Text(
+                      'Oops! There was an issue with your Stripe registration, please try registering again.'),
+                  actions: <Widget>[
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not now')),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                          Navigator.of(context).pushNamed(RegisterDriverScreen.routeName);
+                        },
+                        child: const Text('Register')),
+                  ],
+                );
+              },
+            );
+          } else if (isStripeActive && isActiveDriver) {
+            logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
+            Navigator.pushNamed(context, OfferRideCampus.routeName);
           }
         }
       },

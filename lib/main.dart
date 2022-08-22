@@ -74,60 +74,63 @@ class _TagAlongAppState extends State<TagAlongApp> {
     // Note: By default, Providers are created "lazily", therefore only when
     // they are needed. We depend on [TagAlongUserViewModel] to be created
     // first, therefore when other Providers need it, it'll be ready.
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthService>(create: (BuildContext context) => AuthService()),
-        // TODO: May need `lazy: false`
-        ChangeNotifierProvider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
-        ChangeNotifierProvider<RegisterDriverViewModel>(create: (BuildContext context) => RegisterDriverViewModel()),
-        ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
-        ChangeNotifierProvider<OfferRideViewModel>(
-            create: (BuildContext context) =>
-                OfferRideViewModel(tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
-        ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
-        ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel()),
-        ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
-      ],
-      child: StreamBuilder<User?>(
-          stream: AuthService().userStatus,
-          builder: (context, user) {
-            return MaterialApp(
-                debugShowCheckedModeBanner: true,
-                theme: theme,
-                title: 'TagAlong App',
-                home: user.data?.refreshToken == null || user.data?.refreshToken == ''
-                    ? LoginScreen()
-                    : const RegistrationWrapper(),
-                // home: const AuthWrapper(),
-                routes: <String, WidgetBuilder>{
-                  RegisterUserScreen.routeName: (BuildContext context) => const RegisterUserScreen(),
-                  RegisterDriverScreen.routeName: (BuildContext context) => const RegisterDriverScreen(),
-                  RideBoardScreen.routeName: (BuildContext context) => const RideBoardScreen(),
-                  DriverRegistrationPromptScreen.routeName: (BuildContext context) =>
-                      const DriverRegistrationPromptScreen(),
-                  LoginScreen.routeName: (BuildContext context) => LoginScreen(),
-                  WelcomeScreen.routeName: (BuildContext context) => const WelcomeScreen(),
-                  RegistrationWrapper.routeName: (BuildContext context) => const RegistrationWrapper(),
-                  OfferRideCampus.routeName: (BuildContext context) => const OfferRideCampus(),
-                  OfferRidePickup.routeName: (BuildContext context) => const OfferRidePickup(),
-                  OfferRideDropoff.routeName: (BuildContext context) => const OfferRideDropoff(),
-                  OfferRideDeparture.routeName: (BuildContext context) => const OfferRideDeparture(),
-                  OfferRideTripDetails.routeName: (BuildContext context) => const OfferRideTripDetails(),
-                  OfferRidePricePrefs.routeName: (BuildContext context) => const OfferRidePricePrefs(),
-                  RideDetails.routeName: (BuildContext context) => const RideDetails(),
-                  DriverStripeConnectRegistrationScreen.routeName: (BuildContext context) =>
-                      const DriverStripeConnectRegistrationScreen(),
-                  AccountSettingsScreen.routeName: (context) => const AccountSettingsScreen(),
-                  UpdatePersonalInfoScreen.routeName: (context) => UpdatePersonalInfoScreen(),
-                  ContactUsScreen.routeName: (context) => const ContactUsScreen(),
-                  NotificationPrefsScreen.routeName: (context) => const NotificationPrefsScreen(),
-                  PaymentMethodsScreen.routeName: (context) => const PaymentMethodsScreen(),
-                  PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
-                  AddPaymentMethodScreen.routeName: (context) => const AddPaymentMethodScreen(),
-                  // '/stripe-payment': (BuildContext context) =>
-                  //     const StripePaymentScreen(ride: ,),
-                });
-          }),
+    return ChangeNotifierProvider<AuthService>(
+      create: (BuildContext context) => AuthService(),
+      child: Consumer<AuthService>(builder: (context, auth, child) {
+        auth.getUser()?.reload();
+        logger.log.fine('Current auth user: ${auth.getUser().toString()}');
+        return MultiProvider(
+          providers: [
+            // TODO: May need `lazy: false`
+            ChangeNotifierProvider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
+            ChangeNotifierProvider<RegisterDriverViewModel>(
+                create: (BuildContext context) => RegisterDriverViewModel()),
+            ChangeNotifierProvider<RideBoardViewModel>(create: (BuildContext context) => RideBoardViewModel()),
+            ChangeNotifierProvider<OfferRideViewModel>(
+                create: (BuildContext context) => OfferRideViewModel(
+                    tagAlongUserViewModel: Provider.of<TagAlongUserViewModel>(context, listen: false))),
+            ChangeNotifierProvider<FilterRideViewModel>(create: (BuildContext context) => FilterRideViewModel()),
+            ChangeNotifierProvider<RideDetailsViewModel>(create: (BuildContext context) => RideDetailsViewModel()),
+            ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
+          ],
+          child: MaterialApp(
+            debugShowCheckedModeBanner: true,
+            theme: theme,
+            title: 'TagAlong App',
+            home: auth.getUser()?.refreshToken == null || auth.getUser()?.refreshToken == ''
+                ? LoginScreen()
+                : const RegistrationWrapper(),
+            routes: <String, WidgetBuilder>{
+              RegisterUserScreen.routeName: (BuildContext context) => const RegisterUserScreen(),
+              RegisterDriverScreen.routeName: (BuildContext context) => const RegisterDriverScreen(),
+              RideBoardScreen.routeName: (BuildContext context) => const RideBoardScreen(),
+              DriverRegistrationPromptScreen.routeName: (BuildContext context) =>
+                  const DriverRegistrationPromptScreen(),
+              LoginScreen.routeName: (BuildContext context) => LoginScreen(),
+              WelcomeScreen.routeName: (BuildContext context) => const WelcomeScreen(),
+              RegistrationWrapper.routeName: (BuildContext context) => const RegistrationWrapper(),
+              OfferRideCampus.routeName: (BuildContext context) => const OfferRideCampus(),
+              OfferRidePickup.routeName: (BuildContext context) => const OfferRidePickup(),
+              OfferRideDropoff.routeName: (BuildContext context) => const OfferRideDropoff(),
+              OfferRideDeparture.routeName: (BuildContext context) => const OfferRideDeparture(),
+              OfferRideTripDetails.routeName: (BuildContext context) => const OfferRideTripDetails(),
+              OfferRidePricePrefs.routeName: (BuildContext context) => const OfferRidePricePrefs(),
+              RideDetails.routeName: (BuildContext context) => const RideDetails(),
+              DriverStripeConnectRegistrationScreen.routeName: (BuildContext context) =>
+                  const DriverStripeConnectRegistrationScreen(),
+              AccountSettingsScreen.routeName: (context) => const AccountSettingsScreen(),
+              UpdatePersonalInfoScreen.routeName: (context) => UpdatePersonalInfoScreen(),
+              ContactUsScreen.routeName: (context) => const ContactUsScreen(),
+              NotificationPrefsScreen.routeName: (context) => const NotificationPrefsScreen(),
+              PaymentMethodsScreen.routeName: (context) => const PaymentMethodsScreen(),
+              PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
+              AddPaymentMethodScreen.routeName: (context) => const AddPaymentMethodScreen(),
+              // '/stripe-payment': (BuildContext context) =>
+              //     const StripePaymentScreen(ride: ,),
+            },
+          ),
+        );
+      }),
     );
   }
 }

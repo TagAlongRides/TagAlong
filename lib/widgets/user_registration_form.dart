@@ -55,7 +55,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
       lastName: widget._user!.lastName,
       phoneNumber: widget._user!.phoneNumber,
       emailAddress: widget._user!.emailAddress,
-      institution: widget._user!.institution, // ?? defaultInstitution,
+      institution: widget._user!.institution,
       graduationYear: widget._user!.graduationYear,
     );
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
@@ -155,7 +155,7 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             if (value == null || value.isEmpty) {
               return 'Please enter a valid .edu email';
             }
-            // TODO: Uncomment this after testing
+            // TODO: Uncomment after testing
             // if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@(vt|gmu|illinois).edu").hasMatch(value)) {
             //   return 'Please enter a valid @vt.edu email address';
             // }
@@ -238,7 +238,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                 return DropdownMenuItem<String>(value: institution, child: Text(institution));
               }).toList(),
               onChanged: (String? value) {
-                print(value);
                 _updatedUser = TagAlongUser(
                   id: _updatedUser.id,
                   profilePictureUrl: _updatedUser.profilePictureUrl,
@@ -251,10 +250,8 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                   institution: value!,
                   graduationYear: _updatedUser.graduationYear,
                 );
-                print('onChanged: ${_updatedUser.toString()}');
               },
               onSaved: (String? value) {
-                print(value);
                 _updatedUser = TagAlongUser(
                   id: _updatedUser.id,
                   profilePictureUrl: _updatedUser.profilePictureUrl,
@@ -267,7 +264,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                   institution: value!,
                   graduationYear: _updatedUser.graduationYear,
                 );
-                print('onSaved: ${_updatedUser.toString()}');
               },
             )),
 
@@ -297,7 +293,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                 graduationYear: value,
               );
               gradValue = value!;
-              print('onChangedYear: ${_updatedUser.toString()}');
             },
             onSaved: (value) {
               _updatedUser = TagAlongUser(
@@ -312,7 +307,6 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                 emailAddress: _updatedUser.emailAddress,
                 graduationYear: value,
               );
-              print('onSavedYear: ${_updatedUser.toString()}');
             },
           )),
     ];
@@ -337,15 +331,11 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
             child: ElevatedButton(
               onPressed: () async {
                 logger.log.fine('UserRegistrationForm - onPressed() Register Button');
-                print('Attempting to save ${_updatedUser.toString()}');
+                logger.log.fine('Attempting to save ${_updatedUser.toString()}');
                 final form = _formKey.currentState;
                 logger.log.fine('form is null? ${form == null}');
-
                 if (form != null) {
                   if (form.validate()) {
-                    final _updatedEmailAddress =
-                        tagAlongUserViewModel.tagAlongUser?.institution == _updatedUser.emailAddress;
-                    print('Updating email address? $_updatedEmailAddress');
                     form.save();
                     logger.log.fine('UserRegistrationForm - User registration was valid');
                     logger.log.fine('UserRegistrationForm -Attempting to write the following user data');

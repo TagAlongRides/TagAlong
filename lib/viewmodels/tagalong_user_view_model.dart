@@ -37,6 +37,7 @@ class TagAlongUserViewModel with ChangeNotifier {
   /// Sends a Email verification to [TagAlongUser] `email` as well as
   /// updates the [TagAlongUser] `email`
   Future<void> sendEmailVerificationToUser() async {
+    authService.getUser()?.reload();
     if (userExists()) {
       String? studentEmail = tagAlongUser?.emailAddress;
       User? user = getUser();
@@ -251,5 +252,13 @@ class TagAlongUserViewModel with ChangeNotifier {
 
   bool isStripeActive() {
     return tagAlongUser?.isStripeActive() ?? false;
+  }
+
+  bool isEmailVerified() {
+    final user = getUser();
+    if (user == null) {
+      return false;
+    }
+    return user.emailVerified;
   }
 }
