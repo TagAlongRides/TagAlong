@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -7,7 +8,7 @@ import 'package:tagalong/util/log.dart' as logger;
 ///
 /// It will contain the API for creating, signing in, and out, Firebase users
 /// within the FirebaseAuth system.
-class AuthService {
+class AuthService with ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _fb = FacebookAuth.instance;
 
@@ -15,7 +16,7 @@ class AuthService {
   ///
   /// Note: It has an immediate event when first "listened" to about the
   /// current state of the user.
-  Stream<User?> get userStatus => _auth.authStateChanges();
+  Stream<User?> get userStatus => _auth.userChanges();
 
   /// Returns a unique String UID for a FirebaseAuth user OR null if
   /// [user] doesn't exist or somehow [uid] does not exist for [user].
@@ -41,12 +42,10 @@ class AuthService {
 
     // Log-in was successful
     if (result.status == LoginStatus.success && result.accessToken != null) {
-      final OAuthCredential facebookAuthCredential =
-          FacebookAuthProvider.credential(result.accessToken!.token);
+      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken!.token);
       try {
-        UserCredential? user_cred =
-            await _auth.signInWithCredential(facebookAuthCredential);
-        return user_cred;
+        UserCredential? userCred = await _auth.signInWithCredential(facebookAuthCredential);
+        return userCred;
       }
       // Log-in failed
       on FirebaseAuthException catch (e) {
@@ -79,9 +78,8 @@ class AuthService {
         // rawNonce: rawNonce,
       );
 
-      UserCredential? user_cred =
-          await _auth.signInWithCredential(oauthCredential);
-      return user_cred;
+      UserCredential? userCred = await _auth.signInWithCredential(oauthCredential);
+      return userCred;
     } catch (error) {
       return null;
     }
@@ -118,11 +116,36 @@ class AuthService {
   /// the JSON GraphAPI result.
   Future<Map<String, dynamic>> getFacebookProfilePicture() async {
     logger.log.fine('Querying for user\'s Profile picture');
-    Map<String, dynamic> json =
-        await _fb.getUserData(fields: "picture.width(200)");
+    Map<String, dynamic> json = await _fb.getUserData(fields: "picture.width(200)");
     return json;
   }
 
   /// Sign-out of TagAlong.
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    _auth.signOut();
+    notifyListeners();
+  }
+
+  Future<void> updateAuthUserName(String? firstName, String? lastName) async {
+    try {
+      final user = getUser();
+      if (user == null) {
+        logger.log.fine('Can' 't update auth name: No auth user logged in');
+        return;
+      }
+      if (firstName == null || lastName == null) {
+        logger.log.fine('Can' 't update auth name: New name not passed');
+        return;
+      }
+
+      final newName = firstName + ' ' + lastName;
+      if (user.displayName == newName) {
+        logger.log.fine('No updated needed, auth user name already matches: ${user.displayName}');
+        return;
+      }
+      return await user.updateDisplayName(newName);
+    } catch (e) {
+      logger.log.fine('Failed to update auth user name: ${e.toString()}');
+    }
+  }
 }

@@ -6,6 +6,7 @@ import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/screens/stripe_payment/ride_stripe_payment_screen.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
+import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 class RideDetails extends StatelessWidget {
   const RideDetails({Key? key}) : super(key: key);
@@ -242,33 +243,69 @@ class RideDetails extends StatelessWidget {
           ]),
           // "Continue" Button
           const SizedBox(height: 16),
-          ElevatedButton(
-            child: Stack(
-              children: [
-                const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
+          Consumer<TagAlongUserViewModel>(
+            builder: (context, user, child) {
+              final _isVerified = user.isEmailVerified();
+              return ElevatedButton(
+                style: _isVerified ? null : ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey)),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        _isVerified ? 'Continue' : 'Email Verification Needed',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        _isVerified ? '\$${rideDetailsViewModel.getTotalPrice()}' : '',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    )
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    '\$${rideDetailsViewModel.getTotalPrice()}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                )
-              ],
-            ),
-            onPressed: () {
-              // Navigator.of(context).pushNamed('/stripe-payment');
-
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return RideStripePaymentScreen(ride: ride);
-                },
-              ));
+                onPressed: _isVerified
+                    ? () {
+                        // Navigator.of(context).pushNamed('/stripe-payment');
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return RideStripePaymentScreen(ride: ride);
+                          },
+                        ));
+                      }
+                    : () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                  title: const Text('Please verify email'),
+                                  content: const Text(
+                                      'To keep your travel safe, Tagalong requires every user to verify their email address before posting or booking a ride.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('Resend Verification'),
+                                      onPressed: () {
+                                        user.sendEmailVerificationToUser();
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content:
+                                                Text('Verification email sent to ${user.tagAlongUser?.emailAddress}'),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ]);
+                            });
+                      },
+              );
             },
           )
         ],

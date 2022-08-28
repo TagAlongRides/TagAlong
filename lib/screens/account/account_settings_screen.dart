@@ -18,7 +18,6 @@ class AccountSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logger.log.fine('Account Settings Build');
-    var tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     final auth = Provider.of<AuthService>(context, listen: false);
     var divider = const Divider(height: 0, thickness: 1);
     var sizedBox = const SizedBox(height: 12);
@@ -27,31 +26,33 @@ class AccountSettingsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         sizedBox,
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage: NetworkImage(tagAlongUserViewModel.tagAlongUser!.profilePictureUrl),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${tagAlongUserViewModel.tagAlongUser!.firstName} ${tagAlongUserViewModel.tagAlongUser!.lastName}',
-                  style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
+        Consumer<TagAlongUserViewModel>(
+          builder: (context, users, child) => Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage(users.tagAlongUser!.profilePictureUrl),
                 ),
-                Text(
-                  tagAlongUserViewModel.tagAlongUser?.graduationYear == null
-                      ? '${tagAlongUserViewModel.tagAlongUser!.institution}'
-                      : '${tagAlongUserViewModel.tagAlongUser!.institution} Class of ${tagAlongUserViewModel.tagAlongUser!.graduationYear}',
-                  style: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(fontStyle: FontStyle.italic),
-                )
-              ],
-            ),
-          ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${users.tagAlongUser!.firstName} ${users.tagAlongUser!.lastName}',
+                    style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    users.tagAlongUser?.graduationYear == null
+                        ? users.tagAlongUser!.institution
+                        : '${users.tagAlongUser!.institution} Class of ${users.tagAlongUser!.graduationYear}',
+                    style: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(fontStyle: FontStyle.italic),
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
         sizedBox,
         AccountSettingTile(

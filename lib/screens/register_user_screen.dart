@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
-import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/widgets/user_registration_form.dart';
@@ -19,34 +18,27 @@ class RegisterUserScreen extends StatefulWidget {
 class _RegisterUserScreenState extends State<RegisterUserScreen> {
   @override
   Widget build(BuildContext context) {
-    var authService = Provider.of<AuthService>(context);
+    final user = Provider.of<TagAlongUserViewModel>(context, listen: false).tagAlongUser;
 
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          centerTitle: false,
-          toolbarHeight: 100,
-          // actions: [
-          //   // TODO: STRICTLY DEBUGGING - NEED TO TAKE OUT
-          //   OutlinedButton(
-          //       child: const Text('Sign Out'),
-          //       onPressed: (() {
-          //         authService.signOut();
-          //       }))
-          // ],
-          title: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                SizedBox(height: 16),
-                Text('School Information', style: TextStyle(fontSize: 24.0)),
-                Text('Nice to meet you!', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
-              ])),
-      body: const SafeArea(
+        elevation: 0,
+        centerTitle: false,
+        toolbarHeight: 100,
+        title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              SizedBox(height: 16),
+              Text('School Information', style: TextStyle(fontSize: 24.0)),
+              Text('Nice to meet you!', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            ]),
+      ),
+      body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: UserRegistrationForm(null),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: UserRegistrationForm(user),
           ),
         ),
       ),
