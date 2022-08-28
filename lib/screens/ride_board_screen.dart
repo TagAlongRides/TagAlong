@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/screens/my_ride/my_ride_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
-import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
@@ -175,25 +174,43 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
 
   /// Returns [RideBoardScreen] AppBar
   _getAppBar(BuildContext context) {
-    // TODO: Take out AuthService - only here for quick debugging
-    var authService = Provider.of<AuthService>(context, listen: false);
-    return AppBar(
-      title: const Text('Ride Board'),
-      leading: IconButton(
-        icon: const Icon(Icons.menu),
-        // Filtering Button
-        onPressed: () {
-          showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (BuildContext context) {
-              // Brings up the "BottomModelSheet" for filtering
-              return _getFilterModalBottomSheet(context);
-            },
-          );
-        },
-      ),
-    );
+    switch (_selectedItem) {
+      case 0:
+        return AppBar(title: const Text('Ride Board'),
+            // automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.filter_alt_rounded),
+                // Filtering Button
+                onPressed: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      // Brings up the "BottomModelSheet" for filtering
+                      return _getFilterModalBottomSheet(context);
+                    },
+                  );
+                },
+              ),
+            ]);
+        break;
+      case 1:
+        return null; // Should never get here
+        break;
+      case 2:
+        return AppBar(
+          title: const Text('My Rides'),
+        );
+        break;
+      case 3:
+        return AppBar(
+          title: const Text('Account Settings'),
+        );
+        break;
+      default:
+        return null;
+    }
   }
 
   /// Returns the [RideBoardScreen] body
