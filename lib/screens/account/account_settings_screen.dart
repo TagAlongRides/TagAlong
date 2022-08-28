@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/account/contact_us_screen.dart';
+import 'package:tagalong/screens/account/support_screen.dart';
 import 'package:tagalong/screens/account/notification_prefs_screen.dart';
 import 'package:tagalong/screens/account/payment_prefs_screen.dart';
 import 'package:tagalong/screens/account/privacy_policy_screen.dart';
@@ -91,10 +91,10 @@ class AccountSettingsScreen extends StatelessWidget {
         ),
         divider,
         AccountSettingTile(
-          icon: Icons.phone_outlined,
-          title: 'Contact Us',
+          icon: Icons.question_mark_rounded,
+          title: 'FAQs & Support',
           onTap: () {
-            Navigator.of(context).pushNamed(ContactUsScreen.routeName);
+            Navigator.of(context).pushNamed(SupportScreen.routeName);
           },
         ),
         sizedBox,

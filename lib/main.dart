@@ -8,7 +8,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/account/account_settings_screen.dart';
 import 'package:tagalong/screens/account/add_payment_method_screen.dart';
-import 'package:tagalong/screens/account/contact_us_screen.dart';
+import 'package:tagalong/screens/account/support_screen.dart';
 import 'package:tagalong/screens/account/notification_prefs_screen.dart';
 import 'package:tagalong/screens/account/payment_prefs_screen.dart';
 import 'package:tagalong/screens/account/privacy_policy_screen.dart';
@@ -120,7 +120,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
                   const DriverStripeConnectRegistrationScreen(),
               AccountSettingsScreen.routeName: (context) => const AccountSettingsScreen(),
               UpdatePersonalInfoScreen.routeName: (context) => UpdatePersonalInfoScreen(),
-              ContactUsScreen.routeName: (context) => const ContactUsScreen(),
+              SupportScreen.routeName: (context) => const SupportScreen(),
               NotificationPrefsScreen.routeName: (context) => const NotificationPrefsScreen(),
               PaymentMethodsScreen.routeName: (context) => const PaymentMethodsScreen(),
               PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
