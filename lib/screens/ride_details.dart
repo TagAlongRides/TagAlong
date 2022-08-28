@@ -8,6 +8,22 @@ import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
+extension on String {
+  _toProperCase() {
+    if (this == null) {
+      return null;
+    }
+    if (length == 1) {
+      return toUpperCase();
+    }
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+
+  toTitleCase() {
+    return replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str._toProperCase()).join(' ');
+  }
+}
+
 class RideDetails extends StatelessWidget {
   const RideDetails({Key? key}) : super(key: key);
   static const routeName = '/ride_details';
@@ -78,14 +94,18 @@ class RideDetails extends StatelessWidget {
           ]),
           Row(children: [
             Expanded(
-                child: Text(ride.pickupLocation.label ?? ride.pickupLocation.city,
-                    style: Theme.of(context).textTheme.headline6)),
+              child: Text(
+                (ride.pickupLocation.label ?? ride.pickupLocation.city).toTitleCase() as String,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+            ),
             Expanded(
-                child: Text(
-              ride.dropoffLocation.label ?? ride.dropoffLocation.city,
-              style: Theme.of(context).textTheme.headline6,
-              textAlign: TextAlign.right,
-            ))
+              child: Text(
+                (ride.dropoffLocation.label ?? ride.dropoffLocation.city).toTitleCase() as String,
+                style: Theme.of(context).textTheme.headline6,
+                textAlign: TextAlign.right,
+              ),
+            )
           ]),
           Row(children: [
             Expanded(

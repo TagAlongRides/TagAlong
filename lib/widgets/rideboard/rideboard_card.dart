@@ -7,6 +7,22 @@ import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
+extension on String {
+  _toProperCase() {
+    if (this == null) {
+      return null;
+    }
+    if (length == 1) {
+      return toUpperCase();
+    }
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+
+  toTitleCase() {
+    return replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str._toProperCase()).join(' ');
+  }
+}
+
 /// Represents a RideBoardCard, the only element that should be shown on the
 /// RideBoard, and should surface basic information about a Ride as well as
 /// lead to a more detailed page onTap.
@@ -83,7 +99,7 @@ class RideBoardCard extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      ride.pickupLocation.label ?? ride.pickupLocation.city,
+                      (ride.pickupLocation.label ?? ride.pickupLocation.city).toTitleCase() as String,
                       style: TagAlongTheme.lightTextTheme.headline6,
                     ),
                   ),
@@ -106,7 +122,7 @@ class RideBoardCard extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        ride.dropoffLocation.label ?? ride.dropoffLocation.city,
+                        (ride.dropoffLocation.label ?? ride.dropoffLocation.city).toTitleCase() as String,
                         style: TagAlongTheme.lightTextTheme.headline6,
                       ),
                     ),
