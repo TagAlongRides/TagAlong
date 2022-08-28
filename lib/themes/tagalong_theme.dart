@@ -147,19 +147,16 @@ class TagAlongTheme {
     elevation: 0,
   );
 
-  static BottomNavigationBarThemeData bottomNavigationBarTheme =
-      BottomNavigationBarThemeData(
+  static BottomNavigationBarThemeData bottomNavigationBarTheme = BottomNavigationBarThemeData(
     selectedItemColor: Colors.yellow[200],
     unselectedItemColor: secondarySwatch.shade50,
     backgroundColor: primarySwatch.shade700,
     unselectedLabelStyle: lightTextTheme.caption,
-    selectedLabelStyle:
-        lightTextTheme.caption!.copyWith(fontWeight: FontWeight.bold),
+    selectedLabelStyle: lightTextTheme.caption!.copyWith(fontWeight: FontWeight.bold),
     type: BottomNavigationBarType.fixed,
   );
 
-  static FloatingActionButtonThemeData floatingActionButtonTheme =
-      FloatingActionButtonThemeData(
+  static FloatingActionButtonThemeData floatingActionButtonTheme = FloatingActionButtonThemeData(
     foregroundColor: secondarySwatch.shade50,
     backgroundColor: primarySwatch.shade900,
   );
@@ -169,6 +166,7 @@ class TagAlongTheme {
       textStyle: lightTextTheme.button!.copyWith(
         fontWeight: FontWeight.bold,
       ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(1000))),
       padding: const EdgeInsets.symmetric(
         vertical: 10,
         horizontal: 20,
@@ -226,8 +224,7 @@ class TagAlongTheme {
     secondarySelectedColor: primarySwatch.shade700,
     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
     labelStyle: lightTextTheme.subtitle2!,
-    secondaryLabelStyle:
-        lightTextTheme.subtitle2!.copyWith(color: secondarySwatch.shade50),
+    secondaryLabelStyle: lightTextTheme.subtitle2!.copyWith(color: secondarySwatch.shade50),
     brightness: Brightness.light,
     showCheckmark: true,
     checkmarkColor: Colors.white,
