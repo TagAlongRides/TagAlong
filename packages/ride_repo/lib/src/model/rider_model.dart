@@ -69,8 +69,7 @@ class RideModel {
         driverId: json["driver_id"],
         notes: json["notes"],
         riderIds: List<String>.from(json["rider_ids"] ?? [].map((x) => x)),
-        rideBookingIds:
-            List<String>.from(json["ride_booking_ids"] ?? [].map((x) => x)),
+        rideBookingIds: List<String>.from(json["ride_booking_ids"] ?? [].map((x) => x)),
         pickupLocation: Location.fromJson(json["pickup_location"]),
         university: json["university"],
         driverFullName: json["driver_full_name"],
@@ -85,12 +84,9 @@ class RideModel {
         noPassengers: json["no_passengers"],
         vaccinationCard: json["vaccination_card"],
         dropoffLocation: Location.fromJson(json["dropoff_location"]),
-        status:
-            RideStatus.values.byName(json["status"].toString().toLowerCase()),
+        status: RideStatus.values.byName(json["status"].toString().toLowerCase()),
         stripeAccountId: json["stripe_account_id"] ?? '',
-        updatedAt: json["updated_at"] == null
-            ? null
-            : (json["updated_at"] as Timestamp).toDate(),
+        updatedAt: json["updated_at"] == null ? null : (json["updated_at"] as Timestamp).toDate(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -120,9 +116,7 @@ class RideModel {
 
   /// Returns a [TimeOfDay] instance given a stringified TimeOfDay
   static TimeOfDay timeOfDayFromString(String str) {
-    return TimeOfDay(
-        hour: int.parse(str.split(':')[0]),
-        minute: int.parse(str.split(':')[1].substring(0, 2)));
+    return TimeOfDay(hour: int.parse(str.split(':')[0]), minute: int.parse(str.split(':')[1].substring(0, 2)));
   }
 
   /// Returns a string First Name and last initial for a driver.
@@ -172,7 +166,7 @@ class Location {
 class Vehicle {
   Vehicle({
     required this.color,
-    required this.year,
+    // required this.year,
     required this.createdAt,
     required this.model,
     required this.vehicleId,
@@ -180,7 +174,7 @@ class Vehicle {
   });
 
   final String color;
-  final String year;
+  // final String year;
   final dynamic createdAt;
   final String model;
   final String vehicleId;
@@ -188,7 +182,7 @@ class Vehicle {
 
   factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
         color: json["color"],
-        year: json["year"],
+        // year: json["year"],
         createdAt: json["created_at"],
         model: json["model"],
         vehicleId: json["vehicle_id"],
@@ -197,7 +191,7 @@ class Vehicle {
 
   Map<String, dynamic> toJson() => {
         "color": color,
-        "year": year,
+        // "year": year,
         "created_at": createdAt,
         "model": model,
         "vehicle_id": vehicleId,

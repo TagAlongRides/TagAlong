@@ -9,7 +9,7 @@ import '../services/car_make_model_service.dart';
 class RegisterDriverViewModel extends ChangeNotifier {
   String? make;
   String? model;
-  String? year;
+  // String? year;
   String? color;
 
   bool hasMakeUpdated = false;
@@ -18,13 +18,13 @@ class RegisterDriverViewModel extends ChangeNotifier {
 
   final CarMakeModelService _carMakeModelService = CarMakeModelService();
 
-  /// Updates [make] and resets [model], [year], [color].
+  /// Updates [make] and resets [model], [color].
   ///
   /// This function will also notify all listeners to rebuild.
   void updateMake({required String make}) {
     this.make = make;
     this.model = null;
-    this.year = null;
+    // this.year = null;
     this.color = null;
     this.hasMakeUpdated = true;
     // Tell listening Widgets to rebuild
@@ -32,12 +32,12 @@ class RegisterDriverViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Updates [model] and resets [year], [color].
+  /// Updates [model] and resets [color].
   ///
   /// This function will also notify all listeners to rebuild.
   void updateModel({required String model}) {
     this.model = model;
-    this.year = null;
+    // this.year = null;
     this.color = null;
     this.hasModelUpdated = true;
     // Tell listening Widgets to rebuild
@@ -48,14 +48,14 @@ class RegisterDriverViewModel extends ChangeNotifier {
   /// Updates [year] and resets [color].
   ///
   /// This function will also notify all listeners to rebuild.
-  void updateYear({required String year}) {
-    this.year = year;
-    this.color = null;
-    this.hasYearUpdated = true;
-    // Tell listening Widgets to rebuild
-    logger.log.fine('updateYear($year) - notifying listeners');
-    notifyListeners();
-  }
+  // void updateYear({required String year}) {
+  //   this.year = year;
+  //   this.color = null;
+  //   this.hasYearUpdated = true;
+  //   // Tell listening Widgets to rebuild
+  //   logger.log.fine('updateYear($year) - notifying listeners');
+  //   notifyListeners();
+  // }
 
   /// Updates [color]
   void updateColor({required String color}) {
@@ -67,10 +67,7 @@ class RegisterDriverViewModel extends ChangeNotifier {
   ///
   /// Returns null if one attribute is null.
   Vehicle? createVehicle() {
-    if (this.make == null ||
-        this.color == null ||
-        this.model == null ||
-        this.year == null) {
+    if (this.make == null || this.color == null || this.model == null) {
       logger.log.fine('createVehicle() - Some value is null!');
       return null;
     } else {
@@ -78,7 +75,7 @@ class RegisterDriverViewModel extends ChangeNotifier {
           createdAt: DateTime.now(),
           make: make!,
           model: model!,
-          year: year!,
+          // year: year!,
           color: color!,
           vehicleId: uuid.v4());
       logger.log.fine('createVehicle() - Created vehicle: ${vehicle.toJson()}');
@@ -90,12 +87,10 @@ class RegisterDriverViewModel extends ChangeNotifier {
   Driver? createDriver() {
     Vehicle? vehicle = createVehicle();
     if (vehicle == null) {
-      logger.log.fine(
-          'createDriver() - Could not create Driver because vehicle is null');
+      logger.log.fine('createDriver() - Could not create Driver because vehicle is null');
       return null;
     } else {
-      Driver driver =
-          Driver(createdAt: DateTime.now(), vehicle: vehicle, isActive: true);
+      Driver driver = Driver(createdAt: DateTime.now(), vehicle: vehicle, isActive: true);
       logger.log.fine('createDriver() - Create Driver: ${driver.toString()}');
       return driver;
     }
@@ -110,7 +105,6 @@ class RegisterDriverViewModel extends ChangeNotifier {
   }
 
   Future<List<String>> getYears() async {
-    return await _carMakeModelService.getYears(
-        make: this.make!, model: this.model!);
+    return await _carMakeModelService.getYears(make: this.make!, model: this.model!);
   }
 }

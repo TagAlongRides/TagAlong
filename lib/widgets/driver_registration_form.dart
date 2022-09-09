@@ -40,8 +40,8 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
     RegisterDriverViewModel _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: true);
 
     bool _showModelDropDownButton = (_registerDriverViewModel.make != null);
-    bool _showYearDropDownButton = (_showModelDropDownButton && _registerDriverViewModel.model != null);
-    bool _showColorDropDownButton = (_showYearDropDownButton && _registerDriverViewModel.year != null);
+    // bool _showYearDropDownButton = (_showModelDropDownButton && _registerDriverViewModel.model != null);
+    bool _showColorDropDownButton = (_showModelDropDownButton && _registerDriverViewModel.model != null);
 
     return Form(
       key: _formKey,
@@ -59,8 +59,8 @@ class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
                   Padding(padding: const EdgeInsets.symmetric(vertical: 16.0), child: ModelDropDownButton()),
 
                 // 3. Year - dependant on Make & Model
-                if (_showYearDropDownButton)
-                  Padding(padding: const EdgeInsets.symmetric(vertical: 16.0), child: YearDropDownButton()),
+                // if (_showYearDropDownButton)
+                //   Padding(padding: const EdgeInsets.symmetric(vertical: 16.0), child: YearDropDownButton()),
 
                 // 4. Color - A static enum list therefore no async
                 if (_showColorDropDownButton)

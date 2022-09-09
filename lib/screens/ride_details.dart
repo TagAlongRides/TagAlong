@@ -185,7 +185,7 @@ class RideDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${ride.vehicle.year} ${ride.vehicle.make} ${ride.vehicle.model}',
+                    '${ride.vehicle.make} ${ride.vehicle.model}',
                     style: theme.TagAlongTheme.lightTextTheme.bodyText2!,
                   ),
                   Text(ride.vehicle.color),
