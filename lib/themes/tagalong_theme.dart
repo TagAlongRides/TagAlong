@@ -178,7 +178,7 @@ class TagAlongTheme {
   static TextButtonThemeData textButtonTheme = TextButtonThemeData(
     style: ButtonStyle(
       foregroundColor: MaterialStateProperty.all(colorHighEmphasis),
-      backgroundColor: MaterialStateProperty.all(Colors.white),
+      backgroundColor: MaterialStateProperty.all(Colors.transparent),
       textStyle: MaterialStateProperty.all(
         lightTextTheme.button!.copyWith(
           fontWeight: FontWeight.bold,
