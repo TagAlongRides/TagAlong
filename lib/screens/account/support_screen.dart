@@ -20,7 +20,6 @@ class SupportScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const FAQHeadline('What to do if you\'re new to TagAlong'),
-              const FAQHeadline('HIIIII BABY!!!!'),
               const FAQQuestion('Complete your profile', [
                 TextSpan(
                     text:

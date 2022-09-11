@@ -166,7 +166,7 @@ class TagAlongTheme {
       textStyle: lightTextTheme.button!.copyWith(
         fontWeight: FontWeight.bold,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(1000))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(1000))),
       padding: const EdgeInsets.symmetric(
         vertical: 10,
         horizontal: 20,

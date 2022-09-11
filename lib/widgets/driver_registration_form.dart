@@ -1,10 +1,6 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/driver.dart';
-import 'package:tagalong/screens/ride_board_screen.dart';
-import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_connect_registration_screen.dart';
 import 'package:tagalong/screens/stripe_connect_registration/stripe_info_screen.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
@@ -21,7 +17,6 @@ import 'driver_registration/model_drop_down_button.dart';
 /// 1. A true <data>DropDownButton
 /// 2. A fake disabled DropDownButton
 class DriverRegistrationForm extends StatefulWidget {
-  // final Driver? driver;
   const DriverRegistrationForm({Key? key}) : super(key: key);
 
   @override
@@ -30,11 +25,9 @@ class DriverRegistrationForm extends StatefulWidget {
 
 class _DriverRegistrationFormState extends State<DriverRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
-  StripeConnectResponse? _connectResponse;
 
   @override
   Widget build(BuildContext context) {
-    final _themeData = Theme.of(context);
     final _deviceWidth = MediaQuery.of(context).size.width;
     final _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     final _userVehicle = _tagAlongUserViewModel.tagAlongUser?.driverData?.vehicle;

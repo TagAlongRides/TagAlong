@@ -14,8 +14,6 @@ class RegisterDriverScreen extends StatefulWidget {
 class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
   @override
   Widget build(BuildContext context) {
-    var auth_service = Provider.of<AuthService>(context);
-
     return Scaffold(
         appBar: AppBar(
             elevation: 0,
@@ -29,7 +27,7 @@ class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
                   Text('Start Driving', style: TextStyle(fontSize: 24.0)),
                   Text('Tell us about your car!', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
                 ])),
-        body: Center(
+        body: const Center(
             child: Padding(
           padding: EdgeInsets.all(40.0),
           child: DriverRegistrationForm(),
