@@ -6,7 +6,7 @@ import 'package:tagalong/util/log.dart' as logger;
 
 import '../services/car_make_model_service.dart';
 
-class RegisterDriverViewModel extends ChangeNotifier {
+class RegisterDriverViewModel with ChangeNotifier {
   String? make;
   String? model;
   // String? year;
@@ -23,11 +23,10 @@ class RegisterDriverViewModel extends ChangeNotifier {
   /// This function will also notify all listeners to rebuild.
   void updateMake({required String make}) {
     this.make = make;
-    this.model = null;
+    model = null;
     // this.year = null;
-    this.color = null;
-    this.hasMakeUpdated = true;
-    // Tell listening Widgets to rebuild
+    color = null;
+    hasMakeUpdated = true;
     logger.log.fine('updateMake($make) - notifying listeners');
     notifyListeners();
   }
@@ -38,8 +37,8 @@ class RegisterDriverViewModel extends ChangeNotifier {
   void updateModel({required String model}) {
     this.model = model;
     // this.year = null;
-    this.color = null;
-    this.hasModelUpdated = true;
+    color = null;
+    hasModelUpdated = true;
     // Tell listening Widgets to rebuild
     logger.log.fine('updateModel($model) - notifying listeners');
     notifyListeners();
@@ -67,7 +66,7 @@ class RegisterDriverViewModel extends ChangeNotifier {
   ///
   /// Returns null if one attribute is null.
   Vehicle? createVehicle() {
-    if (this.make == null || this.color == null || this.model == null) {
+    if (make == null || color == null || model == null) {
       logger.log.fine('createVehicle() - Some value is null!');
       return null;
     } else {
@@ -101,10 +100,10 @@ class RegisterDriverViewModel extends ChangeNotifier {
   }
 
   Future<List<String>> getModels() async {
-    return await _carMakeModelService.getModels(make: this.make!);
+    return await _carMakeModelService.getModels(make: make!);
   }
 
   Future<List<String>> getYears() async {
-    return await _carMakeModelService.getYears(make: this.make!, model: this.model!);
+    return await _carMakeModelService.getYears(make: make!, model: model!);
   }
 }
