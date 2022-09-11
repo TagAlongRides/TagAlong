@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/screens/my_ride/my_ride_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
+import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
@@ -260,9 +262,26 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
         }
 
         // 2. User tapped on "Post Ride" (index 1)
+        // TODO - Extract this to its own widget
         else {
+          // print(AuthService().getUser()?.emailVerified);
+          AuthService().reloadUser();
           var userViewModel = tagAlongUserViewModel;
-          bool hasDriverData = userViewModel.tagAlongUser?.driverData != null;
+          final _driverData = userViewModel.tagAlongUser?.driverData;
+
+          if (!(_driverData?.isStripeActive ?? false) && _driverData?.stripeAccountId != null) {
+            final stripeAccount = await StripeAccountRepository.instance.getAccount(_driverData!.stripeAccountId!);
+            _driverData.isStripeActive = stripeAccount.data.chargesEnabled;
+
+            // 1. Update our [TagAlongUser] in-memory
+            Map<String, dynamic> data = {'driver_data': _driverData};
+            userViewModel.updateTagAlongUserInternal(data);
+
+            // 2. Update [TagAlongUser] in Firestore
+            await userViewModel.updateTagAlongUserFirestore();
+          }
+
+          bool hasDriverData = _driverData != null;
           bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
           bool isStripeActive = tagAlongUserViewModel.isStripeActive();
           bool isEmailVerified = tagAlongUserViewModel.isEmailVerified();
