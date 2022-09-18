@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core/core.dart';
-import 'package:ride_repo/src/model/ride_booking_model.dart';
+import 'package:ride_repo/ride_repo.dart';
 
 class RideBookingException implements Exception {
   final ErrorModel error;
@@ -14,13 +16,11 @@ class RideBookingException implements Exception {
 class RideBookingRepository {
   static RideBookingRepository? _instance;
 
-  static RideBookingRepository get instance =>
-      _instance ??= RideBookingRepository._internal();
+  static RideBookingRepository get instance => _instance ??= RideBookingRepository._internal();
 
   RideBookingRepository._internal();
 
-  final rideBookingCollection =
-      FirebaseFirestore.instance.collection('rideBooking');
+  final rideBookingCollection = FirebaseFirestore.instance.collection('rideBooking');
 
   /// book the ride with all the details
   Future<RideBookingModel> bookRide(RideBookingModel model) async {
@@ -45,10 +45,7 @@ class RideBookingRepository {
   /// listen the ride booking with docId
   Stream<RideBookingModel> listenRideBooking(String docId) {
     try {
-      return rideBookingCollection
-          .doc(docId)
-          .snapshots()
-          .map((event) => RideBookingModel.fromMap(event.data()!));
+      return rideBookingCollection.doc(docId).snapshots().map((event) => RideBookingModel.fromMap(event.data()!));
     } catch (error) {
       throw RideBookingException(ErrorModel.firebaseError(error.toString()));
     }
@@ -57,9 +54,8 @@ class RideBookingRepository {
   /// update the ride booking
   Future<RideBookingModel> updateRideBooking(RideBookingModel model) async {
     try {
-      await rideBookingCollection
-          .doc(model.rideBookingId)
-          .update(model.toMap());
+      log('Updating in Firebase: ${model.toJson()}');
+      await rideBookingCollection.doc(model.rideBookingId).update(model.toMap());
       return model;
     } catch (error) {
       throw RideBookingException(ErrorModel.firebaseError(error.toString()));
@@ -70,8 +66,10 @@ class RideBookingRepository {
   Future<RideBookingModel> cancelRideBooking(RideBookingModel model) async {
     try {
       model.isCanceled = true;
-      model = await updateRideBooking(model);
-      return model;
+      model.status = RideBookingStatus.canceled;
+      log('Updating in local memory: ${model.toJson()}');
+      var bookingModel = await updateRideBooking(model);
+      return bookingModel;
     } on HttpApiException catch (error) {
       throw RideBookingException(error.error);
     } catch (error) {
@@ -81,8 +79,7 @@ class RideBookingRepository {
 
   /// get the all ride booking belong to ride id
   /// to get all the rides pass [isCanceled] as null
-  Future<List<RideBookingModel>> getRideBookingForRideId(String rideId,
-      {bool? isCanceled = false}) async {
+  Future<List<RideBookingModel>> getRideBookingForRideId(String rideId, {bool? isCanceled = false}) async {
     try {
       if (isCanceled != null) {
         final querySnapshot = await rideBookingCollection
@@ -95,9 +92,7 @@ class RideBookingRepository {
             )
             .toList();
       } else {
-        final querySnapshot = await rideBookingCollection
-            .where('rideId', isEqualTo: rideId)
-            .get();
+        final querySnapshot = await rideBookingCollection.where('rideId', isEqualTo: rideId).get();
         return await Stream.fromIterable(querySnapshot.docs)
             .asyncMap<RideBookingModel>(
               (event) => RideBookingModel.fromMap(event.data()),
@@ -110,8 +105,7 @@ class RideBookingRepository {
   }
 
   /// get the all ride booking belong to user id
-  Future<List<RideBookingModel>> getRideBookingForUser(String userId,
-      {bool isCanceled = false}) async {
+  Future<List<RideBookingModel>> getRideBookingForUser(String userId, {bool isCanceled = false}) async {
     try {
       final querySnapshot = await rideBookingCollection
           .where('userId', isEqualTo: userId)
