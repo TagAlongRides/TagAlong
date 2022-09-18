@@ -31,6 +31,7 @@ class RideModel {
     required this.price,
     required this.departureDateTime,
     required this.noPassengers,
+    required this.remainingSeats,
     required this.vaccinationCard,
     required this.dropoffLocation,
     required this.status,
@@ -58,6 +59,7 @@ class RideModel {
   final int price;
   final DateTime departureDateTime;
   final int noPassengers;
+  int remainingSeats;
   final bool vaccinationCard;
   final Location dropoffLocation;
   RideStatus status;
@@ -82,6 +84,7 @@ class RideModel {
         price: json["price"],
         departureDateTime: (json["departure_date_time"] as Timestamp).toDate(),
         noPassengers: json["no_passengers"],
+        remainingSeats: json["remaining_seats"],
         vaccinationCard: json["vaccination_card"],
         dropoffLocation: Location.fromJson(json["dropoff_location"]),
         status: RideStatus.values.byName(json["status"].toString().toLowerCase()),
@@ -107,6 +110,7 @@ class RideModel {
         "price": price,
         "departure_date_time": departureDateTime,
         "no_passengers": noPassengers,
+        "remaining_seats": remainingSeats,
         "vaccination_card": vaccinationCard,
         "dropoff_location": dropoffLocation.toJson(),
         "status": status.name.toLowerCase(),

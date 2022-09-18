@@ -42,8 +42,7 @@ class OfferRideViewModel with ChangeNotifier {
 
   void toCampusChoice() {
     toCampus = true;
-    print(
-        'TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser?.toString()}');
+    print('TagAlongUserViewModel: ${tagAlongUserViewModel.tagAlongUser?.toString()}');
     notifyListeners();
   }
 
@@ -209,41 +208,38 @@ class OfferRideViewModel with ChangeNotifier {
       // Pickup Location - no Label needed
       pickupLocation = Location(
           address: this.pickupLocation!,
-          city: this.locationCity!,
-          state: this.locationState!,
-          zip: this.locationZip!,
+          city: locationCity!,
+          state: locationState!,
+          zip: locationZip!,
           locationImageUrl: null);
       // Dropoff Location - Label needed
-      String dropoffFullAddress =
-          VirginiaTechLocation.mappings[this.dropoffLocation!]!;
-      dropoffLocation = VirginiaTechLocation.transformAddressIntoLocation(
-          address: dropoffFullAddress, label: this.dropoffLocation);
+      String dropoffFullAddress = VirginiaTechLocation.mappings[this.dropoffLocation!]!;
+      dropoffLocation =
+          VirginiaTechLocation.transformAddressIntoLocation(address: dropoffFullAddress, label: this.dropoffLocation);
     }
 
     // 2. Driver is going FROM campus
     else {
       // Pickup Location - Label NEEDED
-      String pickupFullAddress =
-          VirginiaTechLocation.mappings[this.pickupLocation!]!;
-      pickupLocation = VirginiaTechLocation.transformAddressIntoLocation(
-          address: pickupFullAddress, label: this.pickupLocation);
+      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
+      pickupLocation =
+          VirginiaTechLocation.transformAddressIntoLocation(address: pickupFullAddress, label: this.pickupLocation);
       // 1. Create first [Location] - direction depends on `toCampus`
       dropoffLocation = Location(
           address: this.dropoffLocation!,
-          city: this.locationCity!,
-          state: this.locationState!,
-          zip: this.locationZip!,
+          city: locationCity!,
+          state: locationState!,
+          zip: locationZip!,
           locationImageUrl: null);
     }
 
     // Create a [Ride] instance
-    final String ride_id = uuid.v4();
-    final driverFullName = tagAlongUserViewModel.tagAlongUser!.firstName +
-        " " +
-        tagAlongUserViewModel.tagAlongUser!.lastName;
+    final String rideId = uuid.v4();
+    final driverFullName =
+        tagAlongUserViewModel.tagAlongUser!.firstName + " " + tagAlongUserViewModel.tagAlongUser!.lastName;
     ride = RideModel(
       createdAt: DateTime.now(),
-      rideId: ride_id,
+      rideId: rideId,
       driverId: tagAlongUserViewModel.tagAlongUser!.id,
       university: Institution.VIRGINIA_TECH,
       status: RideStatus.scheduled,
@@ -253,25 +249,24 @@ class OfferRideViewModel with ChangeNotifier {
       departureDateTime: departureDateTime!,
       departureTimeOfDay: departureTimeOfDay!,
       noPassengers: noPassengers,
+      remainingSeats: noPassengers, // Initialize this to be the total number of seats driver is offering
       noBags: noBags,
       price: price,
       vaccinationCard: vaccinationCard,
       notes: notes.trim(),
       driverFullName: driverFullName,
-      driverProfilePictureUrl:
-          tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
+      driverProfilePictureUrl: tagAlongUserViewModel.tagAlongUser!.profilePictureUrl,
       riderIds: [],
       rideBookingIds: [],
       vehicle: tagAlongUserViewModel.tagAlongUser!.driverData!.vehicle,
-      stripeAccountId:
-          tagAlongUserViewModel.tagAlongUser!.driverData!.stripeAccountId!,
+      stripeAccountId: tagAlongUserViewModel.tagAlongUser!.driverData!.stripeAccountId!,
     );
 
     // Get corresponding [Map] data from [Ride]
     Map<String, dynamic> map = ride.toJson();
 
     // Push to Firebase with our specific RideID, [ride_id]
-    await databaseService.rides.doc(ride_id).set(map);
+    await databaseService.rides.doc(rideId).set(map);
 
     // Reset the [OfferRideViewModel]
     resetAll();
@@ -291,6 +286,7 @@ class OfferRideViewModel with ChangeNotifier {
       'departureDateTime': departureDateTime,
       'departureTimeOfDay': departureTimeOfDay,
       'noPassengers': noPassengers,
+      // 'remainingSeats': remainingSeats,
       'noBags': noBags,
       'price': price,
       'vaccinationCard': vaccinationCard,
