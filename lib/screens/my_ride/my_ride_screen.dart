@@ -50,27 +50,35 @@ class _MyRideScreenState extends State<MyRideScreen> {
                                   onPressed: () async {
                                     final ride = await RideRepository.instance.getRideById(rideBooking.rideId);
                                     if (ride.departureDateTime.difference(DateTime.now()).inHours > 6) {
-                                      InfoDialog.show(context,
-                                          message: 'Are you sure you want to cancel the ride ? Refund = true',
-                                          positiveLabel: 'Continue', positivePress: () async {
-                                        /// 1. Init the refund from the stripe side
-                                        final refund = await StripeRefundRepository.instance.refundDestinationCharge(
-                                          StripeRefundRequest(
-                                            charge: rideBooking.chargeId,
-                                            reverseTransfer: true,
-                                            refundApplicationFee: true,
-                                          ),
-                                        );
+                                      InfoDialog.show(
+                                        context,
+                                        message: 'Are you sure you want to cancel the ride ? Refund = true',
+                                        positiveLabel: 'Continue',
+                                        positivePress: () async {
+                                          // 1. Init the refund from the stripe side
+                                          final refund = await StripeRefundRepository.instance.refundDestinationCharge(
+                                            StripeRefundRequest(
+                                              charge: rideBooking.chargeId,
+                                              reverseTransfer: true,
+                                              refundApplicationFee: true,
+                                            ),
+                                          );
 
-                                        /// 2. Update the firebase collection to cancel the ride booking
-                                        final ridebookingUpdated =
-                                            await RideBookingRepository.instance.cancelRideBooking(rideBooking);
+                                          // 2. Update the firebase collection to cancel the ride booking
+                                          final ridebookingUpdated =
+                                              await RideBookingRepository.instance.cancelRideBooking(rideBooking);
 
-                                        setState(() {});
+                                          // 3. Increment remainingSeats by 1 and update in Firebase
+                                          ride.remainingSeats++;
+                                          await RideRepository.instance.updateRide(ride);
 
-                                        Navigator.of(context).pop();
-                                      });
+                                          setState(() {});
+
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
                                     } else {
+                                      // TODO - Prevent user from being able to cancel within 6 hours
                                       InfoDialog.show(context,
                                           message: 'Are you sure you want to cancel the ride ? Refund = false',
                                           positiveLabel: 'Continue', positivePress: () async {

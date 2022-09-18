@@ -100,7 +100,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
                             isHolderNameVisible: false,
                             isSwipeGestureEnabled: false,
                             isChipVisible: false,
-                            onCreditCardWidgetChange: (CreditCardBrand) {}, //true when you want to show cvv(back) view
+                            onCreditCardWidgetChange: (creditCardBrand) {}, //true when you want to show cvv(back) view
                           ),
                         );
                       }),
@@ -108,7 +108,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
                   }
 
                   if (snapshot.hasError) {
-                    print(snapshot.error);
+                    logger.log.fine(snapshot.error);
                   }
 
                   return Container(
@@ -150,6 +150,18 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
         email: email,
       ); // mocked data for tests
 
+      final currentBookings =
+          await RideBookingRepository.instance.getRideBookingForRideId(widget.ride.rideId, isCanceled: false);
+
+      // Do not allow user to book ride if all seats are already taken
+      if (currentBookings.length >= widget.ride.noPassengers) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Sorry! This ride has no more seats remaining.')));
+        logger.log.fine('Book ride failed - no seats remaining');
+        Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
+        throw Exception('Book ride failed, no seats remaining');
+      }
+
       // 2. Create payment method
       if (paymentMethodId == null) {
         final paymentMethod = await Stripe.instance.createPaymentMethod(PaymentMethodParams.card(
@@ -161,7 +173,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       }
 
       // 3. call API to create PaymentIntent
-      final paymentIntentResult = await StripeConnectRepository.instance.createDestinationPayemntIntent(
+      final paymentIntentResult = await StripeConnectRepository.instance.createDestinationPaymentIntent(
         StripePaymentIntentRequest(
           email: email,
           customerId: _saveCard ? customerId : null, //only pass customer Id in case of save card
@@ -175,7 +187,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       );
 
       if (paymentIntentResult.data.status == 'succeeded') {
-        // Payment succedeed
+        // Payment succeeded
 
         await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
 
@@ -218,7 +230,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
   }
 
   Future _bookRide(RideModel ride, String paymentIntentId, String chargeId) async {
-    /// Create Ride booking entry
+    // Create Ride booking entry
     final rideBooking = await RideBookingRepository.instance.bookRide(RideBookingModel(
       rideId: ride.rideId,
       userId: tagAlongUser.id,
@@ -227,8 +239,12 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       paymentIntentId: paymentIntentId,
     ));
 
-    /// Update Ride doc with ride booking id
-    ride.rideBookingIds.add(rideBooking.rideBookingId);
-    await RideRepository.instance.updateRide(ride);
+    // Pull data from Firebase again in case of recent updates
+    final rideFromRepo = await RideRepository.instance.getRideById(ride.rideId);
+    // Update Ride doc with ride booking id
+    rideFromRepo.rideBookingIds.add(rideBooking.rideBookingId);
+    // Remove 1 remaining seat from the ride
+    rideFromRepo.remainingSeats--;
+    await RideRepository.instance.updateRide(rideFromRepo);
   }
 }
