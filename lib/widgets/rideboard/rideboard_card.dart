@@ -9,9 +9,6 @@ import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 
 extension on String {
   _toProperCase() {
-    if (this == null) {
-      return null;
-    }
     if (length == 1) {
       return toUpperCase();
     }
@@ -146,7 +143,7 @@ class RideBoardCard extends StatelessWidget {
           CircleAvatar(
             backgroundImage: NetworkImage(ride.driverProfilePictureUrl),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Text(
@@ -195,7 +192,6 @@ class RideBoardCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          // TODO: departureTime,
           ride.departureTimeOfDay,
           style: TagAlongTheme.lightTextTheme.bodyText1,
         ),
@@ -211,7 +207,7 @@ class RideBoardCard extends StatelessWidget {
   }
 
   Widget _getRemainingSeats(RideModel ride) {
-    var seatsRemaining = ride.noPassengers - ride.riderIds.length;
+    var seatsRemaining = ride.remainingSeats;
     if (seatsRemaining > 1) {
       return Expanded(
         child: Container(
