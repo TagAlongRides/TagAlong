@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/screens/my_ride/my_ride_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
@@ -175,25 +176,43 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
 
   /// Returns [RideBoardScreen] AppBar
   _getAppBar(BuildContext context) {
-    // TODO: Take out AuthService - only here for quick debugging
-    var authService = Provider.of<AuthService>(context, listen: false);
-    return AppBar(
-      title: const Text('Ride Board'),
-      leading: IconButton(
-        icon: const Icon(Icons.menu),
-        // Filtering Button
-        onPressed: () {
-          showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (BuildContext context) {
-              // Brings up the "BottomModelSheet" for filtering
-              return _getFilterModalBottomSheet(context);
-            },
-          );
-        },
-      ),
-    );
+    switch (_selectedItem) {
+      case 0:
+        return AppBar(title: const Text('Ride Board'),
+            // automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.filter_alt_rounded),
+                // Filtering Button
+                onPressed: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      // Brings up the "BottomModelSheet" for filtering
+                      return _getFilterModalBottomSheet(context);
+                    },
+                  );
+                },
+              ),
+            ]);
+        break;
+      case 1:
+        return null; // Should never get here
+        break;
+      case 2:
+        return AppBar(
+          title: const Text('My Rides'),
+        );
+        break;
+      case 3:
+        return AppBar(
+          title: const Text('Account Settings'),
+        );
+        break;
+      default:
+        return null;
+    }
   }
 
   /// Returns the [RideBoardScreen] body
@@ -243,9 +262,26 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
         }
 
         // 2. User tapped on "Post Ride" (index 1)
+        // TODO - Extract this to its own widget
         else {
+          // print(AuthService().getUser()?.emailVerified);
+          AuthService().reloadUser();
           var userViewModel = tagAlongUserViewModel;
-          bool hasDriverData = userViewModel.tagAlongUser?.driverData != null;
+          final _driverData = userViewModel.tagAlongUser?.driverData;
+
+          if (!(_driverData?.isStripeActive ?? false) && _driverData?.stripeAccountId != null) {
+            final stripeAccount = await StripeAccountRepository.instance.getAccount(_driverData!.stripeAccountId!);
+            _driverData.isStripeActive = stripeAccount.data.chargesEnabled;
+
+            // 1. Update our [TagAlongUser] in-memory
+            Map<String, dynamic> data = {'driver_data': _driverData};
+            userViewModel.updateTagAlongUserInternal(data);
+
+            // 2. Update [TagAlongUser] in Firestore
+            await userViewModel.updateTagAlongUserFirestore();
+          }
+
+          bool hasDriverData = _driverData != null;
           bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
           bool isStripeActive = tagAlongUserViewModel.isStripeActive();
           bool isEmailVerified = tagAlongUserViewModel.isEmailVerified();

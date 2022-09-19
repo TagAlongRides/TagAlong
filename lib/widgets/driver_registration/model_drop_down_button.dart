@@ -4,7 +4,8 @@ import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 class ModelDropDownButton extends StatefulWidget {
-  const ModelDropDownButton({Key? key}) : super(key: key);
+  final String? initValue;
+  const ModelDropDownButton(this.initValue, {Key? key}) : super(key: key);
 
   @override
   _ModelDropDownButtonState createState() => _ModelDropDownButtonState();
@@ -20,48 +21,49 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
     // Prepare our car model list within initState for FutureBuilder.
     // Note: This widget builds ONLY if `make` exists
     _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: false);
+    if (widget.initValue != null) {
+      _registerDriverViewModel.updateModel(model: widget.initValue!);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_registerDriverViewModel.hasMakeUpdated) {
       modelList = _registerDriverViewModel.getModels();
-      _registerDriverViewModel.hasMakeUpdated = false;
+      // _registerDriverViewModel.hasMakeUpdated = false;
     }
     return FutureBuilder<List<String>>(
         future: modelList,
         builder: (context, AsyncSnapshot<List<String>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          else if (snapshot.connectionState == ConnectionState.done) {
+            // return const Center(child: CircularProgressIndicator());
+            return DropdownButtonFormField<String>(
+              decoration: const InputDecoration(border: UnderlineInputBorder(), labelText: 'Car Model'),
+              value: null,
+              disabledHint: _registerDriverViewModel.model != null ? Text(_registerDriverViewModel.model!) : null,
+              items: null,
+              onChanged: null,
+            );
+          } else if (snapshot.connectionState == ConnectionState.done) {
             logger.log.fine('Done!');
             // By this time, `modelList` is a completed Future and contains
             // a List<String> of ALL models of said `make`
             return DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Car Model'
-              ),
+              decoration: const InputDecoration(border: UnderlineInputBorder(), labelText: 'Car Model'),
               value: _registerDriverViewModel.model,
-              items: snapshot.data?.map((modelOption) =>
-                  DropdownMenuItem<String>(
-                      child: Text(modelOption),
-                      value: modelOption
-                  )
-              ).toList(),
+              items: snapshot.data
+                  ?.map((modelOption) => DropdownMenuItem<String>(child: Text(modelOption), value: modelOption))
+                  .toList(),
               // When user chooses option, update our ViewModel's `make` which
               // will automatically cause a rebuild from `NewDriverRegistration`,
               // therefore the new `DropdownButton.value` will automatically be updated.
               onChanged: (String? chosenModel) {
-                _registerDriverViewModel.updateModel(model:chosenModel!);
+                _registerDriverViewModel.updateModel(model: chosenModel!);
               },
             );
-          }
-          else {
+          } else {
             return const Text('Some problem...');
           }
-        }
-    );
+        });
   }
 }

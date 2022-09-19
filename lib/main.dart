@@ -1,6 +1,3 @@
-import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/screens/account/account_settings_screen.dart';
 import 'package:tagalong/screens/account/add_payment_method_screen.dart';
-import 'package:tagalong/screens/account/contact_us_screen.dart';
+import 'package:tagalong/screens/account/support_screen.dart';
 import 'package:tagalong/screens/account/notification_prefs_screen.dart';
 import 'package:tagalong/screens/account/payment_prefs_screen.dart';
 import 'package:tagalong/screens/account/privacy_policy_screen.dart';
@@ -25,6 +22,7 @@ import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/screens/ride_details.dart';
 import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_connect_registration_screen.dart';
+import 'package:tagalong/screens/stripe_connect_registration/stripe_info_screen.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -81,7 +79,6 @@ class _TagAlongAppState extends State<TagAlongApp> {
         logger.log.fine('Current auth user: ${auth.getUser().toString()}');
         return MultiProvider(
           providers: [
-            // TODO: May need `lazy: false`
             ChangeNotifierProvider<TagAlongUserViewModel>(create: (BuildContext context) => TagAlongUserViewModel()),
             ChangeNotifierProvider<RegisterDriverViewModel>(
                 create: (BuildContext context) => RegisterDriverViewModel()),
@@ -94,7 +91,6 @@ class _TagAlongAppState extends State<TagAlongApp> {
             ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
           ],
           child: MaterialApp(
-            debugShowCheckedModeBanner: true,
             theme: theme,
             title: 'TagAlong App',
             home: auth.getUser()?.refreshToken == null || auth.getUser()?.refreshToken == ''
@@ -120,11 +116,12 @@ class _TagAlongAppState extends State<TagAlongApp> {
                   const DriverStripeConnectRegistrationScreen(),
               AccountSettingsScreen.routeName: (context) => const AccountSettingsScreen(),
               UpdatePersonalInfoScreen.routeName: (context) => UpdatePersonalInfoScreen(),
-              ContactUsScreen.routeName: (context) => const ContactUsScreen(),
+              SupportScreen.routeName: (context) => const SupportScreen(),
               NotificationPrefsScreen.routeName: (context) => const NotificationPrefsScreen(),
               PaymentMethodsScreen.routeName: (context) => const PaymentMethodsScreen(),
               PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
               AddPaymentMethodScreen.routeName: (context) => const AddPaymentMethodScreen(),
+              StripeInfoScreen.routeName: (context) => const StripeInfoScreen(),
               // '/stripe-payment': (BuildContext context) =>
               //     const StripePaymentScreen(ride: ,),
             },

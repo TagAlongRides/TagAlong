@@ -41,40 +41,37 @@ class RideBoardViewModel extends ChangeNotifier {
       logger.log.fine('RideBoardViewModel Querying - Filters is NULL');
       Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
       querySnapshot = await databaseService.rides
-          .where('status',
-              isEqualTo: RideStatus.scheduled.name) // Query only "open" rides
-          .where('departure_date_time',
-              isGreaterThan: currentTimestamp) // Query only rides in the future
+          .where('status', isEqualTo: RideStatus.scheduled.name) // Query only "open" rides
+          .where('departure_date_time', isGreaterThan: currentTimestamp) // Query only rides in the future
           .orderBy('departure_date_time') // Order by when ride is leaving
           .get();
+      notifyListeners();
       return;
     }
 
     // 1. ToCampus
     if (filters != null) {
       if (filters!['to_campus'] != null) {
-        logger.log.fine(
-            'RideBoardViewModel Querying - Filters has to_campus: ${filters!['to_campus']}');
+        logger.log.fine('RideBoardViewModel Querying - Filters has to_campus: ${filters!['to_campus']}');
         Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
         rides = rides
             .where('to_campus', isEqualTo: filters!['to_campus'])
             .where('departure_date_time', isGreaterThan: currentTimestamp)
             .orderBy('departure_date_time');
+        notifyListeners();
       }
 
       // 2. Departure Date
       if (filters!['departure_date_time'] != null) {
-        logger.log.fine(
-            'RideBoardViewModel Querying - Filters has departure_date_time: ${filters!['departure_date_time']}');
-        Timestamp departTimeStamp =
-            Timestamp.fromDate(filters!['departure_date_time']);
-        Timestamp dayAheadDepartTimeStamp = Timestamp.fromDate(
-            filters!['departure_date_time'].add(const Duration(hours: 24)));
+        logger.log
+            .fine('RideBoardViewModel Querying - Filters has departure_date_time: ${filters!['departure_date_time']}');
+        Timestamp departTimeStamp = Timestamp.fromDate(filters!['departure_date_time']);
+        Timestamp dayAheadDepartTimeStamp =
+            Timestamp.fromDate(filters!['departure_date_time'].add(const Duration(hours: 24)));
         rides = rides
-            .where('departure_date_time',
-                isGreaterThanOrEqualTo: departTimeStamp)
-            .where('departure_date_time',
-                isLessThanOrEqualTo: dayAheadDepartTimeStamp);
+            .where('departure_date_time', isGreaterThanOrEqualTo: departTimeStamp)
+            .where('departure_date_time', isLessThanOrEqualTo: dayAheadDepartTimeStamp);
+        notifyListeners();
       }
 
       // Update our QuerySnapshot with the queried data

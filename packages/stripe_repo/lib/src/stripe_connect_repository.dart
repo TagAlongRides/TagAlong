@@ -14,8 +14,7 @@ class StripeConnectException implements Exception {
 class StripeConnectRepository {
   static StripeConnectRepository? _instance;
 
-  static StripeConnectRepository get instance =>
-      _instance ??= StripeConnectRepository._internal();
+  static StripeConnectRepository get instance => _instance ??= StripeConnectRepository._internal();
 
   StripeConnectRepository._internal();
 
@@ -31,11 +30,9 @@ class StripeConnectRepository {
   //   }
   // }
 
-  Future<StripeConnectResponse> getStripeConnectLink(
-      StripeConnectRequest request) async {
+  Future<StripeConnectResponse> getStripeConnectLink(StripeConnectRequest request) async {
     try {
-      final data = await HttpApiClient.instance
-          .post('payment/stripeConnect/', data: request.toJson());
+      final data = await HttpApiClient.instance.post('payment/stripeConnect/', data: request.toJson());
       return StripeConnectResponse.fromJson(data);
     } on HttpApiException catch (error) {
       throw StripeConnectException(error.error);
@@ -44,39 +41,33 @@ class StripeConnectRepository {
     }
   }
 
-  Future<StripePaymentIntentCreateResponse> createDestinationPayemntIntent(
-      StripePaymentIntentRequest request) async {
-    try {
-      final data = await HttpApiClient.instance.post(
-          'payment/stripeConnect/charge/destination/paymentintent',
-          data: request.toJson());
-      return StripePaymentIntentCreateResponse.fromJson(data);
-    } on HttpApiException catch (error) {
-      throw StripeConnectException(error.error);
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  Future<StripePaymentIntentCreateResponse> createSeparatePayemntIntent(
-      StripePaymentIntentRequest request) async {
-    try {
-      final data = await HttpApiClient.instance.post(
-          'payment/stripeConnect/charge/separate/paymentintent',
-          data: request.toJson());
-      return StripePaymentIntentCreateResponse.fromJson(data);
-    } on HttpApiException catch (error) {
-      throw StripeConnectException(error.error);
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  Future<StripeConnectResponse> getPayemntIntent(
-      StripeConnectRequest request) async {
+  Future<StripePaymentIntentCreateResponse> createDestinationPaymentIntent(StripePaymentIntentRequest request) async {
     try {
       final data = await HttpApiClient.instance
-          .post('payment/stripeConnect/', data: request.toJson());
+          .post('payment/stripeConnect/charge/destination/paymentintent', data: request.toJson());
+      return StripePaymentIntentCreateResponse.fromJson(data);
+    } on HttpApiException catch (error) {
+      throw StripeConnectException(error.error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<StripePaymentIntentCreateResponse> createSeparatePaymentIntent(StripePaymentIntentRequest request) async {
+    try {
+      final data = await HttpApiClient.instance
+          .post('payment/stripeConnect/charge/separate/paymentintent', data: request.toJson());
+      return StripePaymentIntentCreateResponse.fromJson(data);
+    } on HttpApiException catch (error) {
+      throw StripeConnectException(error.error);
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<StripeConnectResponse> getPaymentIntent(StripeConnectRequest request) async {
+    try {
+      final data = await HttpApiClient.instance.post('payment/stripeConnect/', data: request.toJson());
       return StripeConnectResponse.fromJson(data);
     } on HttpApiException catch (error) {
       throw StripeConnectException(error.error);

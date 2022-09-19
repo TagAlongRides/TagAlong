@@ -34,6 +34,12 @@ class AuthService with ChangeNotifier {
     return _auth.currentUser;
   }
 
+  Future<void> reloadUser() async {
+    final user = await getUser()?.reload();
+    notifyListeners();
+    return;
+  }
+
   /// Returns a Future<UserCredential?> that if the Facebook login is
   /// successful, will create a user within the FirebaseAuth system and return
   /// a UserCredential. If login fails, returns null.
