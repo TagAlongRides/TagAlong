@@ -12,6 +12,7 @@ import 'package:tagalong/screens/account/privacy_policy_screen.dart';
 import 'package:tagalong/screens/account/update_personal_info_screen.dart';
 import 'package:tagalong/screens/driver_registration_prompt_screen.dart';
 import 'package:tagalong/screens/login_screen.dart';
+import 'package:tagalong/screens/my_ride/my_ride_detail_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_departure.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_dropoff.dart';
@@ -122,6 +123,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
               PrivacyPolicyScreen.routeName: (context) => const PrivacyPolicyScreen(),
               AddPaymentMethodScreen.routeName: (context) => const AddPaymentMethodScreen(),
               StripeInfoScreen.routeName: (context) => const StripeInfoScreen(),
+              MyRideDetailScreen.routeName: (context) => const MyRideDetailScreen(),
               // '/stripe-payment': (BuildContext context) =>
               //     const StripePaymentScreen(ride: ,),
             },

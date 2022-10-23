@@ -7,6 +7,11 @@ import 'package:tagalong/screens/stripe_payment/ride_stripe_payment_screen.dart'
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_departure_data.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_misc.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_pricing.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_profile_notes.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_location.dart';
 
 extension on String {
   _toProperCase() {
@@ -38,298 +43,27 @@ class RideDetails extends StatelessWidget {
           leading: IconButton(icon: const Icon(Icons.arrow_back_ios), onPressed: () => Navigator.pop(context)),
         ),
         body: SingleChildScrollView(
-            child: Column(children: [
-          // SizedBox + Departure Date/Time
-          const SizedBox(height: 16.0),
-          _getDepartureData(context, rideDetailsViewModel.ride),
+            child: Column(
+          children: [
+            // SizedBox + Departure Date/Time
+            const SizedBox(height: 16.0),
+            RideDetailDepartureData(context: context, ride: rideDetailsViewModel.ride),
 
-          // SizedBox + Locations
-          const SizedBox(height: 16.0),
-          _getLocationData(context, rideDetailsViewModel.ride),
+            // SizedBox + Locations
+            const SizedBox(height: 16.0),
+            RideDetailLocation(context: context, ride: rideDetailsViewModel.ride),
 
-          // SizedBox + Profile & Notes
-          const SizedBox(height: 16.0),
-          _getProfileAndNotes(context, rideDetailsViewModel.ride),
+            // SizedBox + Profile & Notes
+            const SizedBox(height: 16.0),
+            RideDetailProfileNotes(context: context, ride: rideDetailsViewModel.ride),
 
-          // Ride details (Car + Bags + optional COVID precautions)
-          _getRideDetails(context, rideDetailsViewModel.ride),
+            // Ride details (Car + Bags + optional COVID precautions)
+            RideDetailMisc(context: context, ride: rideDetailsViewModel.ride),
 
-          // SizedBox + Pricing
-          const SizedBox(height: 16.0),
-          _getPricing(context, rideDetailsViewModel.ride)
-        ])));
-  }
-
-  Widget _getDepartureData(BuildContext context, RideModel ride) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(16),
-      child: IntrinsicHeight(
-        child: Row(children: [
-          Expanded(
-              flex: 2,
-              child: Text(DateFormat('EEEE MMM d').format(ride.departureDateTime),
-                  style: Theme.of(context).textTheme.headline6)),
-          const Expanded(
-              flex: 1,
-              child: VerticalDivider(
-                thickness: 1,
-              )),
-          Expanded(flex: 1, child: Text(ride.departureTimeOfDay, style: Theme.of(context).textTheme.headline6))
-        ]),
-      ),
-    );
-  }
-
-  Widget _getLocationData(BuildContext context, RideModel ride) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(16),
-        child: Column(children: [
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
-            Expanded(child: Icon(Icons.trip_origin)),
-            // TODO: Perhaps there's a better way to do the dashes..
-            Text('  -----------------------------  '),
-            Expanded(child: Icon(Icons.sports_score))
-          ]),
-          Row(children: [
-            Expanded(
-              child: Text(
-                (ride.pickupLocation.label ?? ride.pickupLocation.city).toTitleCase() as String,
-                style: Theme.of(context).textTheme.headline6,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                (ride.dropoffLocation.label ?? ride.dropoffLocation.city).toTitleCase() as String,
-                style: Theme.of(context).textTheme.headline6,
-                textAlign: TextAlign.right,
-              ),
-            )
-          ]),
-          Row(children: [
-            Expanded(
-                child: Text(
-              '${ride.pickupLocation.address} \n${ride.pickupLocation.city}, ${ride.pickupLocation.state} ${ride.pickupLocation.zip}',
-              style: Theme.of(context).textTheme.bodyText2,
-            )),
-            Expanded(
-                child: Text(
-              '${ride.dropoffLocation.address} \n${ride.dropoffLocation.city}, ${ride.dropoffLocation.state} ${ride.dropoffLocation.zip}',
-              style: Theme.of(context).textTheme.bodyText2,
-              textAlign: TextAlign.right,
-            ))
-          ])
-        ]));
-  }
-
-  Widget _getProfileAndNotes(BuildContext context, RideModel ride) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.only(top: 16, left: 24, right: 24),
-        child: Column(children: [
-          // Profile picture and Deep-link Facebook Button
-          Row(children: [
-            Expanded(
-                child: Row(children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(ride.driverProfilePictureUrl),
-                ),
-              ),
-              Text(ride.getFirstNameAndInitial(), style: Theme.of(context).textTheme.headline6),
-            ])),
-            OutlinedButton.icon(
-              onPressed: () {
-                // Respond to button press
-              },
-              icon: const FaIcon(FontAwesomeIcons.facebook),
-              label: const Text("View Profile"),
-              style: theme.TagAlongTheme.outlinedButtonTheme.style,
-            )
-          ]),
-
-          // Ride Notes
-          if (ride.notes != "") const SizedBox(height: 16),
-
-          if (ride.notes != "")
-            Container(
-                padding: const EdgeInsets.all(8),
-                width: MediaQuery.of(context).size.width,
-                child: Text(ride.notes),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(12))),
-
-          // Horizontal Divider
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Divider(thickness: 1),
-          )
-        ]));
-  }
-
-  Widget _getRideDetails(BuildContext context, RideModel ride) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        child: Column(children: [
-          Row(children: [
-            const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.directions_car_outlined)),
-            Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${ride.vehicle.make} ${ride.vehicle.model}',
-                    style: theme.TagAlongTheme.lightTextTheme.bodyText2!,
-                  ),
-                  Text(ride.vehicle.color),
-                ]),
-          ]),
-          const SizedBox(height: 16),
-          Row(children: [
-            const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.backpack_outlined)),
-            Text('${ride.noBags} bags per person'),
-          ]),
-          // IF covid precautions were required, introduce INFO (i) button
-          if (ride.vaccinationCard) const SizedBox(height: 16),
-          if (ride.vaccinationCard)
-            Row(children: [
-              const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.masks)),
-              const Text('COVID safety precautions required'),
-              const SizedBox(width: 16),
-              IconButton(
-                  padding: const EdgeInsets.all(0),
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.info_outline),
-                  onPressed: () async {
-                    return showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                              title: const Text('COVID Protocols Enforced'),
-                              content: const Text(
-                                  'This Driver has indicated proof of vaccination or wearing a mask is required. Please ensure you bring your vaccination card and a mask to wear. Failure to do so, Drivers reserve the right to refuse providing a ride.'),
-                              actions: <Widget>[
-                                TextButton(child: const Text('OK'), onPressed: () => Navigator.pop(context))
-                              ]);
-                        });
-                  })
-            ])
-        ]));
-  }
-
-  Widget _getPricing(BuildContext context, RideModel ride) {
-    var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Subtotal
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [const Text('Subtotal'), Text('\$${ride.price}')]),
-          const SizedBox(height: 16),
-
-          // Service Fee
-          Row(children: [
-            const Text('Service Fee'),
-            const SizedBox(width: 16),
-            IconButton(
-                padding: const EdgeInsets.all(0),
-                constraints: const BoxConstraints(),
-                icon: const Icon(Icons.info_outline),
-                onPressed: () async {
-                  return showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                            title: const Text('Pricing Details'),
-                            content: const Text(
-                                'This fee helps support TagAlong’s platform and covers a broad range of operating costs including app maintenance and support.'),
-                            actions: <Widget>[
-                              TextButton(child: const Text('OK'), onPressed: () => Navigator.pop(context))
-                            ]);
-                      });
-                }),
-            const Spacer(),
-            Text('\$${rideDetailsViewModel.getServiceFee()}'),
-          ]),
-          // "Continue" Button
-          const SizedBox(height: 16),
-          Consumer<TagAlongUserViewModel>(
-            builder: (context, user, child) {
-              final _isVerified = user.isEmailVerified();
-              return ElevatedButton(
-                style: _isVerified ? null : ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey)),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        _isVerified ? 'Continue' : 'Email Verification Needed',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        _isVerified ? '\$${rideDetailsViewModel.getTotalPrice()}' : '',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                    )
-                  ],
-                ),
-                onPressed: _isVerified
-                    ? () {
-                        // Navigator.of(context).pushNamed('/stripe-payment');
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) {
-                            return RideStripePaymentScreen(ride: ride);
-                          },
-                        ));
-                      }
-                    : () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                  title: const Text('Please verify email'),
-                                  content: const Text(
-                                      'To keep your travel safe, Tagalong requires every user to verify their email address before posting or booking a ride.'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text('Resend Verification'),
-                                      onPressed: () {
-                                        user.sendEmailVerificationToUser();
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content:
-                                                Text('Verification email sent to ${user.tagAlongUser?.emailAddress}'),
-                                            duration: const Duration(seconds: 2),
-                                          ),
-                                        );
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ]);
-                            });
-                      },
-              );
-            },
-          )
-        ],
-      ),
-    );
+            // SizedBox + Pricing
+            const SizedBox(height: 16.0),
+            RideDetailPricing(context: context, ride: rideDetailsViewModel.ride)
+          ],
+        )));
   }
 }
