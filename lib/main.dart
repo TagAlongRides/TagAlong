@@ -57,14 +57,9 @@ void main() async {
   runApp(const TagAlongApp());
 }
 
-class TagAlongApp extends StatefulWidget {
+class TagAlongApp extends StatelessWidget {
   const TagAlongApp({Key? key}) : super(key: key);
 
-  @override
-  State<TagAlongApp> createState() => _TagAlongAppState();
-}
-
-class _TagAlongAppState extends State<TagAlongApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
