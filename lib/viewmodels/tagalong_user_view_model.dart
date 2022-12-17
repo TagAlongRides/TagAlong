@@ -30,6 +30,8 @@ class TagAlongUserViewModel with ChangeNotifier {
   }
 
 
+
+
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
 

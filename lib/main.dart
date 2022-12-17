@@ -84,6 +84,7 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
+    // Check if the user is authenticated via Firebase and branch off of that
     return StreamBuilder<User?>(
         stream: tagAlongUserViewModel.authStateChanges(),
         builder: (context, snapshot) {
@@ -92,7 +93,7 @@ class AuthGate extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
                 appBar: AppBar(
-                    title: const Text("Waiting...")
+                    title: const Text("Setting user up...")
                 ),
                 body: const Center(
                     child: CircularProgressIndicator()
@@ -120,7 +121,7 @@ class AuthGate extends StatelessWidget {
 
             // 3b. User is NOT signed in - prompt login
             else {
-              logger.log.fine('AuthGate - user NOT logged in');
+              logger.log.fine('AuthGate - user NOT logged in, going to LoginScreen');
               return LoginScreen();
             }
           }
