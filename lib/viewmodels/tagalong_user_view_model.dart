@@ -9,9 +9,29 @@ import 'package:tagalong/services/data_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 
-/// [TagAlongUser] ViewModel which contains business logic.
+
 class TagAlongUserViewModel with ChangeNotifier {
+
+  /// The [TagAlongUser] data model
   TagAlongUser? tagAlongUser;
+
+  /// The [FirebaseAuth] singleton used to check our Firebase User
+  final _firebaseAuth = FirebaseAuth.instance;
+
+  /// The [FacebookAuth] singleton used to facilitate Facebook SSO
+  final _fbAuth = FacebookAuth.instance;
+
+  TagAlongUserViewModel({this.tagAlongUser});
+
+
+  /// Returns a Stream<User?> on when the user is logged in, out, or just registered.
+  Stream<User?> authStateChanges() {
+    return _firebaseAuth.authStateChanges();
+  }
+
+
+
+
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
 

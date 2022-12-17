@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,18 +56,89 @@ void main() async {
   await Stripe.instance.applySettings();
 
   // Run the TagAlong Application
-  runApp(const TagAlongApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => TagAlongUserViewModel(),
+    child: const TagAlongAppNew()
+  ));
 }
 
-class TagAlongApp extends StatefulWidget {
-  const TagAlongApp({Key? key}) : super(key: key);
+
+class TagAlongAppNew extends StatelessWidget {
+  const TagAlongAppNew({Key? key}) : super(key: key);
 
   @override
-  State<TagAlongApp> createState() => _TagAlongAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+      home: const AuthGate(),
+    );
+  }
 }
 
-class _TagAlongAppState extends State<TagAlongApp> {
-  // This widget is the root of your application.
+
+/// A Widget that will act as the medium for checking whether a [TagAlongUser] is registered or not.
+class AuthGate extends StatelessWidget {
+  const AuthGate({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+
+    // Check if the user is authenticated via Firebase and branch off of that
+    return StreamBuilder<User?>(
+        stream: tagAlongUserViewModel.authStateChanges(),
+        builder: (context, snapshot) {
+
+          // 1. WAITING - async op has begun
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+                appBar: AppBar(
+                    title: const Text("Setting user up...")
+                ),
+                body: const Center(
+                    child: CircularProgressIndicator()
+                )
+            );
+          }
+
+          // 2. DONE - Stream has returned a DONE event - should never happen with authStateChanges
+          else if (snapshot.connectionState == ConnectionState.done) {
+            logger.log.fine('authStateChanges Stream emitted DONE event!');
+            return const Text('Error');
+          }
+
+          // 3. ACTIVE - main branch; will continuously listen for auth state changes by the
+          // user, including when they sign-out, hence no logic needs to be written for
+          // navigating to a new screen after that, this will automatically handle it.
+          else if (snapshot.connectionState == ConnectionState.active) {
+            logger.log.fine('authStateChanges emitted active event');
+
+            // 3a. User is signed-in as a Firebase Auth User - initialize [TagAlongUser] in vm.
+            if (snapshot.hasData) {
+              // TODO - query Firestore for our TagAlongUser and initialize
+              return const RideBoardScreen();
+            }
+
+            // 3b. User is NOT signed in - prompt login
+            else {
+              logger.log.fine('AuthGate - user NOT logged in, going to LoginScreen');
+              return LoginScreen();
+            }
+          }
+          else {
+            return Text("Error");
+          }
+        }
+
+    );
+  }
+}
+
+
+class TagAlongApp extends StatelessWidget {
+  const TagAlongApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final theme = TagAlongTheme.light();
