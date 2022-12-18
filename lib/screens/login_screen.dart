@@ -63,7 +63,11 @@ class LoginScreen extends StatelessWidget {
                       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                       child: TextField(
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8),
+                            ),
+                          ),
                           labelText: 'Email',
                           hintText: 'student@vt.edu',
                           isDense: true
@@ -75,11 +79,24 @@ class LoginScreen extends StatelessWidget {
                       child: TextField(
                         obscureText: true,
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8),
+                            ),
+                          ),
                           labelText: 'Password',
-                          hintText: 'student@vt.edu',
                           isDense: true
                         ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                      child: ElevatedButton(
+                        style: const ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap
+                        ),
+                        onPressed: () {},
+                        child: const Text('Sign In')
                       ),
                     ),
 
