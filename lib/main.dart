@@ -103,7 +103,7 @@ class AuthGate extends StatelessWidget {
             );
           }
 
-          // 2. DONE - Stream has returned a DONE event - should never happen with authStateChanges
+          // 2. DONE - Stream has returned a DONE event - should never happen with "authStateChanges"
           else if (snapshot.connectionState == ConnectionState.done) {
             logger.log.fine('authStateChanges Stream emitted DONE event!');
             return const Text('Error');
@@ -123,8 +123,8 @@ class AuthGate extends StatelessWidget {
 
             // 3b. User is NOT signed in - prompt login
             else {
-              logger.log.fine('AuthGate - user NOT logged in, going to LoginScreen');
-              return AuthHomeScreen();
+              logger.log.fine('AuthGate - user NOT logged in, going to AuthHomeScreen');
+              return const AuthHomeScreen();
             }
           }
           else {

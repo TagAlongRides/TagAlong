@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tagalong/screens/startup_authentication/login_screen.dart';
 
 class AuthHomeScreen extends StatelessWidget {
   const AuthHomeScreen({Key? key}) : super(key: key);
@@ -37,25 +38,30 @@ class AuthHomeScreen extends StatelessWidget {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                            style: const ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            onPressed: () {},
-                            child: const Text('Log In')
+                          style: const ButtonStyle(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen())
+                            );
+                          },
+                          child: const Text('Log In')
                         )
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                              style: const ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              onPressed: () {},
-                              child: const Text('Sign Up')
-                          )
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: const ButtonStyle(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () {},
+                          child: const Text('Sign Up')
+                        )
                       ),
                     )
                   ]
