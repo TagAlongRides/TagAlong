@@ -11,6 +11,7 @@ import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
 class MyRideScreen extends StatefulWidget {
   const MyRideScreen({Key? key}) : super(key: key);
+  static const routeName = '/my-ride-screen';
 
   @override
   State<MyRideScreen> createState() => _MyRideScreenState();
@@ -21,7 +22,6 @@ class _MyRideScreenState extends State<MyRideScreen> {
   Widget build(BuildContext context) {
     final _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     final _tagAlongUser = _tagAlongUserViewModel.tagAlongUser!;
-    // RideRepository.instance.getAllRidesForUser(_tagAlongUser.id);
     return Container(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -42,7 +42,8 @@ class _MyRideScreenState extends State<MyRideScreen> {
                     var _upcomingEarnings = 0;
                     for (var ride in snapshot.data!) {
                       if (ride.driverId == _tagAlongUser.id && ride.departureDateTime.isAfter(DateTime.now())) {
-                        _upcomingEarnings += ride.price * ride.noPassengers;
+                        //TODO - Create a more robust way to manage the number of currently booked passengers
+                        _upcomingEarnings += ride.price * (ride.noPassengers - ride.remainingSeats);
                       }
                     }
                     return Column(
@@ -137,75 +138,6 @@ class _MyRideScreenState extends State<MyRideScreen> {
               ),
             ),
           ),
-          // const Text('My Offered Ride'),
-          // Expanded(
-          //   child: RefreshIndicator(
-          //     onRefresh: () async {
-          //       setState(() {});
-          //     },
-          //     child: FutureBuilder<List<RideModel>>(
-          //       future: RideRepository.instance.getMyOfferedRides(_tagAlongUser.id),
-          //       builder: (context, snapshot) {
-          //         if (snapshot.hasData) {
-          //           return ListView.builder(
-          //             itemCount: snapshot.data!.length,
-          //             itemBuilder: (context, index) {
-          //               final ride = snapshot.data![index];
-          //               return Container(
-          //                 margin: const EdgeInsets.all(4),
-          //                 padding: const EdgeInsets.all(12),
-          //                 decoration: BoxDecoration(
-          //                   color: Colors.grey.withOpacity(.3),
-          //                   borderRadius: const BorderRadius.all(
-          //                     Radius.circular(8),
-          //                   ),
-          //                 ),
-          //                 child: Column(
-          //                   children: [
-          //                     Text(ride.rideId),
-          //                     LoadingButton(
-          //                       onPressed: () async {
-          //                         InfoDialog.show(context,
-          //                             message:
-          //                                 'Are you sure you want to cancel the ride ? This action will cancel the ride and refund to all riders',
-          //                             positiveLabel: 'Continue', positivePress: () async {
-          //                           /// Get all active(cancel=false) ride booking from hte ride
-          //                           final rideBookings = await RideBookingRepository.instance
-          //                               .getRideBookingForRideId(ride.rideId, isCanceled: false);
-
-          //                           /// Refund for all active ride booking
-          //                           rideBookings.forEach((element) async {
-          //                             final refund = await StripeRefundRepository.instance.refundDestinationCharge(
-          //                               StripeRefundRequest(
-          //                                 charge: element.chargeId,
-          //                                 reverseTransfer: true,
-          //                                 refundApplicationFee: true,
-          //                               ),
-          //                             );
-          //                           });
-
-          //                           /// Cancel the ride
-          //                           await RideRepository.instance.cancelRide(ride);
-          //                           setState(() {});
-
-          //                           Navigator.of(context).pop();
-          //                         });
-          //                       },
-          //                       text: 'Cancel',
-          //                     )
-          //                   ],
-          //                 ),
-          //               );
-          //             },
-          //           );
-          //         }
-          //         return const Center(
-          //           child: CircularProgressIndicator(),
-          //         );
-          //       },
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
