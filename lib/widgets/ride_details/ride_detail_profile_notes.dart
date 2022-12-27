@@ -20,7 +20,6 @@ class RideDetailProfileNotes extends StatefulWidget {
 
   final BuildContext context;
   final RideModel ride;
-  // TODO - Implement UI changes based on these vars
   final bool isDriver;
   final bool isInFuture;
   final bool isMyRides;
@@ -32,22 +31,6 @@ class RideDetailProfileNotes extends StatefulWidget {
 class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
   var _showPhone = false;
   String? _driverPhone;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // if (widget.isDriver) {
-    //   List<RideBookingModel> _rideBookings =
-    //       await RideBookingRepository.instance.getRideBookingForRideId(widget.ride.rideId);
-    //   List<TagAlongUser> _riderData = [];
-    //   for (var booking in _rideBookings) {
-    //     var user = await Provider.of<TagAlongUserViewModel>(context).getUserFromID(booking.userId);
-    //     _riderData.add(user!);
-    //   }
-    //   // final riderData = Provider.of<TagAlongUser>(context, listen: false);
-    // }
-  }
 
   Future<List<TagAlongUser>?> _getBookedUsers() async {
     var provider = Provider.of<TagAlongUserViewModel>(context);
@@ -107,7 +90,7 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
                 ),
               if (widget.isDriver)
                 riders.connectionState == ConnectionState.waiting
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -231,8 +214,8 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
                 ),
               // Horizontal Divider
               Padding(
-                padding: EdgeInsets.all(16),
-                child: !widget.isDriver ? Divider(thickness: 1) : null,
+                padding: const EdgeInsets.all(16),
+                child: !widget.isDriver && widget.isInFuture ? const Divider(thickness: 1) : null,
               )
             ]),
           );
