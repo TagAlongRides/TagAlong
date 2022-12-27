@@ -120,4 +120,26 @@ class RideBookingRepository {
       throw RideBookingException(ErrorModel.firebaseError(error.toString()));
     }
   }
+
+  // Get the ride bookings for a user related to a particular ride
+  Future<List<RideBookingModel>> getBookingsForRideAndUser({
+    required String rideId,
+    required String userId,
+    bool isCanceled = false,
+  }) async {
+    try {
+      final querySnapshot = await rideBookingCollection
+          .where('rideId', isEqualTo: rideId)
+          .where('userId', isEqualTo: userId)
+          .where('isCanceled', isEqualTo: isCanceled)
+          .get();
+      return await Stream.fromIterable(querySnapshot.docs)
+          .asyncMap<RideBookingModel>(
+            (event) => RideBookingModel.fromMap(event.data()),
+          )
+          .toList();
+    } catch (error) {
+      throw RideBookingException(ErrorModel.firebaseError(error.toString()));
+    }
+  }
 }
