@@ -41,7 +41,9 @@ class _MyRideScreenState extends State<MyRideScreen> {
                     // Calculate upcoming ride earnings
                     var _upcomingEarnings = 0;
                     for (var ride in snapshot.data!) {
-                      if (ride.driverId == _tagAlongUser.id && ride.departureDateTime.isAfter(DateTime.now())) {
+                      if (ride.driverId == _tagAlongUser.id &&
+                          ride.status == RideStatus.scheduled &&
+                          ride.departureDateTime.isAfter(DateTime.now())) {
                         //TODO - Create a more robust way to manage the number of currently booked passengers
                         _upcomingEarnings += ride.price * (ride.noPassengers - ride.remainingSeats);
                       }
@@ -107,7 +109,7 @@ class _MyRideScreenState extends State<MyRideScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           child: Text(
-                            'Past Trips',
+                            'Completed',
                             style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
