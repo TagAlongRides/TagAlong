@@ -69,10 +69,16 @@ class TagAlongAppNew extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
-      home: const AuthGate(),
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: MaterialApp(
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const AuthGate(),
+      ),
     );
   }
 }
