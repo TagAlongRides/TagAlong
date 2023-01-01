@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tagalong/screens/startup_authentication/login_screen.dart';
+import 'package:tagalong/screens/startup_authentication/register_screen.dart';
 
 class AuthHomeScreen extends StatelessWidget {
   const AuthHomeScreen({Key? key}) : super(key: key);
@@ -55,7 +56,12 @@ class AuthHomeScreen extends StatelessWidget {
                         style: const ButtonStyle(
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterScreen())
+                          );
+                        },
                         child: const Text('Sign Up')
                       ),
                     )

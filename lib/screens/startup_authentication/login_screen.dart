@@ -16,7 +16,6 @@ class LoginScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
-                          flex: 1 ,
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -80,7 +79,6 @@ class LoginScreen extends StatelessWidget {
 
                       // SSO Widgets (FB & Apple)
                       Expanded(
-                        flex: 1,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

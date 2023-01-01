@@ -12,13 +12,91 @@ class RegisterScreen extends StatelessWidget {
             SliverFillRemaining(
               hasScrollBody: false,
               child: Column(
-                children: const [
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                   Expanded(
-                    child: Text("")
+                    flex: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Create Account\nto get started now!",
+                              style: Theme.of(context).textTheme.headline4,
+                              textAlign: TextAlign.center
+                          )
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                          child: TextField(
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  ),
+                                ),
+                                labelText: 'Email',
+                                hintText: 'student@uni.edu',
+                                isDense: true
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                          child: TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  ),
+                                ),
+                                labelText: 'Password',
+                                isDense: true
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                          child: TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  ),
+                                ),
+                                labelText: 'Confirm Password',
+                                isDense: true
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left:16, right: 16, top: 32),
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            child: const Text("Sign In"),
+                            style: const ButtonStyle(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                        ),
+
+                      ]
+                    )
                   ),
 
                   Expanded(
-                    child: Text("")
+                    child: Column(
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: TextDivider(middleText: "Or Sign Up With")
+                        )
+                      ]
+                    )
                   )
                 ]
               )
@@ -29,3 +107,35 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
+
+class TextDivider extends StatelessWidget {
+  final String middleText;
+
+  const TextDivider({Key? key, required this.middleText}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Divider(
+              thickness: 1.0,
+            ),
+          )
+        ),
+        Text(middleText),
+        const Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: Divider(
+                thickness: 1.0,
+              ),
+            )
+        ),
+      ]
+    );
+  }
+}
+
