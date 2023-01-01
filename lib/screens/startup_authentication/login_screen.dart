@@ -79,13 +79,39 @@ class LoginScreen extends StatelessWidget {
                       ),
 
                       // SSO Widgets (FB & Apple)
-                      const Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: EdgeInsets.all(1.0),
-                            child: Text(""),
-                          )
-                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  child: const Text("Sign In"),
+                                  style: const ButtonStyle(
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 32),
+                              child: TextButton(
+                                style: const ButtonStyle(
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  logger.log.fine('TODO - Sign up navigation');
+                                },
+                                child: const Text('Don\'t have an account? Sign Up Now.')
+                              ),
+                            )
+                          ]
+                        )
+                      )
                     ]
                   )
                 )

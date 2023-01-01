@@ -32,36 +32,31 @@ class AuthHomeScreen extends StatelessWidget {
 
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: const ButtonStyle(
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const LoginScreen())
-                            );
-                          },
-                          child: const Text('Log In')
-                        )
+                      child: ElevatedButton(
+                        style: const ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginScreen())
+                          );
+                        },
+                        child: const Text('Log In')
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: const ButtonStyle(
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          onPressed: () {},
-                          child: const Text('Sign Up')
-                        )
+                      child: ElevatedButton(
+                        style: const ButtonStyle(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onPressed: () {},
+                        child: const Text('Sign Up')
                       ),
                     )
                   ]
