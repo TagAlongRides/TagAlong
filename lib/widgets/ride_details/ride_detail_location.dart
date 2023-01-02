@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ride_repo/ride_repo.dart';
-
-extension on String {
-  _toProperCase() {
-    if (this == null) {
-      return null;
-    }
-    if (length == 1) {
-      return toUpperCase();
-    }
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-  }
-
-  toTitleCase() {
-    return replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str._toProperCase()).join(' ');
-  }
-}
+import 'package:core/core.dart';
 
 class RideDetailLocation extends StatelessWidget {
   const RideDetailLocation({
