@@ -1,13 +1,9 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
-// import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
-import 'package:tagalong/viewmodels/offer_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/widgets/rideboard/rideboard_card.dart';
@@ -30,16 +26,11 @@ class _RideBoardState extends State<RideBoard> {
     // rebuild this RideBoard Widget, hence re-querying data with filters
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: true);
 
-    // // Listening to OfferRideViewModel for the case when a Driver posts a ride -
-    // // The RideBoard should rebuild to show that ride.
-    // var offerRideViewModel = Provider.of<OfferRideViewModel>(context, listen:true);
-    var uploadedRideViewModel = Provider.of<UploadRideViewModel>(context, listen: true);
-
     // The "RefreshIndicator" will allow us to refresh the Rideboard to get the
     // most up-to-date Rides based on set filters within RideBoardViewModel
-    RideRepository.instance.getMyOfferedRides('qPL64AIflCfwXKMQ5OV5zDvnY4I2').then((value) {
-      log(value.toString());
-    });
+    // RideRepository.instance.getMyOfferedRides('qPL64AIflCfwXKMQ5OV5zDvnY4I2').then((value) {
+    //   log(value.toString());
+    // });
     return RefreshIndicator(
       onRefresh: rideBoardViewModel.getRidesBasedOnFilters,
       child: FutureBuilder<void>(
@@ -81,15 +72,6 @@ class _RideBoardState extends State<RideBoard> {
                         content: const Text('Heads up! You have to verify your email address before booking a ride'),
                         backgroundColor: TagAlongTheme.colorError,
                         actions: [
-                          // TextButton(
-                          //   onPressed: () {
-                          //     setState(() {
-                          //       _bannerDismissed = true;
-                          //     });
-                          //   },
-                          //   style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.transparent)),
-                          //   child: const Text('DISMISS'),
-                          // ),
                           TextButton(
                             onPressed: () {
                               userViewModel.sendEmailVerificationToUser();
@@ -115,7 +97,7 @@ class _RideBoardState extends State<RideBoard> {
               );
             }
           } else {
-            return const Text('af');
+            return const Text('Something went wrong');
           }
         },
       ),
