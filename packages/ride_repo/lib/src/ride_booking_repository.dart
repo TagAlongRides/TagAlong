@@ -54,6 +54,7 @@ class RideBookingRepository {
   /// update the ride booking
   Future<RideBookingModel> updateRideBooking(RideBookingModel model) async {
     try {
+      model.updatedAt = DateTime.now();
       log('Updating in Firebase: ${model.toJson()}');
       await rideBookingCollection.doc(model.rideBookingId).update(model.toMap());
       return model;
