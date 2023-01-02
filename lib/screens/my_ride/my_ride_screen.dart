@@ -8,6 +8,7 @@ import 'package:tagalong/screens/my_ride/my_ride_detail_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:core/core.dart';
 
 class MyRideScreen extends StatefulWidget {
   const MyRideScreen({Key? key}) : super(key: key);
@@ -31,112 +32,118 @@ class _MyRideScreenState extends State<MyRideScreen> {
               onRefresh: () async {
                 setState(() {});
               },
-              child: FutureBuilder<List<RideModel>>(
-                future: RideRepository.instance.getAllRidesForUser(_tagAlongUser.id, ordered: true),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.isEmpty) {
-                      return const Text('You haven\'t offered or booked any rides yet!');
-                    }
-                    // Calculate upcoming ride earnings
-                    var _upcomingEarnings = 0;
-                    for (var ride in snapshot.data!) {
-                      if (ride.driverId == _tagAlongUser.id &&
-                          ride.status == RideStatus.scheduled &&
-                          ride.departureDateTime.isAfter(DateTime.now())) {
-                        //TODO - Create a more robust way to manage the number of currently booked passengers
-                        _upcomingEarnings += ride.price * (ride.noPassengers - ride.remainingSeats);
+              child: SingleChildScrollView(
+                child: FutureBuilder<List<RideModel>>(
+                  future: RideRepository.instance.getAllRidesForUser(_tagAlongUser.id, ordered: true),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data!.isEmpty) {
+                        return const Text('You haven\'t offered or booked any rides yet!');
                       }
-                    }
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Only display upcoming ride section if user has an upcoming ride
-                        if (_upcomingEarnings > 0)
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: 40,
-                                child: FittedBox(
-                                  fit: BoxFit.contain,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        'Estimated Earnings for Upcoming Rides: ',
-                                        style: TagAlongTheme.lightTextTheme.headline5!
-                                            .copyWith(fontWeight: FontWeight.bold),
-                                        softWrap: true,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '\$${_upcomingEarnings.toString()}',
-                                        style: TagAlongTheme.lightTextTheme.headline5!
-                                            .copyWith(fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
+                      // Calculate upcoming ride earnings
+                      var _upcomingEarnings = 0;
+                      for (var ride in snapshot.data!) {
+                        if (ride.driverId == _tagAlongUser.id &&
+                            ride.status == RideStatus.scheduled &&
+                            ride.departureDateTime.isAfter(DateTime.now())) {
+                          //TODO - Create a more robust way to manage the number of currently booked passengers
+                          _upcomingEarnings += ride.price * (ride.noPassengers - ride.remainingSeats);
+                        }
+                      }
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Only display upcoming ride section if user has an upcoming ride
+                          if (_upcomingEarnings > 0)
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 40,
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Estimated Earnings for Upcoming Rides: ',
+                                          style: TagAlongTheme.lightTextTheme.headline5!
+                                              .copyWith(fontWeight: FontWeight.bold),
+                                          softWrap: true,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '\$${_upcomingEarnings.toString()}',
+                                          style: TagAlongTheme.lightTextTheme.headline5!
+                                              .copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Divider(
-                                thickness: 1,
-                                color: Colors.grey.shade400,
-                              ),
-                            ],
-                          ),
+                                Divider(
+                                  thickness: 1,
+                                  color: Colors.grey.shade400,
+                                ),
+                              ],
+                            ),
 
-                        if (snapshot.data!.where((ride) => ride.departureDateTime.isAfter(DateTime.now())).isNotEmpty)
+                          if (snapshot.data!.where((ride) => ride.departureDateTime.isAfter(DateTime.now())).isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Text(
+                                'Upcoming',
+                                style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final _rideData = snapshot.data![index];
+                              final _isDriver = _rideData.driverId == _tagAlongUser.id;
+                              final _isCancelled = _rideData.status == RideStatus.canceled ||
+                                  (!_isDriver && !_rideData.riderIds.contains(_tagAlongUser.id));
+                              if (_rideData.departureDateTime.isAfter(DateTime.now())) {
+                                return MyRideTile(isDriver: _isDriver, isCancelled: _isCancelled, rideData: _rideData);
+                              } else {
+                                return const SizedBox();
+                              }
+                            },
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: Text(
-                              'Upcoming',
+                              'Completed',
                               style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
-
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            final _rideData = snapshot.data![index];
-                            final _isDriver = _rideData.driverId == _tagAlongUser.id;
-                            if (_rideData.departureDateTime.isAfter(DateTime.now())) {
-                              return MyRideTile(isDriver: _isDriver, rideData: _rideData);
-                            } else {
-                              return const SizedBox();
-                            }
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Text(
-                            'Completed',
-                            style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final _rideData = snapshot.data![index];
+                              final _isDriver = _rideData.driverId == _tagAlongUser.id;
+                              final _isCancelled = _rideData.status == RideStatus.canceled ||
+                                  (!_isDriver && !_rideData.riderIds.contains(_tagAlongUser.id));
+                              // final rideBooking = snapshot.data![index];
+                              if (_rideData.departureDateTime.isBefore(DateTime.now())) {
+                                return MyRideTile(isDriver: _isDriver, isCancelled: _isCancelled, rideData: _rideData);
+                              } else {
+                                return const SizedBox();
+                              }
+                            },
                           ),
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            final _rideData = snapshot.data![index];
-                            final _isDriver = _rideData.driverId == _tagAlongUser.id;
-                            // final rideBooking = snapshot.data![index];
-                            if (_rideData.departureDateTime.isBefore(DateTime.now())) {
-                              return MyRideTile(isDriver: _isDriver, rideData: _rideData);
-                            } else {
-                              return const SizedBox();
-                            }
-                          },
-                        ),
-                      ],
+                        ],
+                      );
+                    }
+                    if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
-                  }
-                  if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ),
@@ -150,12 +157,15 @@ class MyRideTile extends StatelessWidget {
   const MyRideTile({
     Key? key,
     required bool isDriver,
+    required bool isCancelled,
     required RideModel rideData,
   })  : _isDriver = isDriver,
+        _isCancelled = isCancelled,
         _rideData = rideData,
         super(key: key);
 
   final bool _isDriver;
+  final bool _isCancelled;
   final RideModel _rideData;
 
   @override
@@ -165,15 +175,17 @@ class MyRideTile extends StatelessWidget {
       child: ListTile(
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(8)), side: BorderSide(color: Colors.black54)),
-        tileColor: _isDriver ? TagAlongTheme.primarySwatch.shade50 : Colors.white,
+        tileColor: _isCancelled ? Colors.grey[300] : Colors.white,
         leading: Icon(_isDriver ? FontAwesomeIcons.car : Icons.airline_seat_recline_normal_rounded),
         title: Text(
             _rideData.toCampus ? 'To ' + _rideData.dropoffLocation.label! : 'From ' + _rideData.pickupLocation.label!),
         subtitle: Text(DateFormat('EEE, MMM d').format(_rideData.departureDateTime)),
-        trailing: Text(
-          '\$${_rideData.price.toString()}',
-          style: TagAlongTheme.lightTextTheme.headline6,
-        ),
+        trailing: _isCancelled
+            ? Text(
+                'Cancelled',
+                style: TagAlongTheme.lightTextTheme.subtitle1,
+              )
+            : null,
         onTap: () {
           Navigator.of(context).pushNamed(MyRideDetailScreen.routeName, arguments: _rideData);
         },
