@@ -16,6 +16,7 @@ class RideDetailProfileNotes extends StatefulWidget {
     this.isDriver = false,
     this.isInFuture = true,
     this.isMyRides = false,
+    this.isCancelled = false,
   }) : super(key: key);
 
   final BuildContext context;
@@ -23,6 +24,7 @@ class RideDetailProfileNotes extends StatefulWidget {
   final bool isDriver;
   final bool isInFuture;
   final bool isMyRides;
+  final bool isCancelled;
 
   @override
   State<RideDetailProfileNotes> createState() => _RideDetailProfileNotesState();
@@ -91,60 +93,74 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
               if (widget.isDriver)
                 riders.connectionState == ConnectionState.waiting
                     ? const CircularProgressIndicator()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Passengers:',
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                          ...riderData.map((e) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Expanded(
-                                      child: Row(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(right: 16.0),
-                                            child: CircleAvatar(backgroundImage: NetworkImage(e.profilePictureUrl)),
-                                          ),
-                                          // Get first name, last initial for each rider
-                                          Text("${e.firstName} ${e.lastName[0]}.",
-                                              style: Theme.of(context).textTheme.bodyLarge),
-                                          if (widget.isInFuture)
-                                            Expanded(
-                                              child: Align(
-                                                alignment: Alignment.centerRight,
-                                                child: OutlinedButton(
-                                                    onPressed: () async {
-                                                      await Clipboard.setData(ClipboardData(text: e.phoneNumber))
-                                                          .then((_) {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          const SnackBar(
-                                                            content: Text("Phone number copied to clipboard"),
-                                                            duration: Duration(seconds: 1),
-                                                          ),
-                                                        );
-                                                      });
-                                                    },
-                                                    child: Text(
-                                                      e.phoneNumber,
-                                                      // style: TextStyle(color: Colors.black),
-                                                    )),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
+                    : SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Passengers:',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                            if (riderData.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 4),
+                                child: Text(
+                                  'No passengers',
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.italic,
                                   ),
-                                ],
+                                ),
                               ),
-                            );
-                          }).toList(),
-                        ],
+                            if (riderData.isNotEmpty)
+                              ...riderData.map((e) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Expanded(
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(right: 16.0),
+                                                child: CircleAvatar(backgroundImage: NetworkImage(e.profilePictureUrl)),
+                                              ),
+                                              // Get first name, last initial for each rider
+                                              Text("${e.firstName} ${e.lastName[0]}.",
+                                                  style: Theme.of(context).textTheme.bodyLarge),
+                                              if (widget.isInFuture)
+                                                Expanded(
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: OutlinedButton(
+                                                        onPressed: () async {
+                                                          await Clipboard.setData(ClipboardData(text: e.phoneNumber))
+                                                              .then((_) {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              const SnackBar(
+                                                                content: Text("Phone number copied to clipboard"),
+                                                                duration: Duration(seconds: 1),
+                                                              ),
+                                                            );
+                                                          });
+                                                        },
+                                                        child: Text(
+                                                          e.phoneNumber,
+                                                          // style: TextStyle(color: Colors.black),
+                                                        )),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                          ],
+                        ),
                       ),
 
               // Ride Notes
@@ -171,7 +187,7 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
                   ),
                 ),
 
-              if (widget.isMyRides && !widget.isDriver && widget.isInFuture)
+              if (widget.isMyRides && !widget.isDriver && widget.isInFuture && !widget.isCancelled)
                 Container(
                   padding: const EdgeInsets.only(top: 16),
                   width: MediaQuery.of(context).size.width,
