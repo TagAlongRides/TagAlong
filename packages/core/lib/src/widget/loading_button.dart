@@ -1,11 +1,12 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 
 class LoadingButton extends StatefulWidget {
   final Future Function()? onPressed;
   final String text;
+  final ButtonStyle? style;
 
-  const LoadingButton({Key? key, required this.onPressed, required this.text})
-      : super(key: key);
+  const LoadingButton({Key? key, required this.onPressed, required this.text, this.style}) : super(key: key);
 
   @override
   _LoadingButtonState createState() => _LoadingButtonState();
@@ -21,10 +22,8 @@ class _LoadingButtonState extends State<LoadingButton> {
       children: [
         Expanded(
           child: ElevatedButton(
-            // style: ElevatedButton.styleFrom(
-            //     padding: const EdgeInsets.symmetric(vertical: 12)),
-            onPressed:
-                (_isLoading || widget.onPressed == null) ? null : _loadFuture,
+            style: widget.style,
+            onPressed: (_isLoading || widget.onPressed == null) ? null : _loadFuture,
             child: _isLoading
                 ? const SizedBox(
                     height: 22,
@@ -47,9 +46,8 @@ class _LoadingButtonState extends State<LoadingButton> {
     try {
       await widget.onPressed!();
     } catch (e, s) {
-      // log(e.toString(), error: e, stackTrace: s);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error $e')));
+      log(e.toString(), error: e, stackTrace: s);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error $e')));
       rethrow;
     } finally {
       setState(() {
