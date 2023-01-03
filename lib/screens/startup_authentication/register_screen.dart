@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -107,35 +108,3 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
-
-class TextDivider extends StatelessWidget {
-  final String middleText;
-
-  const TextDivider({Key? key, required this.middleText}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Divider(
-              thickness: 1.0,
-            ),
-          )
-        ),
-        Text(middleText),
-        const Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Divider(
-                thickness: 1.0,
-              ),
-            )
-        ),
-      ]
-    );
-  }
-}
-

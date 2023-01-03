@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tagalong/screens/startup_authentication/register_screen.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
@@ -102,7 +103,10 @@ class LoginScreen extends StatelessWidget {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 onPressed: () {
-                                  logger.log.fine('TODO - Sign up navigation');
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const RegisterScreen())
+                                  );
                                 },
                                 child: const Text('Don\'t have an account? Sign Up Now.')
                               ),
