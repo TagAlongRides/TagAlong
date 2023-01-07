@@ -89,7 +89,7 @@ class LoginScreen extends StatelessWidget {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {},
-                                  child: const Text("Sign In"),
+                                  child: const Text("Log In"),
                                   style: const ButtonStyle(
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),

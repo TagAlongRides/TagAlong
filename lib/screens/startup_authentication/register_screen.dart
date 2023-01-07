@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -78,7 +81,7 @@ class RegisterScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(left:16, right: 16, top: 32),
                           child: ElevatedButton(
                             onPressed: () {},
-                            child: const Text("Sign In"),
+                            child: const Text("Sign Up"),
                             style: const ButtonStyle(
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -91,10 +94,29 @@ class RegisterScreen extends StatelessWidget {
 
                   Expanded(
                     child: Column(
-                      children: const [
-                        Padding(
+                      children: [
+                        const Padding(
                           padding: EdgeInsets.all(16.0),
                           child: TextDivider(middleText: "Or Sign Up With")
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SignInButton(
+                                Buttons.Facebook,
+                                mini: true,
+                                onPressed: () {}
+                              ),
+                            if (Platform.isIOS)
+                              SignInButton(
+                                Buttons.AppleDark,
+                                mini: true,
+                                onPressed: () {},
+                              )
+                            ]
+                          )
                         )
                       ]
                     )
