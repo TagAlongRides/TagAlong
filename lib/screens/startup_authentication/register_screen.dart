@@ -19,7 +19,6 @@ class RegisterScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
-                    flex: 2,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -32,62 +31,62 @@ class RegisterScreen extends StatelessWidget {
                               textAlign: TextAlign.center
                           )
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                          child: TextField(
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                ),
-                                labelText: 'Email',
-                                hintText: 'student@uni.edu',
-                                isDense: true
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                          child: TextField(
-                            obscureText: true,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                ),
-                                labelText: 'Password',
-                                isDense: true
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                          child: TextField(
-                            obscureText: true,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                ),
-                                labelText: 'Confirm Password',
-                                isDense: true
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left:16, right: 16, top: 32),
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: const Text("Sign Up"),
-                            style: const ButtonStyle(
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          ),
-                        ),
-
+                    //     const Padding(
+                    //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                    //       child: TextField(
+                    //         decoration: InputDecoration(
+                    //             border: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.all(
+                    //                 Radius.circular(8),
+                    //               ),
+                    //             ),
+                    //             labelText: 'Email',
+                    //             hintText: 'student@uni.edu',
+                    //             isDense: true
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const Padding(
+                    //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                    //       child: TextField(
+                    //         obscureText: true,
+                    //         decoration: InputDecoration(
+                    //             border: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.all(
+                    //                 Radius.circular(8),
+                    //               ),
+                    //             ),
+                    //             labelText: 'Password',
+                    //             isDense: true
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     const Padding(
+                    //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                    //       child: TextField(
+                    //         obscureText: true,
+                    //         decoration: InputDecoration(
+                    //             border: OutlineInputBorder(
+                    //               borderRadius: BorderRadius.all(
+                    //                 Radius.circular(8),
+                    //               ),
+                    //             ),
+                    //             labelText: 'Confirm Password',
+                    //             isDense: true
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: const EdgeInsets.only(left:16, right: 16, top: 32),
+                    //       child: ElevatedButton(
+                    //         onPressed: () {},
+                    //         child: const Text("Sign Up"),
+                    //         style: const ButtonStyle(
+                    //           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //
                       ]
                     )
                   ),
@@ -97,26 +96,33 @@ class RegisterScreen extends StatelessWidget {
                       children: [
                         const Padding(
                           padding: EdgeInsets.all(16.0),
-                          child: TextDivider(middleText: "Or Sign Up With")
+                          child: TextDivider(middleText: "Sign Up With")
+                        ),
+                        const SizedBox(height:16),
+                        Padding(
+                          padding: const EdgeInsets.only(top:8.0),
+                          child: SignInButton(
+                            Buttons.FacebookNew,
+                            text: "Sign up with Facebook",
+                            onPressed: () {}
+                          ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SignInButton(
-                                Buttons.Facebook,
-                                mini: true,
-                                onPressed: () {}
-                              ),
-                            if (Platform.isIOS)
-                              SignInButton(
-                                Buttons.AppleDark,
-                                mini: true,
-                                onPressed: () {},
-                              )
-                            ]
-                          )
+                          padding: const EdgeInsets.only(top:8.0),
+                          child: SignInButton(
+                            Buttons.Email,
+                            text: "Sign up with School Email",
+                            onPressed: () {}
+                          ),
+                        ),
+                        if (Platform.isIOS)
+                        Padding(
+                          padding: const EdgeInsets.only(top:8.0),
+                          child: SignInButton(
+                            Buttons.AppleDark,
+                            text: "Sign up with Apple",
+                            onPressed: () {},
+                          ),
                         )
                       ]
                     )

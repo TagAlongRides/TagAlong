@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:tagalong/screens/startup_authentication/register_screen.dart';
+import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
@@ -17,76 +19,67 @@ class LoginScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                        "Welcome,\nGlad to see you!",
-                                        style: Theme.of(context).textTheme.headline4,
-                                        textAlign: TextAlign.center
-                                    )
-                                ),
-                                // Email Sign-in
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(8),
-                                          ),
-                                        ),
-                                        labelText: 'Email',
-                                        hintText: 'student@uni.edu',
-                                        isDense: true
-                                    ),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                                  child: TextField(
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(8),
-                                          ),
-                                        ),
-                                        labelText: 'Password',
-                                        isDense: true
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 16),
-                                    child: TextButton(
-                                      style: const ButtonStyle(
-                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      ),
-                                      onPressed: () {
-                                        logger.log.fine('TODO - Forgot Password button');
-                                      },
-                                      child: const Text('Forgot Password?'),
-                                    ),
-                                  ),
-                                )
-                              ]
-                          )
-                      ),
-
-                      // SSO Widgets (FB & Apple)
-                      Expanded(
+                        flex: 2,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: SizedBox(
-                                width: double.infinity,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                      "Welcome,\nGlad to see you!",
+                                      style: Theme.of(context).textTheme.headline4,
+                                      textAlign: TextAlign.center
+                                  )
+                              ),
+                              // Email Sign-in
+                              const Padding(
+                                padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(8),
+                                        ),
+                                      ),
+                                      labelText: 'Email',
+                                      hintText: 'student@uni.edu',
+                                      isDense: true
+                                  ),
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                child: TextField(
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(8),
+                                        ),
+                                      ),
+                                      labelText: 'Password',
+                                      isDense: true
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 16),
+                                  child: TextButton(
+                                    style: const ButtonStyle(
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    onPressed: () {
+                                      logger.log.fine('TODO - Forgot Password button');
+                                    },
+                                    child: const Text('Forgot Password?'),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
                                 child: ElevatedButton(
                                   onPressed: () {},
                                   child: const Text("Log In"),
@@ -95,6 +88,40 @@ class LoginScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                            ]
+                          )
+                      ),
+
+                      // SSO Widgets (FB & Apple)
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.all(16),
+                              child: TextDivider(middleText: "Sign In With")
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top:8.0),
+                                  child: SignInButton(
+                                      Buttons.Facebook,
+                                      mini: true,
+                                      onPressed: () {}
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top:8.0),
+                                  child: SignInButton(
+                                      Buttons.Email,
+                                      mini: true,
+                                      onPressed: () {}
+                                  ),
+                                ),
+                              ]
                             ),
                             Container(
                               margin: const EdgeInsets.only(bottom: 32),
