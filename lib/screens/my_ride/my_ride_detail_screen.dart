@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_cancelled_message.dart';
 import 'package:tagalong/widgets/ride_details/ride_detail_departure_data.dart';
 import 'package:tagalong/widgets/ride_details/ride_detail_location.dart';
 import 'package:tagalong/widgets/ride_details/ride_detail_misc.dart';
@@ -19,6 +20,11 @@ class MyRideDetailScreen extends StatelessWidget {
     final _isFutureRide = _rideData.departureDateTime.isAfter(DateTime.now());
     final _userIsDriver = _rideData.driverId == _userId;
 
+    // Flag if the entire ride is cancelled or the passenger's booking is cancelled.
+    // Identifying a cancelled booking by checking against the list of current riderIds for the ride
+    final _isCancelled =
+        _rideData.status == RideStatus.canceled || (!_userIsDriver && !_rideData.riderIds.contains(_userId));
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isFutureRide ? 'My Upcoming Ride' : 'My Past Ride'),
@@ -26,6 +32,8 @@ class MyRideDetailScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            if (_isCancelled) const SizedBox(height: 16.0),
+            if (_isCancelled) const RideDetailCancelledMessage(),
             // SizedBox + Departure Date/Time
             const SizedBox(height: 16.0),
             RideDetailDepartureData(
@@ -41,16 +49,18 @@ class MyRideDetailScreen extends StatelessWidget {
             ),
 
             // SizedBox + Profile & Notes
-            const SizedBox(height: 16.0),
-            RideDetailProfileNotes(
-              context: context,
-              ride: _rideData,
-              isDriver: _userIsDriver,
-              isInFuture: _isFutureRide,
-              isMyRides: true,
-            ),
+            if (!_isCancelled) const SizedBox(height: 16.0),
+            if (!_isCancelled)
+              RideDetailProfileNotes(
+                context: context,
+                ride: _rideData,
+                isDriver: _userIsDriver,
+                isInFuture: _isFutureRide,
+                isMyRides: true,
+                isCancelled: _isCancelled,
+              ),
 
-            if (!_userIsDriver)
+            if (!_userIsDriver && _isFutureRide && !_isCancelled)
               // Ride details (Car + Bags + optional COVID precautions)
               RideDetailMisc(
                 context: context,
@@ -59,81 +69,19 @@ class MyRideDetailScreen extends StatelessWidget {
 
             // SizedBox + Pricing
             const SizedBox(height: 16.0),
-            RideDetailPricing(
-              context: context,
-              ride: _rideData,
-              isDriver: _userIsDriver,
-            )
+            if (!_isCancelled)
+              RideDetailPricing(
+                context: context,
+                ride: _rideData,
+                userId: _userId,
+                isDriver: _userIsDriver,
+                isInFuture: _isFutureRide,
+                isMyRides: true,
+                isCancelled: _isCancelled,
+              )
           ],
         ),
       ),
-
-      // return Container(
-      //   margin: const EdgeInsets.all(4),
-      //   padding: const EdgeInsets.all(12),
-      //   decoration: BoxDecoration(
-      //     color: Colors.grey.withOpacity(.3),
-      //     borderRadius: const BorderRadius.all(
-      //       Radius.circular(8),
-      //     ),
-      //   ),
-      //   child: Column(
-      //     children: [
-      //       Text(rideData.rideId),
-      //       LoadingButton(
-      //           onPressed: () async {
-      //             final ride = await RideRepository.instance.getRideById(rideData.rideId);
-      //             if (ride.departureDateTime.difference(DateTime.now()).inHours > 6) {
-      //               InfoDialog.show(
-      //                 context,
-      //                 message: 'Are you sure you want to cancel the ride ? Refund = true',
-      //                 positiveLabel: 'Continue',
-      //                 // positivePress: () async {
-      //                 //   // 1. Init the refund from the stripe side
-      //                 //   final refund = await StripeRefundRepository.instance.refundDestinationCharge(
-      //                 //     StripeRefundRequest(
-      //                 //       charge: rideBooking.chargeId,
-      //                 //       reverseTransfer: true,
-      //                 //       refundApplicationFee: true,
-      //                 //     ),
-      //                 //   );
-
-      //                 //   // 2. Update the firebase collection to cancel the ride booking
-      //                 //   final ridebookingUpdated =
-      //                 //       await RideBookingRepository.instance.cancelRideBooking(rideBooking);
-
-      //                 //   // 3. Increment remainingSeats by 1 and update in Firebase
-      //                 //   ride.remainingSeats++;
-      //                 //   await RideRepository.instance.updateRide(ride);
-
-      //                 //   setState(() {});
-
-      //                 //   Navigator.of(context).pop();
-      //                 // },
-      //               );
-      //             } else {
-      //               // TODO - Prevent user from being able to cancel within 6 hours
-      //               InfoDialog.show(
-      //                 context,
-      //                 message: 'Are you sure you want to cancel the ride ? Refund = false',
-      //                 positiveLabel: 'Continue',
-      //                 // positivePress: () async {
-      //                 //   /// 1. Update the firebase collection to cancel the ride booking
-      //                 //   final ridebookingUpdated =
-      //                 //       await RideBookingRepository.instance.cancelRideBooking(rideBooking);
-
-      //                 //   setState(() {});
-
-      //                 //   Navigator.of(context).pop();
-      //                 // },
-      //               );
-      //             }
-      //             // final message =
-      //           },
-      //           text: 'Cancel')
-      //     ],
-      //   ),
-      // );
     );
   }
 }

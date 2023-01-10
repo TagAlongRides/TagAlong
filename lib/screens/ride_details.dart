@@ -13,22 +13,6 @@ import 'package:tagalong/widgets/ride_details/ride_detail_pricing.dart';
 import 'package:tagalong/widgets/ride_details/ride_detail_profile_notes.dart';
 import 'package:tagalong/widgets/ride_details/ride_detail_location.dart';
 
-extension on String {
-  _toProperCase() {
-    if (this == null) {
-      return null;
-    }
-    if (length == 1) {
-      return toUpperCase();
-    }
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-  }
-
-  toTitleCase() {
-    return replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str._toProperCase()).join(' ');
-  }
-}
-
 class RideDetails extends StatelessWidget {
   const RideDetails({Key? key}) : super(key: key);
   static const routeName = '/ride_details';

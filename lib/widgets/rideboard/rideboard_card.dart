@@ -6,19 +6,7 @@ import 'package:tagalong/screens/ride_details.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
-
-extension on String {
-  _toProperCase() {
-    if (length == 1) {
-      return toUpperCase();
-    }
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-  }
-
-  toTitleCase() {
-    return replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str._toProperCase()).join(' ');
-  }
-}
+import 'package:core/core.dart';
 
 /// Represents a RideBoardCard, the only element that should be shown on the
 /// RideBoard, and should surface basic information about a Ride as well as

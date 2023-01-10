@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
@@ -202,6 +204,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
         final paymentIntent = await Stripe.instance.handleNextAction(paymentIntentResult.data.clientSecret);
 
         if (paymentIntent.status == PaymentIntentsStatus.RequiresConfirmation) {
+          log('Stripe payment intent ${paymentIntent.id} requires confirmation. Recommended action is: ${paymentIntent.nextAction}');
           // 5. Call API to confirm intent
           // Stripe.instance.confirmPayment(
           //   paymentIntentResult.data.clientSecret!,
@@ -210,8 +213,11 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
           //   ),
           // );
           // await confirmIntent(paymentIntent.id);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Require Confirmation !: The payment was successfully!, but require confirmation')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Your payment requires confirmation before it can be processed. The recommended next step is: ${paymentIntent.nextAction}. Contact TagAlong support for assistance.'),
+            duration: const Duration(seconds: 15),
+          ));
         } else {
           // Payment succedeed
 
@@ -241,8 +247,9 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
 
     // Pull data from Firebase again in case of recent updates
     final rideFromRepo = await RideRepository.instance.getRideById(ride.rideId);
-    // Update Ride doc with ride booking id
+    // Update Ride doc with ride booking id and rider id
     rideFromRepo.rideBookingIds.add(rideBooking.rideBookingId);
+    rideFromRepo.riderIds.add(tagAlongUser.id);
     // Remove 1 remaining seat from the ride
     rideFromRepo.remainingSeats--;
     await RideRepository.instance.updateRide(rideFromRepo);
