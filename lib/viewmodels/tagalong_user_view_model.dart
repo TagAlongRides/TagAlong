@@ -261,4 +261,16 @@ class TagAlongUserViewModel with ChangeNotifier {
     }
     return user.emailVerified;
   }
+
+  Future<TagAlongUser?> getUserFromID(String userId) async {
+    try {
+      final _userDocSnapshot = await databaseService.users.doc(userId).get();
+      final _userData = _userDocSnapshot.data() as Map<String, dynamic>;
+      final _userFormatted = TagAlongUser.fromJson(_userData);
+      return _userFormatted;
+    } catch (e) {
+      logger.log.fine('Could not retrieve user : ${e.toString()}');
+      rethrow;
+    }
+  }
 }

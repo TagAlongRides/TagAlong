@@ -54,6 +54,7 @@ class RideBookingRepository {
   /// update the ride booking
   Future<RideBookingModel> updateRideBooking(RideBookingModel model) async {
     try {
+      model.updatedAt = DateTime.now();
       log('Updating in Firebase: ${model.toJson()}');
       await rideBookingCollection.doc(model.rideBookingId).update(model.toMap());
       return model;
@@ -108,6 +109,28 @@ class RideBookingRepository {
   Future<List<RideBookingModel>> getRideBookingForUser(String userId, {bool isCanceled = false}) async {
     try {
       final querySnapshot = await rideBookingCollection
+          .where('userId', isEqualTo: userId)
+          .where('isCanceled', isEqualTo: isCanceled)
+          .get();
+      return await Stream.fromIterable(querySnapshot.docs)
+          .asyncMap<RideBookingModel>(
+            (event) => RideBookingModel.fromMap(event.data()),
+          )
+          .toList();
+    } catch (error) {
+      throw RideBookingException(ErrorModel.firebaseError(error.toString()));
+    }
+  }
+
+  // Get the ride bookings for a user related to a particular ride
+  Future<List<RideBookingModel>> getBookingsForRideAndUser({
+    required String rideId,
+    required String userId,
+    bool isCanceled = false,
+  }) async {
+    try {
+      final querySnapshot = await rideBookingCollection
+          .where('rideId', isEqualTo: rideId)
           .where('userId', isEqualTo: userId)
           .where('isCanceled', isEqualTo: isCanceled)
           .get();

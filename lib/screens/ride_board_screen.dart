@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stripe_repo/stripe_repo.dart';
@@ -5,6 +6,7 @@ import 'package:tagalong/screens/my_ride/my_ride_screen.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_campus.dart';
 import 'package:tagalong/screens/register_driver_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
@@ -28,13 +30,24 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
   // Therefore if you want to [RideBoard, MyRides, Account] UI to show
   // new state, you must rebuild the specific Widget.
   int _selectedItem = 0;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _tabController = TabController(vsync: this, length: 4);
+  }
 
   @override
   Widget build(BuildContext context) {
     logger.log.fine('RideboardScreen Build');
 
     return Scaffold(
-        appBar: _getAppBar(context), body: _getBody(context), bottomNavigationBar: _getBottomNavBar(context));
+      appBar: _getAppBar(context),
+      body: _getBody(context),
+      bottomNavigationBar: _getBottomNavBar(context),
+    );
   }
 
   /// UI for the filter Modal Bottom Sheet and its corresponding functionality.
@@ -217,148 +230,173 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
 
   /// Returns the [RideBoardScreen] body
   Widget _getBody(BuildContext context) {
-    return IndexedStack(index: _selectedItem, children: const [
-      RideBoard(),
-      Text(''), // This should never be shown - represents "Post Ride"
-      MyRideScreen(),
-      AccountSettingsScreen(),
-    ]);
+    return TabBarView(
+      controller: _tabController,
+      physics: NeverScrollableScrollPhysics(),
+      children: [
+        RideBoard(),
+        Text(''), // This should never be shown - represents "Post Ride"
+        MyRideScreen(),
+        AccountSettingsScreen(),
+      ],
+    );
   }
 
   /// Returns the [RideBoardScreen] BottomNavigationBar
   Widget _getBottomNavBar(BuildContext context) {
     var tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
 
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
-          label: 'Ride Board',
-          icon: Icon(Icons.home_outlined),
-        ),
-        BottomNavigationBarItem(
-          label: 'Post Ride',
-          icon: Icon(Icons.add),
-        ),
-        BottomNavigationBarItem(
-          label: 'My Rides',
-          icon: Icon(Icons.directions_car_outlined),
-        ),
-        BottomNavigationBarItem(
-          label: 'Account',
-          icon: Icon(Icons.account_circle_outlined),
-        ),
-      ],
-      currentIndex: _selectedItem,
-      // OnTap, update our current index into `items` and rebuild ONLY this
-      // specific widget. DOES NOT REBUILD Children!
-      // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
-      onTap: (int index) async {
-        // 1. User tapped a valid BottomNavBar Page (RideBoard, MyRides, Account)
-        if ([0, 2, 3].contains(index)) {
-          setState(() {
-            _selectedItem = index;
-          });
-        }
-
-        // 2. User tapped on "Post Ride" (index 1)
-        // TODO - Extract this to its own widget
-        else {
-          // print(AuthService().getUser()?.emailVerified);
-          AuthService().reloadUser();
-          var userViewModel = tagAlongUserViewModel;
-          final _driverData = userViewModel.tagAlongUser?.driverData;
-
-          if (!(_driverData?.isStripeActive ?? false) && _driverData?.stripeAccountId != null) {
-            final stripeAccount = await StripeAccountRepository.instance.getAccount(_driverData!.stripeAccountId!);
-            _driverData.isStripeActive = stripeAccount.data.chargesEnabled;
-
-            // 1. Update our [TagAlongUser] in-memory
-            Map<String, dynamic> data = {'driver_data': _driverData};
-            userViewModel.updateTagAlongUserInternal(data);
-
-            // 2. Update [TagAlongUser] in Firestore
-            await userViewModel.updateTagAlongUserFirestore();
+    return Material(
+      color: TagAlongTheme.primarySwatch.shade500,
+      child: TabBar(
+        controller: _tabController,
+        labelColor: Colors.blue.shade900,
+        unselectedLabelColor: Colors.blue.shade50,
+        indicatorColor: Colors.blue.shade900,
+        tabs: const [
+          FittedBox(
+            fit: BoxFit.cover,
+            child: Tab(
+              text: 'Ride Board',
+              icon: Icon(Icons.home_outlined),
+            ),
+          ),
+          FittedBox(
+            fit: BoxFit.contain,
+            child: Tab(
+              text: 'Post Ride',
+              icon: Icon(Icons.add),
+            ),
+          ),
+          FittedBox(
+            fit: BoxFit.contain,
+            child: Tab(
+              text: 'My Rides',
+              icon: Icon(Icons.directions_car_outlined),
+            ),
+          ),
+          FittedBox(
+            fit: BoxFit.contain,
+            child: Tab(
+              text: 'Account',
+              icon: Icon(Icons.account_circle_outlined),
+            ),
+          ),
+        ],
+        // OnTap, update our current index into `items` and rebuild ONLY this
+        // specific widget. DOES NOT REBUILD Children!
+        // See: https://stackoverflow.com/questions/57716056/indexedstack-widgets-are-not-updating
+        onTap: (int index) async {
+          // 1. User tapped a valid BottomNavBar Page (RideBoard, MyRides, Account)
+          if ([0, 2, 3].contains(index)) {
+            setState(() {
+              _selectedItem = index;
+            });
           }
 
-          bool hasDriverData = _driverData != null;
-          bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
-          bool isStripeActive = tagAlongUserViewModel.isStripeActive();
-          bool isEmailVerified = tagAlongUserViewModel.isEmailVerified();
-          logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
+          // 2. User tapped on "Post Ride" (index 1)
+          // TODO - Extract this to its own widget
+          else {
+            // print(AuthService().getUser()?.emailVerified);
+            setState(() {
+              _selectedItem = 0;
+            });
+            AuthService().reloadUser();
+            var userViewModel = tagAlongUserViewModel;
+            final _driverData = userViewModel.tagAlongUser?.driverData;
 
-          // If NOT Active Driver, offer option to register as such
-          if (!isEmailVerified) {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Verify email'),
-                  content: const Text(
-                      'To keep your travel safe, Tagalong requires every user to verify their email address before posting or booking a ride.'),
-                  actions: <Widget>[
-                    TextButton(
-                        onPressed: () {
-                          userViewModel.sendEmailVerificationToUser();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Verification email sent to ${userViewModel.tagAlongUser?.emailAddress}'),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Resend Verification')),
-                    TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
-                  ],
-                );
-              },
-            );
-          } else if (!hasDriverData) {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Not a Driver'),
-                  content: const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
-                  actions: <Widget>[
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not now')),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).popUntil((route) => route.isFirst);
-                          Navigator.of(context).pushNamed(RegisterDriverScreen.routeName);
-                        },
-                        child: const Text('Create profile')),
-                  ],
-                );
-              },
-            );
-          } else if (hasDriverData && !isStripeActive) {
-            showDialog<String>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('We couldn' 't collect your payment details'),
-                  content: const Text(
-                      'Oops! There was an issue with your Stripe registration, please try registering again.'),
-                  actions: <Widget>[
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not now')),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).popUntil((route) => route.isFirst);
-                          Navigator.of(context).pushNamed(RegisterDriverScreen.routeName);
-                        },
-                        child: const Text('Register')),
-                  ],
-                );
-              },
-            );
-          } else if (isStripeActive && isActiveDriver) {
-            logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
-            Navigator.pushNamed(context, OfferRideCampus.routeName);
+            if (!(_driverData?.isStripeActive ?? false) && _driverData?.stripeAccountId != null) {
+              final stripeAccount = await StripeAccountRepository.instance.getAccount(_driverData!.stripeAccountId!);
+              _driverData.isStripeActive = stripeAccount.data.chargesEnabled;
+
+              // 1. Update our [TagAlongUser] in-memory
+              Map<String, dynamic> data = {'driver_data': _driverData};
+              userViewModel.updateTagAlongUserInternal(data);
+
+              // 2. Update [TagAlongUser] in Firestore
+              await userViewModel.updateTagAlongUserFirestore();
+            }
+
+            bool hasDriverData = _driverData != null;
+            bool isActiveDriver = tagAlongUserViewModel.isActiveDriver();
+            bool isStripeActive = tagAlongUserViewModel.isStripeActive();
+            bool isEmailVerified = tagAlongUserViewModel.isEmailVerified();
+            logger.log.fine('RideBoardScreen - isActiveDriver: $isActiveDriver');
+
+            // If NOT Active Driver, offer option to register as such
+            if (!isEmailVerified) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Verify email'),
+                    content: const Text(
+                        'To keep your travel safe, Tagalong requires every user to verify their email address before posting or booking a ride.'),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () {
+                            userViewModel.sendEmailVerificationToUser();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Verification email sent to ${userViewModel.tagAlongUser?.emailAddress}'),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Resend Verification')),
+                      TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
+                    ],
+                  );
+                },
+              );
+            } else if (!hasDriverData) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Not a Driver'),
+                    content:
+                        const Text('You’re almost ready to post rides! Create your driver profile to get started.'),
+                    actions: <Widget>[
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not now')),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(context).pushNamed(RegisterDriverScreen.routeName);
+                          },
+                          child: const Text('Create profile')),
+                    ],
+                  );
+                },
+              );
+            } else if (hasDriverData && !isStripeActive) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('We couldn' 't collect your payment details'),
+                    content: const Text(
+                        'Oops! There was an issue with your Stripe registration, please try registering again.'),
+                    actions: <Widget>[
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not now')),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(context).pushNamed(RegisterDriverScreen.routeName);
+                          },
+                          child: const Text('Register')),
+                    ],
+                  );
+                },
+              );
+            } else if (isStripeActive && isActiveDriver) {
+              logger.log.fine('RideBoardScreen - Going to OfferRideCampus');
+              Navigator.pushNamed(context, OfferRideCampus.routeName);
+            }
           }
-        }
-      },
+        },
+      ),
     );
   }
 }
