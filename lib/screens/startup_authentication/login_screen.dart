@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:tagalong/screens/startup_authentication/register_screen.dart';
@@ -113,14 +114,15 @@ class LoginScreen extends StatelessWidget {
                                       onPressed: () {}
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top:8.0),
-                                  child: SignInButton(
-                                      Buttons.Email,
-                                      mini: true,
-                                      onPressed: () {}
-                                  ),
-                                ),
+                                if (Platform.isIOS)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top:8.0),
+                                    child: SignInButton(
+                                      Buttons.AppleDark,
+                                      text: "Sign up with Apple",
+                                      onPressed: () {},
+                                    ),
+                                  )
                               ]
                             ),
                             Container(

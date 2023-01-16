@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:tagalong/screens/startup_authentication/reg_name.dart';
 import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -31,21 +31,7 @@ class RegisterScreen extends StatelessWidget {
                               textAlign: TextAlign.center
                           )
                         ),
-                    //     const Padding(
-                    //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                    //       child: TextField(
-                    //         decoration: InputDecoration(
-                    //             border: OutlineInputBorder(
-                    //               borderRadius: BorderRadius.all(
-                    //                 Radius.circular(8),
-                    //               ),
-                    //             ),
-                    //             labelText: 'Email',
-                    //             hintText: 'student@uni.edu',
-                    //             isDense: true
-                    //         ),
-                    //       ),
-                    //     ),
+
                     //     const Padding(
                     //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                     //       child: TextField(
@@ -112,7 +98,11 @@ class RegisterScreen extends StatelessWidget {
                           child: SignInButton(
                             Buttons.Email,
                             text: "Sign up with School Email",
-                            onPressed: () {}
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const RegName())
+                              );
+                            }
                           ),
                         ),
                         if (Platform.isIOS)
