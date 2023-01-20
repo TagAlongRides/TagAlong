@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 
-/// [RegName] is a Screen that contains a Form for receiving the first and last
+/// [RegNameScreen] is a Screen that contains a Form for receiving the first and last
 /// name of a TagAlongUser.
-class RegName extends StatefulWidget {
-  const RegName({Key? key}) : super(key: key);
+class RegNameScreen extends StatefulWidget {
+  const RegNameScreen({Key? key}) : super(key: key);
 
   @override
-  State<RegName> createState() => _RegNameState();
+  State<RegNameScreen> createState() => _RegNameScreenState();
 }
 
-class _RegNameState extends State<RegName> {
+class _RegNameScreenState extends State<RegNameScreen> {
   // Form state
   final formKey = GlobalKey<FormState>();
   final fullName = TextEditingController();
-  RegExp exp = RegExp(r"/^[a-z ,.'-]+$/i");
+  RegExp exp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,7 @@ class _RegNameState extends State<RegName> {
         title: getProgressBarRow(filledIcons: 1, totalIcons: 3)
       ),
       body: Form(
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -41,7 +43,7 @@ class _RegNameState extends State<RegName> {
                     )
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                    padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
                     child: TextFormField(
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
@@ -67,14 +69,23 @@ class _RegNameState extends State<RegName> {
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(16),
+             Padding(
+              padding: const EdgeInsets.all(16),
               child: Align(
                 alignment: Alignment.bottomRight,
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 24.0,
-                  semanticLabel: "Move to next registration form",
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 24.0,
+                    semanticLabel: "Move to next registration form",
+                  ),
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const RegGradYearScreen())
+                      );
+                    }
+                  },
                 )
               )
             )

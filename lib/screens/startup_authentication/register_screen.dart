@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:tagalong/screens/startup_authentication/reg_name.dart';
+import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -100,7 +100,7 @@ class RegisterScreen extends StatelessWidget {
                             text: "Sign up with School Email",
                             onPressed: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const RegName())
+                                MaterialPageRoute(builder: (context) => const RegNameScreen())
                               );
                             }
                           ),
