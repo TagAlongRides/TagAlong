@@ -1,0 +1,132 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
+import 'package:tagalong/util/form_sequence_utils.dart';
+import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:tagalong/viewmodels/register_user_view_model.dart';
+
+/// [RegEmailAndPassword] is a Screen that contains a Form for receiving the email, potential password, and phone
+class RegEmailAndPassword extends StatefulWidget {
+  const RegEmailAndPassword({Key? key}) : super(key: key);
+
+  @override
+  State<RegEmailAndPassword> createState() => _RegEmailAndPasswordState();
+}
+
+class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
+  // Form state
+  final formKey = GlobalKey<FormState>();
+  final emailAddress = TextEditingController();
+  final password = TextEditingController();
+  final confirmPassword = TextEditingController();
+
+  @override
+  void dispose() {
+    emailAddress.dispose();
+    password.dispose();
+    confirmPassword.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+
+    return Scaffold(
+        appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
+            automaticallyImplyLeading: false,
+            title: getProgressBarRow(filledIcons: 3, totalIcons: 4)
+        ),
+        body: Form(
+          key: formKey,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(
+                              "What is your university student email (.edu)?"
+                          )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                        child: TextFormField(
+                            controller: emailAddress,
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  ),
+                                ),
+                                labelText: 'Student Email',
+                                hintText: 'johnsmith@vt.edu',
+                                isDense: true
+                            ),
+                            validator: null
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text(
+                                "What is your phone number?"
+                          )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                        child: TextFormField(
+                            controller: emailAddress,
+                            decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
+                                  ),
+                                ),
+                                labelText: 'Phone Number',
+                                hintText: '703-555-5555',
+                                isDense: true
+                            ),
+                            validator: null
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 24.0,
+                            semanticLabel: "Move to next registration form",
+                          ),
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const RegGradYearScreen())
+                              );
+                            }
+                          },
+                        )
+                    )
+                )
+              ]
+          ),
+        )
+    );
+  }
+}

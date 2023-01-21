@@ -32,6 +32,7 @@ import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
+import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
@@ -57,8 +58,11 @@ void main() async {
   await Stripe.instance.applySettings();
 
   // Run the TagAlong Application
-  runApp(ChangeNotifierProvider(
-    create: (context) => TagAlongUserViewModel(),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => RegisterUserViewModel()),
+      ChangeNotifierProvider(create: (context) => TagAlongUserViewModel()),
+    ],
     child: const TagAlongAppNew()
   ));
 }

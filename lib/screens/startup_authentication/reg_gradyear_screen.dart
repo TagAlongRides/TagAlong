@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tagalong/screens/startup_authentication/reg_email_and_password.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:tagalong/viewmodels/register_user_view_model.dart';
 
 /// [RegGradYearScreen] is a Screen that contains a Form for receiving the graduation year
 class RegGradYearScreen extends StatefulWidget {
@@ -13,19 +16,20 @@ class RegGradYearScreen extends StatefulWidget {
 class _RegGradYearScreenState extends State<RegGradYearScreen> {
   // Form state
   final formKey = GlobalKey<FormState>();
-  final List<String> gradYears = ['2023', '2024', '2025', '2026', '2027', '2028'];
-  String? gradYear;
 
   @override
   Widget build(BuildContext context) {
+    RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+
     return Scaffold(
         appBar: AppBar(
             backgroundColor: Colors.transparent,
             iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
             automaticallyImplyLeading: false,
-            title: getProgressBarRow(filledIcons: 2, totalIcons: 3)
+            title: getProgressBarRow(filledIcons: 2, totalIcons: 4)
         ),
         body: Form(
+          key: formKey,
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -42,9 +46,9 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: DropdownButtonFormField(
-                          value: gradYear,
-                            items: gradYears.map<DropdownMenuItem<String>>((String grad) {
-                              return DropdownMenuItem<String>(value: grad, child: Text(grad));
+                          value: vm.graduationYear,
+                            items: vm.gradYears.map<DropdownMenuItem<String>>((String? grad) {
+                              return DropdownMenuItem<String>(value: grad, child: Text(grad ?? "N/A"));
                             }).toList(),
                             decoration: const InputDecoration(
                                 // icon: Icon(Icons.school_rounded),
@@ -56,9 +60,8 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                                 ),
                                 isDense: true
                             ),
-                            onChanged: (String? value) {
-                              gradYear = value;
-                            },
+                            onChanged: (value) {},
+                            validator: vm.validateAndUpdateYear,
                         ),
                       ),
                     ],
@@ -76,9 +79,9 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                           ),
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
-                              // Navigator.of(context).push(
-                              //     MaterialPageRoute(builder: (context) => const RegYear())
-                              // );
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const RegEmailAndPhoneScreen())
+                              );
                             }
                           },
                         )

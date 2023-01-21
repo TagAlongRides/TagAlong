@@ -11,7 +11,7 @@ class TagAlongUserNew {
   String signUpMethod;
   String institution;
   String emailAddress;
-  // TODO: need to verify this as well eventually..
+  // TODO: need to have verification for this as well eventually..
   // String phoneNumber;
   int signUpTime;
   bool isEmailVerified = false;

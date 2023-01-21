@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
+import 'package:tagalong/viewmodels/register_user_view_model.dart';
 
 /// [RegNameScreen] is a Screen that contains a Form for receiving the first and last
 /// name of a TagAlongUser.
@@ -15,17 +17,24 @@ class RegNameScreen extends StatefulWidget {
 class _RegNameScreenState extends State<RegNameScreen> {
   // Form state
   final formKey = GlobalKey<FormState>();
-  final fullName = TextEditingController();
-  RegExp exp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
+  final fullNameController = TextEditingController();
+
+  @override
+  void dispose() {
+    fullNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: theme.TagAlongTheme.progressBarTheme.iconTheme,
         automaticallyImplyLeading: false,
-        title: getProgressBarRow(filledIcons: 1, totalIcons: 3)
+        title: getProgressBarRow(filledIcons: 1, totalIcons: 4)
       ),
       body: Form(
         key: formKey,
@@ -45,6 +54,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
                     child: TextFormField(
+                      controller: fullNameController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -55,15 +65,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
                         hintText: 'John Smith',
                         isDense: true
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a first and last name';
-                        }
-                        if (exp.hasMatch(value) == false) {
-                          return 'Please enter a valid first and last name';
-                        }
-                        return null;
-                      }
+                      validator: vm.validateAndUpdateName
                     ),
                   ),
                 ],
