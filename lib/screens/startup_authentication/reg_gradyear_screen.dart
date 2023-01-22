@@ -80,7 +80,7 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                           onPressed: () {
                             if (formKey.currentState!.validate()) {
                               Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const RegEmailAndPhoneScreen())
+                                  MaterialPageRoute(builder: (context) => const RegEmailAndPassword())
                               );
                             }
                           },

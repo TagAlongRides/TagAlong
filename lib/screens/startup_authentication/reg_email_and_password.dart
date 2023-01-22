@@ -19,6 +19,7 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
   final emailAddress = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
+  bool _obscured = false;
 
   @override
   void dispose() {
@@ -48,57 +49,53 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
+                      Padding(
                           padding: EdgeInsets.all(16),
                           child: Text(
                               "What is your university student email (.edu)?"
                           )
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: TextFormField(
-                            controller: emailAddress,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                ),
-                                labelText: 'Student Email',
-                                hintText: 'johnsmith@vt.edu',
-                                isDense: true
+                        padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                        child: TextField(
+                          obscureText: _obscured,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                             ),
-                            validator: null
+                            labelText: 'Password',
+                            isDense: true,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscured
+                                    ? Icons.visibility_rounded
+                                    : Icons.visibility_off_rounded
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscured = !_obscured;
+                                });
+                                print(_obscured);
+                              },
+                            ),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                                "What is your phone number?"
-                          )
-                      ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: TextFormField(
-                            controller: emailAddress,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                ),
-                                labelText: 'Phone Number',
-                                hintText: '703-555-5555',
-                                isDense: true
+                        padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                        child: TextField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8),
+                              ),
                             ),
-                            validator: null
+                            labelText: 'Confirm Password',
+                            isDense: true
+                          ),
                         ),
                       ),
                     ],
