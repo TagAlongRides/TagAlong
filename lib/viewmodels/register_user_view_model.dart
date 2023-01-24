@@ -9,6 +9,9 @@ class RegisterUserViewModel extends ChangeNotifier {
   String? password;
   String? graduationYear;
 
+  // Sign up provider string
+  String? signUpMethod;
+
   // Valid RegEx for full name validation
   final RegExp exp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
 
@@ -32,6 +35,9 @@ class RegisterUserViewModel extends ChangeNotifier {
     return null;
   }
 
+  /// Validates and updates [graduationYear] and notifies listeners
+  ///
+  /// Returns error string on invalid input and null on correct.
   String? validateAndUpdateYear(String? year) {
     // 1. client-side validation
     if (gradYears.contains(year) == false) {
@@ -39,6 +45,23 @@ class RegisterUserViewModel extends ChangeNotifier {
     }
     // 2. Update year
     graduationYear = year;
+    notifyListeners();
+    return null;
+  }
+
+  /// Validates and updates [
+  String? validateAndUpdatePassword(String password, String confirmPassword) {
+    // 1. Client-side validation that passwords are same
+    if (password != confirmPassword) {
+      return "The two passwords are not equal";
+    }
+    else {
+      if (confirmPassword.length < 8) {
+        return "Password must be at least 8 characters long";
+      }
+    }
+    // 2. update password
+    this.password = password;
     notifyListeners();
     return null;
   }

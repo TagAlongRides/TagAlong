@@ -46,7 +46,6 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: DropdownButtonFormField(
-                          value: vm.graduationYear,
                             items: vm.gradYears.map<DropdownMenuItem<String>>((String? grad) {
                               return DropdownMenuItem<String>(value: grad, child: Text(grad ?? "N/A"));
                             }).toList(),

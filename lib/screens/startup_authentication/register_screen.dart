@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:provider/provider.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
+import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -9,6 +11,8 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -31,48 +35,6 @@ class RegisterScreen extends StatelessWidget {
                               textAlign: TextAlign.center
                           )
                         ),
-
-                    //     const Padding(
-                    //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                    //       child: TextField(
-                    //         obscureText: true,
-                    //         decoration: InputDecoration(
-                    //             border: OutlineInputBorder(
-                    //               borderRadius: BorderRadius.all(
-                    //                 Radius.circular(8),
-                    //               ),
-                    //             ),
-                    //             labelText: 'Password',
-                    //             isDense: true
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     const Padding(
-                    //       padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                    //       child: TextField(
-                    //         obscureText: true,
-                    //         decoration: InputDecoration(
-                    //             border: OutlineInputBorder(
-                    //               borderRadius: BorderRadius.all(
-                    //                 Radius.circular(8),
-                    //               ),
-                    //             ),
-                    //             labelText: 'Confirm Password',
-                    //             isDense: true
-                    //         ),
-                    //       ),
-                    //     ),
-                    //     Padding(
-                    //       padding: const EdgeInsets.only(left:16, right: 16, top: 32),
-                    //       child: ElevatedButton(
-                    //         onPressed: () {},
-                    //         child: const Text("Sign Up"),
-                    //         style: const ButtonStyle(
-                    //           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    //         ),
-                    //       ),
-                    //     ),
-                    //
                       ]
                     )
                   ),
@@ -90,7 +52,13 @@ class RegisterScreen extends StatelessWidget {
                           child: SignInButton(
                             Buttons.FacebookNew,
                             text: "Sign up with Facebook",
-                            onPressed: () {}
+                            onPressed: () {
+                              // SignUpMethod == Facebook
+                              vm.signUpMethod = "Facebook";
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const RegNameScreen())
+                              );
+                            }
                           ),
                         ),
                         Padding(
@@ -99,6 +67,8 @@ class RegisterScreen extends StatelessWidget {
                             Buttons.Email,
                             text: "Sign up with School Email",
                             onPressed: () {
+                              // SignUpMethod == Email
+                              vm.signUpMethod = "Email";
                               Navigator.of(context).push(
                                 MaterialPageRoute(builder: (context) => const RegNameScreen())
                               );
@@ -111,7 +81,13 @@ class RegisterScreen extends StatelessWidget {
                           child: SignInButton(
                             Buttons.AppleDark,
                             text: "Sign up with Apple",
-                            onPressed: () {},
+                            onPressed: () {
+                              // SignUpMethod == Apple
+                              vm.signUpMethod = "Apple";
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const RegNameScreen())
+                              );
+                            },
                           ),
                         )
                       ]

@@ -5,7 +5,8 @@ import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 
-/// [RegEmailAndPassword] is a Screen that contains a Form for receiving the email, potential password, and phone
+/// [RegEmailAndPassword] is a Screen that contains a Form for receiving the email and potential password
+/// given the sign up provider
 class RegEmailAndPassword extends StatefulWidget {
   const RegEmailAndPassword({Key? key}) : super(key: key);
 
@@ -19,7 +20,7 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
   final emailAddress = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
-  bool _obscured = false;
+  bool _obscured = true;
 
   @override
   void dispose() {
@@ -49,18 +50,19 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
+                      const Padding(
                           padding: EdgeInsets.all(16),
                           child: Text(
                               "What is your university student email (.edu)?"
                           )
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: TextField(
+                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                        child: TextFormField(
+                          controller: password,
                           obscureText: _obscured,
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(8),
                               ),
@@ -84,18 +86,23 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: TextField(
+                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                        child: TextFormField(
+                          controller: confirmPassword,
                           obscureText: true,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(8),
                               ),
                             ),
                             labelText: 'Confirm Password',
-                            isDense: true
+                            isDense: true,
+                            helperText: "Enter a password at least 8 characters long"
                           ),
+                          validator: (String? tmp) {
+                            return vm.validateAndUpdatePassword(password.text, confirmPassword.text);
+                          },
                         ),
                       ),
                     ],
