@@ -36,6 +36,7 @@ import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'locator.dart';
 import 'screens/offer_ride/offer_ride_pickup.dart';
 import 'themes/tagalong_theme.dart';
 import 'viewmodels/offer_ride_view_model.dart';
@@ -52,6 +53,9 @@ void main() async {
 
   // Set up logging
   logger.setupLogger();
+
+  // Set up service locator
+  setUp();
 
   Stripe.publishableKey =
       'pk_test_51KrmEeHOJhcBOg6eRUYQ0r274bFJuDrXl87YoDf32FiU3KozWxYtUi5sgxBJfmw8ZvZQM9SjzWkgmYJMbnHTekEK00HyDQBaBU';

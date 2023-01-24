@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
+import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
 
@@ -12,6 +14,10 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+
+    // TODO: Test
+    UserService us = serviceLocator.get<UserService>();
+    print(us);
 
     return Scaffold(
       body: SafeArea(
