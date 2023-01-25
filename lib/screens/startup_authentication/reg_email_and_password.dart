@@ -18,8 +18,11 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
   // Form state
   final formKey = GlobalKey<FormState>();
   final emailAddress = TextEditingController();
+  // passwords shown ONLY if "SignUpMethod" is "Email"
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
+
+  // state for password obfuscation
   bool _obscured = true;
 
   @override
@@ -41,94 +44,132 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
             automaticallyImplyLeading: false,
             title: getProgressBarRow(filledIcons: 3, totalIcons: 4)
         ),
-        body: Form(
-          key: formKey,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Form(
+                  key: formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text(
-                              "What is your university student email (.edu)?"
-                          )
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: TextFormField(
-                          controller: password,
-                          obscureText: _obscured,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(
+                                      "What is your university student email (.edu)?"
+                                  )
                               ),
-                            ),
-                            labelText: 'Password',
-                            isDense: true,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscured
-                                    ? Icons.visibility_rounded
-                                    : Icons.visibility_off_rounded
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                child: TextFormField(
+                                    controller: emailAddress,
+                                    decoration: const InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(8),
+                                          ),
+                                        ),
+                                        labelText: 'Email',
+                                        hintText: 'jsmith@vt.edu',
+                                        helperText: "Please enter a valid Virginia Tech email",
+                                        isDense: true
+                                    ),
+                                    validator: vm.validateAndUpdateEmail
+                                ),
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscured = !_obscured;
-                                });
-                                print(_obscured);
-                              },
-                            ),
+
+                              // "Email" SignUpMethod Password Widgets
+                              if (vm.signUpMethod == "Email")
+                                const Padding(
+                                    padding: EdgeInsets.only(top: 64, left: 16, right: 16, bottom: 16),
+                                    child: Text(
+                                        "Please create your account password"
+                                    )
+                                ),
+                              if (vm.signUpMethod == "Email")
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                child: TextFormField(
+                                  controller: password,
+                                  obscureText: _obscured,
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(8),
+                                      ),
+                                    ),
+                                    labelText: 'Password',
+                                    isDense: true,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                          _obscured
+                                              ? Icons.visibility_rounded
+                                              : Icons.visibility_off_rounded
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscured = !_obscured;
+                                        });
+                                        print(_obscured);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (vm.signUpMethod == "Email")
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                child: TextFormField(
+                                  controller: confirmPassword,
+                                  obscureText: true,
+                                  decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(8),
+                                        ),
+                                      ),
+                                      labelText: 'Confirm Password',
+                                      isDense: true,
+                                      helperText: "Enter a password at least 8 characters long"
+                                  ),
+                                  validator: (String? tmp) {
+                                    return vm.validateAndUpdatePassword(password.text, confirmPassword.text);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: TextFormField(
-                          controller: confirmPassword,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
-                            ),
-                            labelText: 'Confirm Password',
-                            isDense: true,
-                            helperText: "Enter a password at least 8 characters long"
-                          ),
-                          validator: (String? tmp) {
-                            return vm.validateAndUpdatePassword(password.text, confirmPassword.text);
-                          },
-                        ),
-                      ),
-                    ],
+                        Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 24.0,
+                                    semanticLabel: "Move to next registration form",
+                                  ),
+                                  onPressed: () {
+                                    if (formKey.currentState!.validate()) {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) => const RegGradYearScreen())
+                                      );
+                                    }
+                                  },
+                                )
+                            )
+                        )
+                      ]
                   ),
                 ),
-                Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 24.0,
-                            semanticLabel: "Move to next registration form",
-                          ),
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const RegGradYearScreen())
-                              );
-                            }
-                          },
-                        )
-                    )
-                )
-              ]
+              ),
+            ]
           ),
         )
     );

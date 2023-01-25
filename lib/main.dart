@@ -77,6 +77,8 @@ class TagAlongAppNew extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // GestureDetector for changing focus on TextFields when user touches other
+    // parts of the screen.
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();

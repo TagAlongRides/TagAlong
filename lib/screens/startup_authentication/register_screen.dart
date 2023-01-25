@@ -13,11 +13,11 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ViewModel for holding Form data - name, year, email, etc..
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
 
-    // TODO: Test
+    // UserService singleton
     UserService us = serviceLocator.get<UserService>();
-    print(us);
 
     return Scaffold(
       body: SafeArea(

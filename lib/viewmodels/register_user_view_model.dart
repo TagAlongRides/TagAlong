@@ -13,7 +13,10 @@ class RegisterUserViewModel extends ChangeNotifier {
   String? signUpMethod;
 
   // Valid RegEx for full name validation
-  final RegExp exp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
+  final RegExp nameExp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
+
+  // Valid RegEx for school email ending in ".edu"
+  final RegExp emailExp = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\.edu$");
 
   // Valid graduation years
   final List<String?> gradYears = ['2023', '2024', '2025', '2026', '2027', '2028', null];
@@ -26,7 +29,7 @@ class RegisterUserViewModel extends ChangeNotifier {
     if (name == null || name.isEmpty) {
       return 'Please enter a first and last name';
     }
-    if (exp.hasMatch(name) == false) {
+    if (nameExp.hasMatch(name) == false) {
       return 'Please enter a valid first and last name';
     }
     // 2. Update name
@@ -49,7 +52,9 @@ class RegisterUserViewModel extends ChangeNotifier {
     return null;
   }
 
-  /// Validates and updates [
+  /// Validates and updates [password] and notifies listeners
+  ///
+  /// Returns error string on invalid input and null on correct.
   String? validateAndUpdatePassword(String password, String confirmPassword) {
     // 1. Client-side validation that passwords are same
     if (password != confirmPassword) {
@@ -65,4 +70,27 @@ class RegisterUserViewModel extends ChangeNotifier {
     notifyListeners();
     return null;
   }
+
+  /// Validates and updates [emailAddress] and notifies listeners
+  ///
+  /// Returns error string on invalid input and null on correct.
+  String? validateAndUpdateEmail(String? emailAddress) {
+    // 1. client-side validation 
+    if (emailAddress == null) {
+      return "Please enter a school email";
+    }
+    if (emailExp.hasMatch(emailAddress) == false) {
+      return "Please enter a valid school email";
+    }
+    else {
+      if (emailAddress.contains("@vt.edu") == false) {
+        return "Please enter a valid Virginia Tech email";
+      }
+    }
+    // 2. update
+    this.emailAddress = emailAddress;
+    notifyListeners();
+    return null;
+  }
+  
 }
