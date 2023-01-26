@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
+/// The ViewModel for the User registration forms
 class RegisterUserViewModel extends ChangeNotifier {
 
   // Basic user-inputted state for registering a user

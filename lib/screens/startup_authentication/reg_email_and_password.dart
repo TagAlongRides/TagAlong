@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
+import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
@@ -36,6 +38,7 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+    UserService us = serviceLocator.get<UserService>();
 
     return Scaffold(
         appBar: AppBar(
@@ -155,11 +158,16 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                                     size: 24.0,
                                     semanticLabel: "Move to next registration form",
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (formKey.currentState!.validate()) {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(builder: (context) => const RegGradYearScreen())
-                                      );
+                                      if (vm.signUpMethod == "Email") {
+                                        String code = await us.createUserWithEmailAndPassword(
+                                            email: vm.emailAddress!,
+                                            password: vm.password!
+                                        );
+                                        print(code);
+                                      }
+                                      // us.registerUser(signUpMethod: vm.signUpMethod!);
                                     }
                                   },
                                 )

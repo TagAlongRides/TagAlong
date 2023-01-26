@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:tagalong/data/models/tagalong_user_new.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 /// [UserService] is a service class that facilitates all functionality related to the main [TagAlongUser].
 ///
@@ -22,21 +23,33 @@ class UserService {
     return _firebaseAuth.authStateChanges();
   }
 
-  Future<UserCredential> createUserWithEmailAndPassword({
+  /// Creates a Firebase [User] with the given [email] and [password]
+  Future<String> createUserWithEmailAndPassword({
     required String email,
     required String password}) async
   {
+    String errorCode = "Successful";
     try {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+      await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
           password: password
       );
     }
     on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
+      errorCode = e.code;
     }
+    return errorCode;
   }
+  
+  // Future registerUser({required String signUpMethod}) {
+  //   // 1. Email
+  //   if (signUpMethod == "Email") {
+  //     createUserWithEmailAndPassword(email: email, password: password)
+  //   }
+  //   // 2. Facebook
+  //   else if (signUpMethod == "Facebook") {
+  //
+  //   }
+  // }
 
 }

@@ -56,7 +56,7 @@ void main() async {
   logger.setupLogger();
 
   // Set up service locator
-  setUp();
+  setUpServiceLocator();
 
   Stripe.publishableKey =
       'pk_test_51KrmEeHOJhcBOg6eRUYQ0r274bFJuDrXl87YoDf32FiU3KozWxYtUi5sgxBJfmw8ZvZQM9SjzWkgmYJMbnHTekEK00HyDQBaBU';
@@ -131,11 +131,16 @@ class AuthGate extends StatelessWidget {
           // navigating to a new screen after that, this will automatically handle it.
           else if (snapshot.connectionState == ConnectionState.active) {
             logger.log.fine('authStateChanges emitted active event');
-
+            print("HERE!: ${snapshot.data}");
             // 3a. User is signed-in as a Firebase Auth User - initialize [TagAlongUser] in vm.
             if (snapshot.hasData) {
               // TODO - query Firestore for our TagAlongUser and initialize
-              return const RideBoardScreen();
+              // return const RideBoardScreen();
+              return Scaffold(
+                body: Center(
+                  child: Text("${snapshot}")
+                )
+              );
             }
 
             // 3b. User is NOT signed in - prompt login

@@ -6,7 +6,7 @@ import 'package:tagalong/services/user_service.dart';
 
 final serviceLocator = GetIt.instance;
 
-void setUp() {
+void setUpServiceLocator() {
   serviceLocator.registerSingleton<UserService>(UserService());
 }
 
