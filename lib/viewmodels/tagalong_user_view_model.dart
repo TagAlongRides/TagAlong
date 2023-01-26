@@ -24,14 +24,6 @@ class TagAlongUserViewModel with ChangeNotifier {
   TagAlongUserViewModel({this.tagAlongUser});
 
 
-  /// Returns a Stream<User?> on when the user is logged in, out, or just registered.
-  Stream<User?> authStateChanges() {
-    return _firebaseAuth.authStateChanges();
-  }
-
-
-
-
   final AuthService _authService = AuthService();
   final DatabaseService _databaseService = DatabaseService();
 

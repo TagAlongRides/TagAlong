@@ -82,11 +82,12 @@ class RegisterUserViewModel extends ChangeNotifier {
     if (emailExp.hasMatch(emailAddress) == false) {
       return "Please enter a valid school email";
     }
-    else {
-      if (emailAddress.contains("@vt.edu") == false) {
-        return "Please enter a valid Virginia Tech email";
-      }
-    }
+    // TODO: Currently allowing all .edu emails for testing
+    // else {
+    //   if (emailAddress.contains("@vt.edu") == false) {
+    //     return "Please enter a valid Virginia Tech email";
+    //   }
+    // }
     // 2. update
     this.emailAddress = emailAddress;
     notifyListeners();

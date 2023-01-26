@@ -29,6 +29,7 @@ import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_conne
 import 'package:tagalong/screens/stripe_connect_registration/stripe_info_screen.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
@@ -100,11 +101,11 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TagAlongUserViewModel tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+    UserService userService = serviceLocator.get<UserService>();
 
     // Check if the user is authenticated via Firebase and branch off of that
     return StreamBuilder<User?>(
-        stream: tagAlongUserViewModel.authStateChanges(),
+        stream: userService.authStateChanges(),
         builder: (context, snapshot) {
 
           // 1. WAITING - async op has begun
