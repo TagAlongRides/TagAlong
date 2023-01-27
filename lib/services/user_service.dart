@@ -12,7 +12,7 @@ class UserService {
 
   // FirebaseAuth instance of authentication - singleton
   final _firebaseAuth = FirebaseAuth.instance;
-  final _fb = FacebookAuth.instance;
+  final _fbAuth = FacebookAuth.instance;
 
   // TagAlongUserNew instance - singleton
   TagAlongUserNew? tagalongUser;
@@ -34,22 +34,16 @@ class UserService {
           email: email,
           password: password
       );
+      print('created user');
     }
     on FirebaseAuthException catch (e) {
       errorCode = e.code;
     }
     return errorCode;
   }
-  
-  // Future registerUser({required String signUpMethod}) {
-  //   // 1. Email
-  //   if (signUpMethod == "Email") {
-  //     createUserWithEmailAndPassword(email: email, password: password)
-  //   }
-  //   // 2. Facebook
-  //   else if (signUpMethod == "Facebook") {
-  //
-  //   }
-  // }
+
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
 
 }

@@ -101,11 +101,11 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserService userService = serviceLocator.get<UserService>();
+    UserService us = serviceLocator.get<UserService>();
 
     // Check if the user is authenticated via Firebase and branch off of that
     return StreamBuilder<User?>(
-        stream: userService.authStateChanges(),
+        stream: us.authStateChanges(),
         builder: (context, snapshot) {
 
           // 1. WAITING - async op has begun
@@ -131,18 +131,20 @@ class AuthGate extends StatelessWidget {
           // navigating to a new screen after that, this will automatically handle it.
           else if (snapshot.connectionState == ConnectionState.active) {
             logger.log.fine('authStateChanges emitted active event');
-            print("HERE!: ${snapshot.data}");
+            print(snapshot.data);
             // 3a. User is signed-in as a Firebase Auth User - initialize [TagAlongUser] in vm.
             if (snapshot.hasData) {
               // TODO - query Firestore for our TagAlongUser and initialize
-              // return const RideBoardScreen();
+
               return Scaffold(
                 body: Center(
                   child: Text("${snapshot}")
-                )
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () async => await us.signOut(),
+                ),
               );
             }
-
             // 3b. User is NOT signed in - prompt login
             else {
               logger.log.fine('AuthGate - user NOT logged in, going to AuthHomeScreen');
@@ -157,7 +159,6 @@ class AuthGate extends StatelessWidget {
     );
   }
 }
-
 
 class TagAlongApp extends StatelessWidget {
   const TagAlongApp({Key? key}) : super(key: key);

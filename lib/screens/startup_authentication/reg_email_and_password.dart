@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
-import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
+import 'package:tagalong/main.dart';
 import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
+import 'package:tagalong/util/log.dart' as logger;
 
 /// [RegEmailAndPassword] is a Screen that contains a Form for receiving the email and potential password
 /// given the sign up provider
@@ -141,6 +142,7 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                                       helperText: "Enter a password at least 8 characters long"
                                   ),
                                   validator: (String? tmp) {
+                                    // Validate the two password TextFields - [tmp] doesn't really matter here
                                     return vm.validateAndUpdatePassword(password.text, confirmPassword.text);
                                   },
                                 ),
@@ -158,16 +160,28 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                                     size: 24.0,
                                     semanticLabel: "Move to next registration form",
                                   ),
+
                                   onPressed: () async {
+
+                                    // Validate the Form
                                     if (formKey.currentState!.validate()) {
+
+                                      // 1. Email - create FirebaseUser with Email/Password
                                       if (vm.signUpMethod == "Email") {
-                                        String code = await us.createUserWithEmailAndPassword(
+                                        String errorCode = await us.createUserWithEmailAndPassword(
                                             email: vm.emailAddress!,
                                             password: vm.password!
                                         );
-                                        print(code);
+                                        logger.log.fine(errorCode);
+
+                                        // 2. Push [AuthGate] on to the stack and remove ALL routes below it.
+                                        //    A successful sign-up met by the [AuthGate] logic for a logged-in user
+                                        await Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(builder: (BuildContext context) => const AuthGate()),
+                                            (Route<dynamic> route) => false
+                                        );
                                       }
-                                      // us.registerUser(signUpMethod: vm.signUpMethod!);
                                     }
                                   },
                                 )
