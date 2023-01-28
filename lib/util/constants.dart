@@ -1,4 +1,6 @@
 class Constants {
+
+  /// Stripe Constants
   static const BASE_URL = "";
   //Tets Credit card details
   static const String CARD_NUMBER = "4242424242424242";
@@ -22,4 +24,11 @@ class Constants {
   static const String STRIPE_CONFIRM_PAYMENT_INTENT =
       "v1/payment_intents/pay_id/confirm";
   static const String STRIPE_FETCH_ALL_COUPONS_URL = "v1/coupons";
+
+  /// Firebase Authentication Constants
+  static const String FIREBASE_AUTH_ERR_IN_USE = "email-already-in-use";
+  static const String FIREBASE_AUTH_ERR_INVALID_EMAIL = "invalid-email";
+  static const String FIREBASE_AUTH_ERR_OP_NOT_ALLOWED = "operation-not-allowed:";
+  static const String FIREBASE_AUTH_ERR_WEAK_PASSWORD= "weak-password";
+  static const String FIREBASE_AUTH_SUCESS = "successful";
 }

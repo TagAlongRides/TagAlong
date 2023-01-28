@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
 import 'package:tagalong/main.dart';
 import 'package:tagalong/services/user_service.dart';
+import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
@@ -119,7 +120,6 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                                         setState(() {
                                           _obscured = !_obscured;
                                         });
-                                        print(_obscured);
                                       },
                                     ),
                                   ),
@@ -174,13 +174,34 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                                         );
                                         logger.log.fine(errorCode);
 
-                                        // 2. Push [AuthGate] on to the stack and remove ALL routes below it.
-                                        //    A successful sign-up met by the [AuthGate] logic for a logged-in user
-                                        await Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(builder: (BuildContext context) => const AuthGate()),
-                                            (Route<dynamic> route) => false
-                                        );
+                                        // Check [errorCode] and present:
+                                        // - AlertDialog on error and stay OR
+                                        // - pushAndRemove to [AuthGate]
+                                        if (errorCode != Constants.FIREBASE_AUTH_SUCESS) {
+                                          await showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text("Account Creation Error"),
+                                                  content: Text("$errorCode\nTry again."),
+                                                  actions: [
+                                                    TextButton(
+                                                      child: const Text("OK"),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )
+                                                  ]
+                                                );
+                                            });
+                                        }
+                                        else {
+                                          await Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(builder: (BuildContext context) => const AuthGate()),
+                                              (Route<dynamic> route) => false
+                                          );
+                                        }
                                       }
                                     }
                                   },

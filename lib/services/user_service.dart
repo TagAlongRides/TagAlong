@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:tagalong/data/models/tagalong_user_new.dart';
+import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 /// [UserService] is a service class that facilitates all functionality related to the main [TagAlongUser].
@@ -28,7 +29,7 @@ class UserService {
     required String email,
     required String password}) async
   {
-    String errorCode = "Successful";
+    String errorCode = Constants.FIREBASE_AUTH_SUCESS;
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
