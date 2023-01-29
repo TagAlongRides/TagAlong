@@ -203,6 +203,36 @@ class _RegEmailAndPasswordState extends State<RegEmailAndPassword> {
                                           );
                                         }
                                       }
+
+                                      // 2. Facebook Sign Up
+                                      else if (vm.signUpMethod == "Facebook") {
+                                        String errorCode = await us.signInWithFacebook();
+                                        if (errorCode != Constants.FIREBASE_AUTH_SUCESS) {
+                                          await showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                    title: const Text("Account Creation Error"),
+                                                    content: Text("$errorCode\nTry again."),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: const Text("OK"),
+                                                        onPressed: () {
+                                                          Navigator.pop(context);
+                                                        },
+                                                      )
+                                                    ]
+                                                );
+                                            });
+                                        }
+                                        else {
+                                          await Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(builder: (BuildContext context) => const AuthGate()),
+                                                  (Route<dynamic> route) => false
+                                          );
+                                        }
+                                      }
                                     }
                                   },
                                 )

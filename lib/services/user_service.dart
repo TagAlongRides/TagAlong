@@ -18,13 +18,14 @@ class UserService {
   // TagAlongUserNew instance - singleton
   TagAlongUserNew? tagalongUser;
 
-
   /// Returns a Stream<User?> on when the user is logged in, out, or just registered.
   Stream<User?> authStateChanges() {
     return _firebaseAuth.authStateChanges();
   }
 
-  /// Creates a Firebase [User] with the given [email] and [password]
+  /// Creates a Firebase [User] with the given [email] and [password].
+  ///
+  /// Returns a Future with a String of the error code of logging in.
   Future<String> createUserWithEmailAndPassword({
     required String email,
     required String password}) async
@@ -35,7 +36,6 @@ class UserService {
           email: email,
           password: password
       );
-      print('created user');
     }
     on FirebaseAuthException catch (e) {
       errorCode = e.code;
@@ -43,6 +43,30 @@ class UserService {
     return errorCode;
   }
 
+  /// Signs in a user
+  Future<String> signInWithFacebook() async {
+    String errorCode = Constants.FIREBASE_AUTH_SUCESS;
+
+    // Trigger the sign-in flow
+    final LoginResult loginResult = await _fbAuth.login();
+
+    // Update errorCode on failure
+    if (loginResult.status != LoginStatus.success) {
+      errorCode = "failure";
+    }
+    else {
+      // Create a credential from the access token
+      final OAuthCredential facebookAuthCredential = FacebookAuthProvider
+          .credential(loginResult.accessToken!.token);
+
+      // Once signed in, return the UserCredential
+      await _firebaseAuth.signInWithCredential(facebookAuthCredential);
+    }
+
+    return errorCode;
+  }
+
+  /// Signs the User out
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
