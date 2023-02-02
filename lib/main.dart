@@ -96,6 +96,8 @@ class TagAlongAppNew extends StatelessWidget {
 
 
 /// A Widget that will act as the medium for checking whether a [TagAlongUser] is registered or not.
+///
+/// It continuously listens for Auth events via [authStateChanges].
 class AuthGate extends StatelessWidget {
   const AuthGate({Key? key}) : super(key: key);
 
@@ -145,7 +147,7 @@ class AuthGate extends StatelessWidget {
                 ),
               );
             }
-            // 3b. User is NOT signed in - prompt login
+            // 3b. User is NOT signed in - prompt "Continuation"
             else {
               logger.log.fine('AuthGate - user NOT logged in, going to AuthHomeScreen');
               return const AuthHomeScreen();

@@ -52,7 +52,7 @@ class AuthHomeScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       child: SignInButton(
                           Buttons.Email,
-                          text: "Sign up with School Email",
+                          text: "Continue with School Email",
                           onPressed: () {
                             // SignUpMethod == Email
                             vm.signUpMethod = "Email";
@@ -60,11 +60,22 @@ class AuthHomeScreen extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(builder: (context) => const LoginScreen())
                             );
+                          }
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SignInButton(
+                          Buttons.FacebookNew,
+                          text: "Continue with Facebook",
+                          onPressed: () {
+                            // SignUpMethod == Facebook
+                            vm.signUpMethod = "Facebook";
 
                           }
                       ),
                     ),
-                    // if (Platform.isIOS)
+                    if (Platform.isIOS)
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: SignInButton(
