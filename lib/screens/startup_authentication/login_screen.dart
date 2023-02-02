@@ -96,35 +96,35 @@ class LoginScreen extends StatelessWidget {
                       // SSO Widgets (FB & Apple)
                       Expanded(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.all(16),
-                              child: TextDivider(middleText: "Sign In With")
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top:8.0),
-                                  child: SignInButton(
-                                      Buttons.Facebook,
-                                      mini: true,
-                                      onPressed: () {}
-                                  ),
-                                ),
-                                if (Platform.isIOS)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top:8.0),
-                                    child: SignInButton(
-                                      Buttons.AppleDark,
-                                      text: "Sign up with Apple",
-                                      onPressed: () {},
-                                    ),
-                                  )
-                              ]
-                            ),
+                            // const Padding(
+                            //   padding: EdgeInsets.all(16),
+                            //   child: TextDivider(middleText: "Sign In With")
+                            // ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: [
+                            //     Padding(
+                            //       padding: const EdgeInsets.only(top:8.0),
+                            //       child: SignInButton(
+                            //           Buttons.Facebook,
+                            //           mini: true,
+                            //           onPressed: () {}
+                            //       ),
+                            //     ),
+                            //     if (Platform.isIOS)
+                            //       Padding(
+                            //         padding: const EdgeInsets.only(top:8.0),
+                            //         child: SignInButton(
+                            //           Buttons.AppleDark,
+                            //           text: "Sign up with Apple",
+                            //           onPressed: () {},
+                            //         ),
+                            //       )
+                            //   ]
+                            // ),
                             Container(
                               margin: const EdgeInsets.only(bottom: 32),
                               child: TextButton(

@@ -1,110 +1,126 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:provider/provider.dart';
-import 'package:tagalong/locator.dart';
-import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
-import 'package:tagalong/services/user_service.dart';
-import 'package:tagalong/viewmodels/register_user_view_model.dart';
-import 'package:tagalong/widgets/ui_helpers/text_divider.dart';
+import 'package:tagalong/screens/startup_authentication/login_screen.dart';
+import 'package:tagalong/util/log.dart' as logger;
+
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // ViewModel for holding Form data - name, year, email, etc..
-    RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
-
-    // UserService singleton
-    UserService us = serviceLocator.get<UserService>();
-
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
+          child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Create Account\nto get started now!",
-                              style: Theme.of(context).textTheme.headline4,
-                              textAlign: TextAlign.center
-                          )
-                        ),
-                      ]
-                    )
-                  ),
+                        children: [
+                          Expanded(
+                              flex: 2,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Text(
+                                            "Create Account\nto get started!",
+                                            style: Theme.of(context).textTheme.headline4,
+                                            textAlign: TextAlign.center
+                                        )
+                                    ),
+                                    // Email Sign-in
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                      child: TextField(
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(8),
+                                              ),
+                                            ),
+                                            labelText: 'Email',
+                                            hintText: 'student@uni.edu',
+                                            isDense: true
+                                        ),
+                                      ),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                      child: TextField(
+                                        obscureText: true,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(8),
+                                              ),
+                                            ),
+                                            labelText: 'Password',
+                                            isDense: true
+                                        ),
+                                      ),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                      child: TextField(
+                                        obscureText: true,
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(8),
+                                              ),
+                                            ),
+                                            labelText: 'Confirm Password',
+                                            isDense: true
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left:16,right:16,top:32),
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: const Text("Sign Up"),
+                                        style: const ButtonStyle(
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                      ),
+                                    ),
+                                  ]
+                              )
+                          ),
 
-                  Expanded(
-                    child: Column(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: TextDivider(middleText: "Sign Up With")
-                        ),
-                        const SizedBox(height:16),
-                        Padding(
-                          padding: const EdgeInsets.only(top:8.0),
-                          child: SignInButton(
-                            Buttons.FacebookNew,
-                            text: "Sign up with Facebook",
-                            onPressed: () {
-                              // SignUpMethod == Facebook
-                              vm.signUpMethod = "Facebook";
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const RegNameScreen())
-                              );
-                            }
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top:8.0),
-                          child: SignInButton(
-                            Buttons.Email,
-                            text: "Sign up with School Email",
-                            onPressed: () {
-                              // SignUpMethod == Email
-                              vm.signUpMethod = "Email";
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const RegNameScreen())
-                              );
-                            }
-                          ),
-                        ),
-                        if (Platform.isIOS)
-                        Padding(
-                          padding: const EdgeInsets.only(top:8.0),
-                          child: SignInButton(
-                            Buttons.AppleDark,
-                            text: "Sign up with Apple",
-                            onPressed: () {
-                              // SignUpMethod == Apple
-                              vm.signUpMethod = "Apple";
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const RegNameScreen())
-                              );
-                            },
-                          ),
-                        )
-                      ]
+                          // SSO Widgets (FB & Apple)
+                          Expanded(
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 32),
+                                      child: TextButton(
+                                          style: const ButtonStyle(
+                                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => const LoginScreen())
+                                            );
+                                          },
+                                          child: const Text('Already have an account? Sign In Now.')
+                                      ),
+                                    )
+                                  ]
+                              )
+                          )
+                        ]
                     )
-                  )
-                ]
-              )
-            )
-          ]
-        )
-      )
+                )
+              ]
+
+          )
+      ),
     );
   }
 }
