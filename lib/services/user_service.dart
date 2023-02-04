@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:tagalong/data/models/tagalong_user_new.dart';
@@ -13,6 +14,11 @@ class UserService {
 
   // FirebaseAuth instance of authentication - singleton
   final _firebaseAuth = FirebaseAuth.instance;
+
+  // Cloud Firestore instance - singleton
+  final db = FirebaseFirestore.instance;
+
+  // FacebookAuth instance - singleton
   final _fbAuth = FacebookAuth.instance;
 
   // TagAlongUserNew instance - singleton
@@ -30,12 +36,16 @@ class UserService {
     required String email,
     required String password}) async
   {
+    // Default creation error code SUCCESS
     String errorCode = Constants.FIREBASE_AUTH_SUCESS;
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      UserCredential userCred = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email,
           password: password
       );
+
+      // Create a "Basic" [TagAlongUser]
+      tagalongUser = TagAlongUserNew.fromFireBaseUser(userCred.user!);
     }
     on FirebaseAuthException catch (e) {
       errorCode = e.code;
@@ -65,6 +75,12 @@ class UserService {
 
     return errorCode;
   }
+
+  void createTagAlongUserFirestore() async {
+    TagAlongUserNew tagAlongUserRef = this.tagalongUser!;
+    await db.collection('users').doc(tagAlongUserRef.id).set(tagAlongUserRef.toJson());
+  }
+
 
   /// Signs the User out
   Future<void> signOut() async {

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tagalong/data/models/driver.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -6,16 +7,16 @@ part 'tagalong_user_new.g.dart';
 /// Represents the [TagAlongUserNew] data model.
 @JsonSerializable()
 class TagAlongUserNew {
-  String id;
-  String name;
-  String signUpMethod;
-  String institution;
-  String emailAddress;
+  String id;                          // User.uid
+  String providerId;                  // User.providerData[0].providerId
+  bool isEmailVerified;               // User.emailVerified   --> Proves [TagAlongUserNew] is "Registered"
+  String? name;
+  String? institution;
+  String? emailAddress;
+  String? password;
   // TODO: need to have verification for this as well eventually..
   // String phoneNumber;
-  int signUpTime;
-  bool isEmailVerified = false;
-  String? password;
+  int? signUpTime;
   String? graduationYear;
   Driver? driverData;
 
@@ -25,16 +26,21 @@ class TagAlongUserNew {
   ///
   TagAlongUserNew({
     required this.id,
-    required this.name,
-    required this.signUpMethod,
-    required this.institution,
-    required this.signUpTime,
-    required this.emailAddress,
+    required this.isEmailVerified,
+    required this.providerId,
+    this.name,
+    this.institution,
+    this.signUpTime,
+    this.emailAddress,
     this.password,
     this.graduationYear,
     this.driverData,
-    this.isEmailVerified = false,
   });
+
+  TagAlongUserNew.fromFireBaseUser(User user):
+    id = user.uid,
+    isEmailVerified = user.emailVerified,
+    providerId = user.providerData[0].providerId;
 
   factory TagAlongUserNew.fromJson(Map<String, dynamic> json) => _$TagAlongUserNewFromJson(json);
 

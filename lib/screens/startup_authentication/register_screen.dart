@@ -101,6 +101,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           ),
                                         ),
                                       ),
+
+                                      // Confirm Password
                                       Padding(
                                         padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
                                         child: TextFormField(
@@ -155,9 +157,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     });
                                               }
                                               else {
+                                                us.createTagAlongUserFirestore();
                                                 Navigator.pop(context);
                                               }
-
                                             }
                                           },
                                           child: const Text("Sign Up"),
