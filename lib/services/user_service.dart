@@ -22,7 +22,7 @@ class UserService {
   final _fbAuth = FacebookAuth.instance;
 
   // TagAlongUserNew instance - singleton
-  TagAlongUserNew? tagalongUser;
+  late TagAlongUserNew tagalongUser;
 
   /// Returns a Stream<User?> on when the user is logged in, out, or just registered.
   Stream<User?> authStateChanges() {
@@ -94,17 +94,11 @@ class UserService {
     return errorCode;
   }
 
-  // Future<void> createTagAlongUserFirestore() async {
-  //   TagAlongUserNew tagAlongUserRef = this.tagalongUser!;
-  //   await db.collection('users').doc(tagAlongUserRef.id).set(tagAlongUserRef.toJson());
-  // }
-
-  Future<String> queryAndLoadTagAlongUser() async {
+  Future<String> loadTagAlongUser() async {
     try {
       final User user = _firebaseAuth.currentUser!;
       final CollectionReference usersRef = db.collection("users");
       final DocumentReference userRef = usersRef.doc(user.uid);
-      late final TagAlongUserNew tagAlongUserNew;
 
       // Query [usersRef] collection for user
       DocumentSnapshot userSnapShot = await userRef.get();
@@ -113,17 +107,17 @@ class UserService {
       // [TagAlongUser] exists in Firestore - get a [TagAlongUserNew] instance
       if (userSnapShot.exists) {
         Map<String, dynamic> data = userSnapShot.data() as Map<String, dynamic>;
-        tagAlongUserNew = TagAlongUserNew.fromJson(data);
+        tagalongUser = TagAlongUserNew.fromJson(data);
       }
       // [TagAlongUser] does NOT exist in Firestore (registering 1st time)
       // Upload new [TagAlongUserNew] to Firestore
       else {
-        tagAlongUserNew = TagAlongUserNew.fromFireBaseUser(user);
-        Map<String, dynamic> data = tagAlongUserNew.toJson();
+        tagalongUser = TagAlongUserNew.fromFireBaseUser(user);
+        Map<String, dynamic> data = tagalongUser.toJson();
         userRef.set(data);
       }
 
-      return tagAlongUserNew.toString();
+      return tagalongUser.toString();
 
     } catch (e) {
       logger.log.severe('$e');
