@@ -25,6 +25,7 @@ import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/screens/ride_details.dart';
 import 'package:tagalong/screens/startup_authentication/auth_home_screen.dart';
+import 'package:tagalong/screens/startup_authentication/registration_gate.dart';
 import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_connect_registration_screen.dart';
 import 'package:tagalong/screens/stripe_connect_registration/stripe_info_screen.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
@@ -124,7 +125,7 @@ class AuthGate extends StatelessWidget {
 
           // 2. DONE - Stream has returned a DONE event - should never happen with "authStateChanges"
           else if (snapshot.connectionState == ConnectionState.done) {
-            logger.log.fine('authStateChanges Stream emitted DONE event!');
+            logger.log.severe('authStateChanges Stream emitted DONE event!');
             return const Text('Error');
           }
 
@@ -136,16 +137,7 @@ class AuthGate extends StatelessWidget {
             print(snapshot.data);
             // 3a. User is signed-in as a Firebase Auth User - initialize [TagAlongUser] in vm.
             if (snapshot.hasData) {
-              // TODO - query Firestore for our TagAlongUser and initialize
-
-              return Scaffold(
-                body: Center(
-                  child: Text("${snapshot}")
-                ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () async => await us.signOut(),
-                ),
-              );
+              return const RegistrationGate();
             }
             // 3b. User is NOT signed in - prompt "Continuation"
             else {
@@ -154,7 +146,7 @@ class AuthGate extends StatelessWidget {
             }
           }
           else {
-            return Text("Error");
+            return const Text("Error");
           }
         }
 
@@ -193,7 +185,7 @@ class TagAlongApp extends StatelessWidget {
             theme: theme,
             title: 'TagAlong App',
             home: auth.getUser()?.refreshToken == null || auth.getUser()?.refreshToken == ''
-                ? LoginScreen()
+                ? const LoginScreen()
                 : const RegistrationWrapper(),
             routes: <String, WidgetBuilder>{
               RegisterUserScreen.routeName: (BuildContext context) => const RegisterUserScreen(),
@@ -201,7 +193,7 @@ class TagAlongApp extends StatelessWidget {
               RideBoardScreen.routeName: (BuildContext context) => const RideBoardScreen(),
               DriverRegistrationPromptScreen.routeName: (BuildContext context) =>
                   const DriverRegistrationPromptScreen(),
-              LoginScreen.routeName: (BuildContext context) => LoginScreen(),
+              LoginScreen.routeName: (BuildContext context) => const LoginScreen(),
               WelcomeScreen.routeName: (BuildContext context) => const WelcomeScreen(),
               RegistrationWrapper.routeName: (BuildContext context) => const RegistrationWrapper(),
               OfferRideCampus.routeName: (BuildContext context) => const OfferRideCampus(),

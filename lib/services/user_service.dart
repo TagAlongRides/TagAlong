@@ -43,9 +43,27 @@ class UserService {
           email: email,
           password: password
       );
+    }
+    on FirebaseAuthException catch (e) {
+      errorCode = e.code;
+    }
+    return errorCode;
+  }
 
-      // Create a "Basic" [TagAlongUser]
-      tagalongUser = TagAlongUserNew.fromFireBaseUser(userCred.user!);
+  /// Signs in a Firebase [User] with the given [email] and [password].
+  ///
+  /// Returns a Future with a String of the error code of logging in.
+  Future<String> signInWithEmailAndPassword({
+    required String email,
+    required String password}) async
+  {
+    // Default creation error code SUCCESS
+    String errorCode = Constants.FIREBASE_AUTH_SUCESS;
+    try {
+      UserCredential userCred = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email,
+          password: password
+      );
     }
     on FirebaseAuthException catch (e) {
       errorCode = e.code;
@@ -76,9 +94,41 @@ class UserService {
     return errorCode;
   }
 
-  void createTagAlongUserFirestore() async {
-    TagAlongUserNew tagAlongUserRef = this.tagalongUser!;
-    await db.collection('users').doc(tagAlongUserRef.id).set(tagAlongUserRef.toJson());
+  // Future<void> createTagAlongUserFirestore() async {
+  //   TagAlongUserNew tagAlongUserRef = this.tagalongUser!;
+  //   await db.collection('users').doc(tagAlongUserRef.id).set(tagAlongUserRef.toJson());
+  // }
+
+  Future<String> queryAndLoadTagAlongUser() async {
+    try {
+      final User user = _firebaseAuth.currentUser!;
+      final CollectionReference usersRef = db.collection("users");
+      final DocumentReference userRef = usersRef.doc(user.uid);
+      late final TagAlongUserNew tagAlongUserNew;
+
+      // Query [usersRef] collection for user
+      DocumentSnapshot userSnapShot = await userRef.get();
+      logger.log.fine(userSnapShot.data);
+
+      // [TagAlongUser] exists in Firestore - get a [TagAlongUserNew] instance
+      if (userSnapShot.exists) {
+        Map<String, dynamic> data = userSnapShot.data() as Map<String, dynamic>;
+        tagAlongUserNew = TagAlongUserNew.fromJson(data);
+      }
+      // [TagAlongUser] does NOT exist in Firestore (registering 1st time)
+      // Upload new [TagAlongUserNew] to Firestore
+      else {
+        tagAlongUserNew = TagAlongUserNew.fromFireBaseUser(user);
+        Map<String, dynamic> data = tagAlongUserNew.toJson();
+        userRef.set(data);
+      }
+
+      return tagAlongUserNew.toString();
+
+    } catch (e) {
+      logger.log.severe('$e');
+      return "error";
+    }
   }
 
 

@@ -157,7 +157,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                     });
                                               }
                                               else {
-                                                us.createTagAlongUserFirestore();
                                                 Navigator.pop(context);
                                               }
                                             }
