@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:tagalong/locator.dart';
+import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
-/// [RegistrationGate] is Widget that performs conditional logic based on where
-/// the enduser is in their TagAlongUser registration process.
+/// [RegistrationGate] is a Widget that performs conditional logic based on where
+/// the end user is in their TagAlongUser registration process.
 /// The logic is based on the results of async computation [loadTagAlongUser]
 ///
-/// This widget can only be built if the enduser is logged in, therefore the
-/// [FirebaseAuth.currentUser] is NOT null.
-///
-/// The
+/// This widget can only be built if the end user is logged in, therefore the
+/// [FirebaseAuth.currentUser] is NOT null at this time and can be guaranteed.
+
 class RegistrationGate extends StatefulWidget {
   const RegistrationGate({Key? key}) : super(key: key);
 
@@ -21,44 +21,82 @@ class RegistrationGate extends StatefulWidget {
 
 class _RegistrationGateState extends State<RegistrationGate> {
 
+  // UserService singleton
   UserService us = serviceLocator.get<UserService>();
-  late Future<String> loadTagAlongUserResult;
+
+  // async op that the FutureBuilder is based on
+  late Future<bool> loadTagAlongUserResult;
 
   @override
   void initState() {
     super.initState();
     loadTagAlongUserResult = us.loadTagAlongUser();
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<String>(
-        future: loadTagAlongUserResult,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          logger.log.fine('snapshot: ${snapshot.connectionState}');
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          else if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Center(child: const Text('Error'));
+      body: SafeArea(
+        child: FutureBuilder<bool>(
+          future: loadTagAlongUserResult,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            logger.log.fine('snapshot: ${snapshot.connectionState}');
+
+            // 1. WAITING - async operation loading in the user
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
             }
-            if (snapshot.hasData) {
-              return Center(child: Text(snapshot.data));
+
+            // 2. DONE - [loadTagAlongUser] has finished
+            else if (snapshot.connectionState == ConnectionState.done) {
+
+              // TODO: implement a ERROR screen
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error'));
+              }
+
+              // MAIN branch!
+              // Data was received (bool for status code)
+              if (snapshot.hasData) {
+
+                // User was loaded in successfully!
+                if (snapshot.data == true) {
+                  logger.log.fine('RegistrationGate - user was loaded in successfully!');
+
+                  // User is verified - to Rideboard!
+                  if (us.tagalongUser.isEmailVerified == true) {
+
+                  }
+
+                  // User is registered, but NOT verified - to VerificationScreen
+
+                  // User is NOT registered - to RegForms
+                  else {
+                    return const RegNameScreen();
+                  }
+                }
+                // TODO: implement a ERROR screen
+                // User was NOT loaded in successfully!
+                else {
+                  logger.log.fine('RegistrationGate - user was NOT loaded in successfully!');
+                }
+                return Center(child: Text(snapshot.data.toString()));
+              }
+              else {
+                return const Text('Empty data');
+              }
             }
+
+            // 3. SHOULD NOT HAPPEN WITH FutureBuilder
             else {
-              return const Text('Empty data');
+              return const Text("asdfasdfa");
             }
           }
-          else {
-            return Text("asdfasdfa");
-          }
-        }
+        ),
       ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async => await us.signOut(),
-        )
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () async => await us.signOut(),
+        // )
     );
   }
 }

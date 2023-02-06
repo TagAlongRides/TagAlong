@@ -134,9 +134,10 @@ class AuthGate extends StatelessWidget {
           // navigating to a new screen after that, this will automatically handle it.
           else if (snapshot.connectionState == ConnectionState.active) {
             logger.log.fine('authStateChanges emitted active event');
-            print(snapshot.data);
-            // 3a. User is signed-in as a Firebase Auth User - initialize [TagAlongUser] in vm.
+
+            // 3a. User is signed-in as a Firebase Auth User - More logic needed for registration status.
             if (snapshot.hasData) {
+              logger.log.fine('AuthGate - user logged in, going to RegistrationGate');
               return const RegistrationGate();
             }
             // 3b. User is NOT signed in - prompt "Continuation"

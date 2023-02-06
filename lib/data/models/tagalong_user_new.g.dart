@@ -20,13 +20,14 @@ TagAlongUserNew _$TagAlongUserNewFromJson(Map<String, dynamic> json) =>
       driverData: json['driverData'] == null
           ? null
           : Driver.fromJson(json['driverData'] as Map<String, dynamic>),
-    );
+    )..isRegistered = json['isRegistered'] as bool;
 
 Map<String, dynamic> _$TagAlongUserNewToJson(TagAlongUserNew instance) =>
     <String, dynamic>{
       'id': instance.id,
       'providerId': instance.providerId,
       'isEmailVerified': instance.isEmailVerified,
+      'isRegistered': instance.isRegistered,
       'name': instance.name,
       'institution': instance.institution,
       'emailAddress': instance.emailAddress,

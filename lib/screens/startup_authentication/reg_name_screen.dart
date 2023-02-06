@@ -82,10 +82,12 @@ class _RegNameScreenState extends State<RegNameScreen> {
                     semanticLabel: "Move to next registration form",
                   ),
                   onPressed: () {
+                    // TODO: testing
                     if (formKey.currentState!.validate()) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const RegGradYearScreen())
-                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(builder: (context) => const RegGradYearScreen())
+                      // );
+                      Navigator.of(context).pop();
                     }
                   },
                 )

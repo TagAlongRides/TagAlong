@@ -21,6 +21,7 @@ class UserService {
   // FacebookAuth instance - singleton
   final _fbAuth = FacebookAuth.instance;
 
+  // ! IMPORTANT ! - initialized "late" in [loadTagAlongUser]
   // TagAlongUserNew instance - singleton
   late TagAlongUserNew tagalongUser;
 
@@ -94,7 +95,13 @@ class UserService {
     return errorCode;
   }
 
-  Future<String> loadTagAlongUser() async {
+  /// Loads the [tagalongUser] in-memory as a singleton in this class.
+  ///
+  /// This will be called in [RegistrationGate], hence [tagalongUser] can be used freely and is type-safe against null.
+  /// Returns true is user was successfully loaded in, else false.
+  Future<bool> loadTagAlongUser() async {
+    bool wasLoaded = true;
+
     try {
       final User user = _firebaseAuth.currentUser!;
       final CollectionReference usersRef = db.collection("users");
@@ -102,7 +109,7 @@ class UserService {
 
       // Query [usersRef] collection for user
       DocumentSnapshot userSnapShot = await userRef.get();
-      logger.log.fine(userSnapShot.data);
+      logger.log.fine('loadTagAlongUser() - ${userSnapShot.data()}');
 
       // [TagAlongUser] exists in Firestore - get a [TagAlongUserNew] instance
       if (userSnapShot.exists) {
@@ -116,15 +123,13 @@ class UserService {
         Map<String, dynamic> data = tagalongUser.toJson();
         userRef.set(data);
       }
-
-      return tagalongUser.toString();
-
     } catch (e) {
       logger.log.severe('$e');
-      return "error";
+      wasLoaded = false;
     }
-  }
 
+    return wasLoaded;
+  }
 
   /// Signs the User out
   Future<void> signOut() async {
