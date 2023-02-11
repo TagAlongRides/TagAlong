@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/startup_authentication/reg_email_and_password.dart';
+import 'package:tagalong/screens/startup_authentication/reg_email.dart';
+import 'package:tagalong/screens/startup_authentication/registration_gate.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 
 /// [RegGradYearScreen] is a Screen that contains a Form for receiving the graduation year
 class RegGradYearScreen extends StatefulWidget {
+
   const RegGradYearScreen({Key? key}) : super(key: key);
 
   @override
@@ -76,11 +78,9 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                             size: 24.0,
                             semanticLabel: "Move to next registration form",
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (formKey.currentState!.validate()) {
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => const RegEmailAndPassword())
-                              );
+                              Navigator.of(context).pushNamed('reg/reg_email');
                             }
                           },
                         )

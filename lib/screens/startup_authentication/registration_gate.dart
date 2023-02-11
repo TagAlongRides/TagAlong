@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tagalong/locator.dart';
+import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -100,3 +101,6 @@ class _RegistrationGateState extends State<RegistrationGate> {
     );
   }
 }
+
+
+

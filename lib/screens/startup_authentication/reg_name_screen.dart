@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
@@ -84,10 +83,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
                   onPressed: () {
                     // TODO: testing
                     if (formKey.currentState!.validate()) {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(builder: (context) => const RegGradYearScreen())
-                      // );
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('reg/reg_gradyear');
                     }
                   },
                 )

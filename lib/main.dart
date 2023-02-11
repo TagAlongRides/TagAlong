@@ -25,6 +25,9 @@ import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/screens/ride_details.dart';
 import 'package:tagalong/screens/startup_authentication/auth_home_screen.dart';
+import 'package:tagalong/screens/startup_authentication/reg_email.dart';
+import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
+import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/screens/startup_authentication/registration_gate.dart';
 import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_connect_registration_screen.dart';
 import 'package:tagalong/screens/stripe_connect_registration/stripe_info_screen.dart';
@@ -138,7 +141,7 @@ class AuthGate extends StatelessWidget {
             // 3a. User is signed-in as a Firebase Auth User - More logic needed for registration status.
             if (snapshot.hasData) {
               logger.log.fine('AuthGate - user logged in, going to RegistrationGate');
-              return const RegistrationGate();
+              return const RegistrationFlowNavigator();
             }
             // 3b. User is NOT signed in - prompt "Continuation"
             else {
@@ -154,6 +157,39 @@ class AuthGate extends StatelessWidget {
     );
   }
 }
+
+class RegistrationFlowNavigator extends StatelessWidget {
+  const RegistrationFlowNavigator({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Navigator(
+        initialRoute: 'reg/reg_gate',
+        onGenerateRoute: (RouteSettings settings) {
+          WidgetBuilder builder;
+          switch (settings.name) {
+            case 'reg/reg_gate':
+              builder = (BuildContext context) => const RegistrationGate();
+              break;
+            case 'reg/reg_name':
+              builder = (BuildContext context) => const RegNameScreen();
+              break;
+            case 'reg/reg_gradyear':
+              builder = (BuildContext _) => RegGradYearScreen();
+              break;
+            case 'reg/reg_email':
+              builder = (BuildContext _) => RegEmailScreen();
+              break;
+            default:
+              throw Exception('Invalid route: ${settings.name}');
+          }
+          return MaterialPageRoute<void>(builder: builder, settings: settings);
+        }
+    );
+  }
+}
+
+
 
 class TagAlongApp extends StatelessWidget {
   const TagAlongApp({Key? key}) : super(key: key);
