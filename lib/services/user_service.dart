@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:tagalong/data/globals.dart';
 import 'package:tagalong/data/models/tagalong_user_new.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/util/log.dart' as logger;
@@ -109,26 +110,43 @@ class UserService {
 
       // Query [usersRef] collection for user
       DocumentSnapshot userSnapShot = await userRef.get();
-      logger.log.fine('loadTagAlongUser() - ${userSnapShot.data()}');
 
       // [TagAlongUser] exists in Firestore - get a [TagAlongUserNew] instance
       if (userSnapShot.exists) {
+        logger.log.fine('loadTagAlongUser() - user does exist, retrieving document');
         Map<String, dynamic> data = userSnapShot.data() as Map<String, dynamic>;
         tagalongUser = TagAlongUserNew.fromJson(data);
       }
       // [TagAlongUser] does NOT exist in Firestore (registering 1st time)
       // Upload new [TagAlongUserNew] to Firestore
       else {
+        logger.log.fine('loadTagAlongUser() - user does NOT exist, creating document in Firestore');
         tagalongUser = TagAlongUserNew.fromFireBaseUser(user);
         Map<String, dynamic> data = tagalongUser.toJson();
-        userRef.set(data);
+        await userRef.set(data);
       }
     } catch (e) {
       logger.log.severe('$e');
       wasLoaded = false;
     }
 
+    logger.log.fine('loadTagAlongUser() - all done - ${tagalongUser.toJson()}');
     return wasLoaded;
+  }
+
+  /// Registers the TagAlongUser
+  Future<bool> registerTagAlongUser() async {
+
+    tagalongUser.isRegistered = true;
+
+    final CollectionReference usersRef = db.collection("users");
+    final DocumentReference userRef = usersRef.doc(tagalongUser.id);
+
+    logger.log.fine('registerTagAlongUser() - registering user');
+    Map<String, dynamic> data = tagalongUser.toJson();
+    await userRef.set(data);
+
+    return true;
   }
 
   /// Signs the User out

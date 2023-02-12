@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:tagalong/locator.dart';
-import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 
 /// [RegistrationGate] is a Widget that performs conditional logic based on where
-/// the end user is in their TagAlongUser registration process.
+/// the end user is in their [TagAlongUserNew] registration process.
 /// The logic is based on the results of async computation [loadTagAlongUser]
 ///
 /// This widget can only be built if the end user is logged in, therefore the
 /// [FirebaseAuth.currentUser] is NOT null at this time and can be guaranteed.
-
 class RegistrationGate extends StatefulWidget {
+
   const RegistrationGate({Key? key}) : super(key: key);
 
   @override
@@ -22,7 +21,7 @@ class RegistrationGate extends StatefulWidget {
 
 class _RegistrationGateState extends State<RegistrationGate> {
 
-  // UserService singleton
+  // UserService singleton - contains our singleton in-memory TagAlongUserNew
   UserService us = serviceLocator.get<UserService>();
 
   // async op that the FutureBuilder is based on
@@ -41,7 +40,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
         child: FutureBuilder<bool>(
           future: loadTagAlongUserResult,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            logger.log.fine('snapshot: ${snapshot.connectionState}');
+            logger.log.fine('loadTagAlongUserResult snapshot: ${snapshot.connectionState}');
 
             // 1. WAITING - async operation loading in the user
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -66,10 +65,14 @@ class _RegistrationGateState extends State<RegistrationGate> {
 
                   // User is verified - to Rideboard!
                   if (us.tagalongUser.isEmailVerified == true) {
-
+                    logger.log.fine('RegistrationGate - user is verified, headed to rideboard!');
                   }
 
                   // User is registered, but NOT verified - to VerificationScreen
+                  else if (us.tagalongUser.isRegistered == true) {
+                    logger.log.fine('RegistrationGate - user is registered, but not verified, headed to VerifyScreen!');
+                    return const Center(child: Text("Rideboard"));
+                  }
 
                   // User is NOT registered - to RegForms
                   else {
@@ -98,6 +101,10 @@ class _RegistrationGateState extends State<RegistrationGate> {
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () async => await us.signOut(),
         // )
+    floatingActionButton: FloatingActionButton(
+      onPressed: () { us.signOut(); },
+
+      ),
     );
   }
 }

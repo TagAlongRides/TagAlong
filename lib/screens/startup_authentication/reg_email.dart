@@ -85,27 +85,37 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
                         ),
                         Padding(
                             padding: const EdgeInsets.all(16),
-                            child: Align(
-                                alignment: Alignment.bottomRight,
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 24.0,
-                                    semanticLabel: "Move to next registration form",
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios,
+                                      size: 24.0,
+                                      semanticLabel: "Go Back",
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
                                   ),
-
-                                  onPressed: () async {
-
-                                    // Validate the Form
-                                    if (formKey.currentState!.validate()) {
-                                      await Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        'reg/reg_gate',
-                                        (Route<dynamic> route) => false
-                                      );
-                                    }
-                                  },
-                                )
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 24.0,
+                                      semanticLabel: "Move to next registration form",
+                                    ),
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        await us.registerTagAlongUser();
+                                        await Navigator.pushNamedAndRemoveUntil(
+                                            context,
+                                            'reg/reg_gate',
+                                            (Route<dynamic> route) => false
+                                        );
+                                      }
+                                    },
+                                  )
+                                ]
                             )
                         )
                       ]

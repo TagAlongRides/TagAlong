@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tagalong/locator.dart';
+import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
@@ -7,6 +9,7 @@ import 'package:tagalong/viewmodels/register_user_view_model.dart';
 /// [RegNameScreen] is a Screen that contains a Form for receiving the first and last
 /// name of a TagAlongUser.
 class RegNameScreen extends StatefulWidget {
+
   const RegNameScreen({Key? key}) : super(key: key);
 
   @override
@@ -27,6 +30,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
+    UserService us = serviceLocator.get<UserService>();
 
     return Scaffold(
       appBar: AppBar(
@@ -72,21 +76,32 @@ class _RegNameScreenState extends State<RegNameScreen> {
             ),
              Padding(
               padding: const EdgeInsets.all(16),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 24.0,
-                    semanticLabel: "Move to next registration form",
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      size: 24.0,
+                      semanticLabel: "Go Back",
+                    ),
+                    onPressed: () {
+                      us.signOut();
+                    },
                   ),
-                  onPressed: () {
-                    // TODO: testing
-                    if (formKey.currentState!.validate()) {
-                      Navigator.of(context).pushNamed('reg/reg_gradyear');
-                    }
-                  },
-                )
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 24.0,
+                      semanticLabel: "Move to next registration form",
+                    ),
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        Navigator.of(context).pushNamed('reg/reg_gradyear');
+                      }
+                    },
+                  )
+                ]
               )
             )
           ]

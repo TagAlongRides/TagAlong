@@ -93,6 +93,9 @@ class TagAlongAppNew extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: const AuthGate(),
+        routes: {
+          AuthGate.routeName: (BuildContext context) => const AuthGate()
+        }
       ),
     );
   }
@@ -103,6 +106,8 @@ class TagAlongAppNew extends StatelessWidget {
 ///
 /// It continuously listens for Auth events via [authStateChanges].
 class AuthGate extends StatelessWidget {
+  static const String routeName = '/auth_gate';
+
   const AuthGate({Key? key}) : super(key: key);
 
   @override
@@ -135,6 +140,8 @@ class AuthGate extends StatelessWidget {
           // 3. ACTIVE - main branch; will continuously listen for auth state changes by the
           // user, including when they sign-out, hence no logic needs to be written for
           // navigating to a new screen after that, this will automatically handle it.
+          // Will always be near the top of the root Navigator, hence it will handle
+          // spontaneous log-outs.
           else if (snapshot.connectionState == ConnectionState.active) {
             logger.log.fine('authStateChanges emitted active event');
 
@@ -158,27 +165,43 @@ class AuthGate extends StatelessWidget {
   }
 }
 
+/// A Navigator used for handling the [TagAlongUserNew] registration flow.
+///
+/// Defaults to a [RegistrationGate], which loads in a [TagAlongUserNew] into
+/// memory navigates accordingly. Read documentation for more info.
+/// The use of this implies it being nested inside a Material Navigator. The last
+/// RegABCScreen must call:
+/// await Navigator.pushNamedAndRemoveUntil(
+///                                         context,
+///                                         'reg/reg_gate',
+///                                         (Route<dynamic> route) => false
+///                                       );
+/// in which the [RegistrationGate] will be able to be newly created and have
+/// updated data.
 class RegistrationFlowNavigator extends StatelessWidget {
   const RegistrationFlowNavigator({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
+    UserService us = serviceLocator.get<UserService>();
+
     return Navigator(
         initialRoute: 'reg/reg_gate',
         onGenerateRoute: (RouteSettings settings) {
           WidgetBuilder builder;
           switch (settings.name) {
             case 'reg/reg_gate':
-              builder = (BuildContext context) => const RegistrationGate();
+              builder = (BuildContext _) => const RegistrationGate();
               break;
             case 'reg/reg_name':
-              builder = (BuildContext context) => const RegNameScreen();
+              builder = (BuildContext _) => const RegNameScreen();
               break;
             case 'reg/reg_gradyear':
-              builder = (BuildContext _) => RegGradYearScreen();
+              builder = (BuildContext context) => const RegGradYearScreen();
               break;
             case 'reg/reg_email':
-              builder = (BuildContext _) => RegEmailScreen();
+              builder = (BuildContext context) => const RegEmailScreen();
               break;
             default:
               throw Exception('Invalid route: ${settings.name}');

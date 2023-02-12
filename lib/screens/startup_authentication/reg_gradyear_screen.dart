@@ -70,20 +70,32 @@ class _RegGradYearScreenState extends State<RegGradYearScreen> {
                 ),
                 Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 24.0,
-                            semanticLabel: "Move to next registration form",
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios,
+                              size: 24.0,
+                              semanticLabel: "Go Back",
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
                           ),
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              Navigator.of(context).pushNamed('reg/reg_email');
-                            }
-                          },
-                        )
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 24.0,
+                              semanticLabel: "Move to next registration form",
+                            ),
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                Navigator.of(context).pushNamed('reg/reg_email');
+                              }
+                            },
+                          )
+                        ]
                     )
                 )
               ]
