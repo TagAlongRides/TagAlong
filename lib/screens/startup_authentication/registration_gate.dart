@@ -24,7 +24,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
   // UserService singleton - contains our singleton in-memory TagAlongUserNew
   UserService us = serviceLocator.get<UserService>();
 
-  // async op that the FutureBuilder is based on
+  // async op that the FutureBuilder is based on - prepares in-memory TagAlongUserNew
   late Future<bool> loadTagAlongUserResult;
 
   @override
@@ -76,6 +76,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
 
                   // User is NOT registered - to RegForms
                   else {
+                    logger.log.fine('RegistrationGate - user is NOT registered, headed to RegForms!');
                     return const RegNameScreen();
                   }
                 }
@@ -101,10 +102,10 @@ class _RegistrationGateState extends State<RegistrationGate> {
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () async => await us.signOut(),
         // )
-    floatingActionButton: FloatingActionButton(
-      onPressed: () { us.signOut(); },
-
-      ),
+    // floatingActionButton: FloatingActionButton(
+    //   onPressed: () { us.signOut(); },
+    //
+    //   ),
     );
   }
 }

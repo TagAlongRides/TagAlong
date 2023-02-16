@@ -92,10 +92,7 @@ class TagAlongAppNew extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const AuthGate(),
-        routes: {
-          AuthGate.routeName: (BuildContext context) => const AuthGate()
-        }
+        home: const AuthGate()
       ),
     );
   }
@@ -104,9 +101,8 @@ class TagAlongAppNew extends StatelessWidget {
 
 /// A Widget that will act as the medium for checking whether a [TagAlongUser] is registered or not.
 ///
-/// It continuously listens for Auth events via [authStateChanges].
+/// It continuously listens for Auth events via [authStateChanges] stream.
 class AuthGate extends StatelessWidget {
-  static const String routeName = '/auth_gate';
 
   const AuthGate({Key? key}) : super(key: key);
 
@@ -168,7 +164,7 @@ class AuthGate extends StatelessWidget {
 /// A Navigator used for handling the [TagAlongUserNew] registration flow.
 ///
 /// Defaults to a [RegistrationGate], which loads in a [TagAlongUserNew] into
-/// memory navigates accordingly. Read documentation for more info.
+/// memory and navigates accordingly. Read documentation for more info.
 /// The use of this implies it being nested inside a Material Navigator. The last
 /// RegABCScreen must call:
 /// await Navigator.pushNamedAndRemoveUntil(
@@ -183,19 +179,16 @@ class RegistrationFlowNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    UserService us = serviceLocator.get<UserService>();
-
     return Navigator(
         initialRoute: 'reg/reg_gate',
         onGenerateRoute: (RouteSettings settings) {
           WidgetBuilder builder;
           switch (settings.name) {
             case 'reg/reg_gate':
-              builder = (BuildContext _) => const RegistrationGate();
+              builder = (BuildContext context) => const RegistrationGate();
               break;
             case 'reg/reg_name':
-              builder = (BuildContext _) => const RegNameScreen();
+              builder = (BuildContext context) => const RegNameScreen();
               break;
             case 'reg/reg_gradyear':
               builder = (BuildContext context) => const RegGradYearScreen();

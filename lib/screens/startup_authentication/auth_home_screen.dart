@@ -49,13 +49,11 @@ class AuthHomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: SignInButton(
                           Buttons.Email,
-                          text: "Continue with School Email",
+                          text: "Continue with Email",
                           onPressed: () {
-                            // SignUpMethod == Email
-                            vm.signUpMethod = "Email";
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => const LoginScreen())
@@ -64,26 +62,22 @@ class AuthHomeScreen extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       child: SignInButton(
                           Buttons.FacebookNew,
                           text: "Continue with Facebook",
                           onPressed: () {
-                            // SignUpMethod == Facebook
-                            vm.signUpMethod = "Facebook";
 
                           }
                       ),
                     ),
                     if (Platform.isIOS)
                       Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         child: SignInButton(
                           Buttons.AppleDark,
                           text: "Continue with Apple",
                           onPressed: () {
-                            // SignUpMethod == Apple
-                            vm.signUpMethod = "Apple";
                           },
                         ),
                       )

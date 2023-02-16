@@ -106,7 +106,16 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
                                     ),
                                     onPressed: () async {
                                       if (formKey.currentState!.validate()) {
-                                        await us.registerTagAlongUser();
+
+                                        // User has fully registered all their user information.
+                                        // Register the TagAlongUserNew in firestore
+                                        await us.registerTagAlongUser(
+                                          name: vm.name!,
+                                          emailAddress: vm.emailAddress!,
+                                          gradYear: vm.graduationYear
+                                        );
+
+                                        // Pop all the routes and rebuild [RegistrationGate]
                                         await Navigator.pushNamedAndRemoveUntil(
                                             context,
                                             'reg/reg_gate',

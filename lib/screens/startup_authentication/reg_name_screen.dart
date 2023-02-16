@@ -83,7 +83,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
                     icon: const Icon(
                       Icons.arrow_back_ios,
                       size: 24.0,
-                      semanticLabel: "Go Back",
+                      semanticLabel: "Go Back and sign out",
                     ),
                     onPressed: () {
                       us.signOut();

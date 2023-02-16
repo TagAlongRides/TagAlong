@@ -7,11 +7,7 @@ class RegisterUserViewModel extends ChangeNotifier {
   // Basic user-inputted state for registering a user
   String? name;
   String? emailAddress;
-  String? password;
   String? graduationYear;
-
-  // Sign up provider string
-  String? signUpMethod;
 
   // Valid RegEx for full name validation
   final RegExp nameExp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
@@ -53,7 +49,7 @@ class RegisterUserViewModel extends ChangeNotifier {
     return null;
   }
 
-  /// Validates and updates [password] and notifies listeners
+  /// Validates `password` input and notifies listeners
   ///
   /// Returns error string on invalid input and null on correct.
   String? validateAndUpdatePassword(String password, String confirmPassword) {
@@ -66,8 +62,6 @@ class RegisterUserViewModel extends ChangeNotifier {
         return "Password must be at least 8 characters long";
       }
     }
-    // 2. update password
-    this.password = password;
     notifyListeners();
     return null;
   }

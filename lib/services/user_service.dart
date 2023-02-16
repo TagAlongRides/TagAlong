@@ -135,9 +135,16 @@ class UserService {
   }
 
   /// Registers the TagAlongUser
-  Future<bool> registerTagAlongUser() async {
+  Future<bool> registerTagAlongUser({
+    required String name,
+    required String emailAddress,
+    required String? gradYear}) async {
 
+    // Update [tagalongUser]
     tagalongUser.isRegistered = true;
+    tagalongUser.name = name;
+    tagalongUser.emailAddress = emailAddress;
+    tagalongUser.graduationYear = gradYear;
 
     final CollectionReference usersRef = db.collection("users");
     final DocumentReference userRef = usersRef.doc(tagalongUser.id);
@@ -145,6 +152,7 @@ class UserService {
     logger.log.fine('registerTagAlongUser() - registering user');
     Map<String, dynamic> data = tagalongUser.toJson();
     await userRef.set(data);
+    logger.log.fine('registerTagAlongUser() - user ${tagalongUser.id} fully registered');
 
     return true;
   }

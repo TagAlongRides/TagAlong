@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         // Client-side validation passed - sign in user
                                         String errorCode = await us.signInWithEmailAndPassword(
                                             email: vm.emailAddress!,
-                                            password: vm.password!
+                                            password: password.text
                                         );
 
                                         // Check [errorCode] and present:

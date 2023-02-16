@@ -132,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               // Client-side validation passed - create user
                                               String errorCode = await us.createUserWithEmailAndPassword(
                                                   email: vm.emailAddress!,
-                                                  password: vm.password!
+                                                  password: confirmPassword.text
                                               );
 
                                               // Check [errorCode] and present:
