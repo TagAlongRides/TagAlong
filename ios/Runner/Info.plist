@@ -47,5 +47,20 @@
 	<true/>
 	<key>FLTEnableImpeller</key>
       <true/>
+    <key>FacebookAppID</key>
+    <string>453909532921770</string>
+    <key>FacebookClientToken</key>
+    <string>d094eeef19b8ef94f884931bec850e46</string>
+    <key>FacebookDisplayName</key>
+    <string>TagAlongg</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>fb453909532921770</string>
+        </array>
+      </dict>
+    </array>
 </dict>
 </plist>

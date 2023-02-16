@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/login_screen.dart';
 import 'package:tagalong/services/user_service.dart';
+import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 
 class AuthHomeScreen extends StatelessWidget {
@@ -66,8 +67,32 @@ class AuthHomeScreen extends StatelessWidget {
                       child: SignInButton(
                           Buttons.FacebookNew,
                           text: "Continue with Facebook",
-                          onPressed: () {
+                          onPressed: () async {
 
+                            // Sign in OR create Firebase User
+                            String errorCode = await us.signInWithFacebook();
+
+                            // Check [errorCode] and present:
+                            // - AlertDialog on error and stay OR
+                            // - pop() off [RegisterScreen] back to AuthGate
+                            if (errorCode != Constants.FIREBASE_AUTH_SUCESS) {
+                              await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                        title: const Text("Account Creation Error"),
+                                        content: Text("$errorCode\nTry again."),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("OK"),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          )
+                                        ]
+                                    );
+                                  });
+                            }
                           }
                       ),
                     ),
