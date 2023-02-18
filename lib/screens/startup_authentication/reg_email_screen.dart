@@ -120,6 +120,9 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
                                           gradYear: vm.graduationYear
                                         );
 
+                                        // Send email verification to User
+                                        bool emailWasSent = await us.sendEmailVerificationToUser();
+
                                         // Pop all the routes and rebuild [RegistrationGate]
                                         await Navigator.pushNamedAndRemoveUntil(
                                             context,

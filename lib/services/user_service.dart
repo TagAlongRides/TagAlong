@@ -136,7 +136,8 @@ class UserService {
     return wasLoaded;
   }
 
-  /// Registers the TagAlongUser, updating Firestore `users` collection.
+  /// Registers the TagAlongUser, updating Firestore `users` collection and
+  /// updates the Firebase User's "email" for verification purposes.
   Future<bool> registerTagAlongUser({
     required String name,
     required String emailAddress,
@@ -148,6 +149,10 @@ class UserService {
     tagalongUser.emailAddress = emailAddress;
     tagalongUser.graduationYear = gradYear;
 
+    // Update Firebase User's email
+    await _firebaseAuth.currentUser!.updateEmail(emailAddress);
+    logger.log.fine('registerTagAlongUser() - Updated Firebase User with email $emailAddress');
+
     final CollectionReference usersRef = _db.collection("users");
     final DocumentReference userRef = usersRef.doc(tagalongUser.id);
 
@@ -157,6 +162,40 @@ class UserService {
     logger.log.fine('registerTagAlongUser() - user ${tagalongUser.id} fully registered');
 
     return true;
+  }
+
+  /// Sends a verification email to the Firebase User's email.
+  Future<bool> sendEmailVerificationToUser() async {
+
+    bool sentVerification = false;
+    User user = _firebaseAuth.currentUser!;
+
+    // Refresh currently logged in User
+    // user.reload();
+
+    // Basic check to see if [tagalongUser] is "registered"
+    if (tagalongUser.isRegistered == false) {
+      logger.log.severe('User ${tagalongUser.id} is NOT registered!');
+    }
+
+    // Check if already has verified their email
+    else {
+      logger.log.fine('sendEmailVerificationToUser() - User ${tagalongUser.id} is registered');
+
+      // is email verified
+      if (user.emailVerified == true) {
+        logger.log.severe('sendEmailVerificationToUser() - User ${tagalongUser.id} is verified!');
+      }
+
+      // is NOT verified
+      else {
+        logger.log.fine('sendEmailVerificationToUser() - Sending a verification email to ${tagalongUser.id}');
+        await user.sendEmailVerification();
+        sentVerification = true;
+      }
+    }
+
+    return sentVerification;
   }
 
   /// Signs the User out
