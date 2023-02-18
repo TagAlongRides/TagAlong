@@ -17,7 +17,7 @@ class UserService {
   final _firebaseAuth = FirebaseAuth.instance;
 
   // Cloud Firestore instance - singleton
-  final db = FirebaseFirestore.instance;
+  final _db = FirebaseFirestore.instance;
 
   // FacebookAuth instance - singleton
   final _fbAuth = FacebookAuth.instance;
@@ -99,13 +99,14 @@ class UserService {
   /// Loads the [tagalongUser] in-memory as a singleton in this class.
   ///
   /// This will be called in [RegistrationGate], hence [tagalongUser] can be used freely and is type-safe against null.
-  /// Returns true is user was successfully loaded in, else false.
+  /// Returns true if user was successfully loaded in, else false.
   Future<bool> loadTagAlongUser() async {
     bool wasLoaded = true;
 
     try {
+      // User exists 100%
       final User user = _firebaseAuth.currentUser!;
-      final CollectionReference usersRef = db.collection("users");
+      final CollectionReference usersRef = _db.collection("users");
       final DocumentReference userRef = usersRef.doc(user.uid);
 
       // Query [usersRef] collection for user
@@ -125,6 +126,7 @@ class UserService {
         Map<String, dynamic> data = tagalongUser.toJson();
         await userRef.set(data);
       }
+      logger.log.fine('loadTagAlongUser() - Firebase User JSON - ${user.toString()}');
     } catch (e) {
       logger.log.severe('$e');
       wasLoaded = false;
@@ -134,7 +136,7 @@ class UserService {
     return wasLoaded;
   }
 
-  /// Registers the TagAlongUser
+  /// Registers the TagAlongUser, updating Firestore `users` collection.
   Future<bool> registerTagAlongUser({
     required String name,
     required String emailAddress,
@@ -146,7 +148,7 @@ class UserService {
     tagalongUser.emailAddress = emailAddress;
     tagalongUser.graduationYear = gradYear;
 
-    final CollectionReference usersRef = db.collection("users");
+    final CollectionReference usersRef = _db.collection("users");
     final DocumentReference userRef = usersRef.doc(tagalongUser.id);
 
     logger.log.fine('registerTagAlongUser() - registering user');
@@ -160,6 +162,11 @@ class UserService {
   /// Signs the User out
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+  }
+
+  /// Returns the [UserService]'s instance (a singleton) of the [FirebaseAuth]
+  FirebaseAuth getFirebaseAuth() {
+    return _firebaseAuth;
   }
 
 }

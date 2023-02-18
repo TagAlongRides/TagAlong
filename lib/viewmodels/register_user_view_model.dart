@@ -1,8 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tagalong/locator.dart';
+import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 
 /// The ViewModel for the User registration forms
 class RegisterUserViewModel extends ChangeNotifier {
+
+  static UserService us = serviceLocator.get<UserService>();
 
   // Basic user-inputted state for registering a user
   String? name;
@@ -86,6 +91,34 @@ class RegisterUserViewModel extends ChangeNotifier {
     // 2. update
     this.emailAddress = emailAddress;
     notifyListeners();
+    return null;
+  }
+
+  /// Returns the Firebase [User]'s email if possible.
+  ///
+  /// This will only return a String if the user registered with "password"
+  String? getSchoolEmailFromFirebaseUser() {
+    try {
+      final User user = us.getFirebaseAuth().currentUser!;
+      return user.email;
+    }
+    catch (e) {
+      logger.log.severe('$e');
+    }
+    return null;
+  }
+
+  /// Returns the Firebase [User]'s display name if possible.
+  ///
+  /// This will only return a String if the user registered with 3rd-party providers
+  String? getDisplayNameFromFirebaseUser() {
+    try {
+      final User user = us.getFirebaseAuth().currentUser!;
+      return user.displayName;
+    }
+    catch (e) {
+      logger.log.severe('$e');
+    }
     return null;
   }
   

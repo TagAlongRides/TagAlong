@@ -35,6 +35,9 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
     UserService us = serviceLocator.get<UserService>();
 
+    // Assign initial value of [emailAddress] controller to email if possible
+    emailAddress.text = vm.getSchoolEmailFromFirebaseUser() ?? '';
+
     return Scaffold(
         appBar: AppBar(
             backgroundColor: Colors.transparent,
@@ -107,8 +110,10 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
                                     onPressed: () async {
                                       if (formKey.currentState!.validate()) {
 
-                                        // User has fully registered all their user information.
-                                        // Register the TagAlongUserNew in firestore
+                                        // User has fully registered all their user information,
+                                        // with the data being stored in the RegisterUserViewModel.
+                                        // Register the TagAlongUserNew in firestore, creating a
+                                        // Registered, but not verified TagAlongUser
                                         await us.registerTagAlongUser(
                                           name: vm.name!,
                                           emailAddress: vm.emailAddress!,

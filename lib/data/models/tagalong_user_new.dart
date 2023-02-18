@@ -11,11 +11,11 @@ part 'tagalong_user_new.g.dart';
 class TagAlongUserNew {
   String id;                          // User.uid
   String providerId;                  // User.providerData[0].providerId
-  bool isEmailVerified;               // User.emailVerified   --> Proves [TagAlongUserNew] is "Registered"
+  bool isEmailVerified;               // User.emailVerified  --> Proves [TagAlongUserNew] is "Registered"
   bool isRegistered = false;
   String? name;
   String? institution;
-  String? emailAddress;
+  String? emailAddress;               // School email, not provider email
   String? password;
   // TODO: need to have verification for this as well eventually..
   // String phoneNumber;
@@ -26,7 +26,8 @@ class TagAlongUserNew {
 
   /// Initializes an [TagAlongUserNew]
   ///
-  ///
+  /// This constructor is used for creating a brand new TagAlongUser, therefore
+  /// the user is NOT registered (isRegistered) OR verified (isEmailVerified)
   TagAlongUserNew({
     required this.id,
     required this.isEmailVerified,

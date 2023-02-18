@@ -32,6 +32,9 @@ class _RegNameScreenState extends State<RegNameScreen> {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
     UserService us = serviceLocator.get<UserService>();
 
+    // Assign initial value of [fullName] controller to email if possible
+    fullNameController.text = vm.getDisplayNameFromFirebaseUser() ?? '';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,

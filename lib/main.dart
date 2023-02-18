@@ -25,7 +25,7 @@ import 'package:tagalong/screens/register_user_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/screens/ride_details.dart';
 import 'package:tagalong/screens/startup_authentication/auth_home_screen.dart';
-import 'package:tagalong/screens/startup_authentication/reg_email.dart';
+import 'package:tagalong/screens/startup_authentication/reg_email_screen.dart';
 import 'package:tagalong/screens/startup_authentication/reg_gradyear_screen.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/screens/startup_authentication/registration_gate.dart';

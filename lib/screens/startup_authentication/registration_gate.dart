@@ -71,7 +71,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
                   // User is registered, but NOT verified - to VerificationScreen
                   else if (us.tagalongUser.isRegistered == true) {
                     logger.log.fine('RegistrationGate - user is registered, but not verified, headed to VerifyScreen!');
-                    return const Center(child: Text("Rideboard"));
+                    return const Center(child: Text("VerifyScreen"));
                   }
 
                   // User is NOT registered - to RegForms
