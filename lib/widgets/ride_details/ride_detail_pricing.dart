@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:stripe_repo/stripe_repo.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/screens/stripe_payment/ride_stripe_payment_screen.dart';
 import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/widgets/rideboard/rideboard.dart';
 
 class RideDetailPricing extends StatelessWidget {
   const RideDetailPricing({
@@ -109,7 +111,7 @@ class RideDetailPricing extends StatelessWidget {
                         alignment: Alignment.center,
                         child: Text(
                           _isVerified ? 'Continue' : 'Email Verification Needed',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ),
                       Align(
@@ -123,12 +125,28 @@ class RideDetailPricing extends StatelessWidget {
                   ),
                   onPressed: _isVerified
                       ? () {
-                          // Navigator.of(context).pushNamed('/stripe-payment');
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) {
-                              return RideStripePaymentScreen(ride: ride);
-                            },
-                          ));
+                          if (user.tagAlongUser!.id == ride.driverId) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Cannot reserve a seat because you are the driver of this ride'),
+                              ),
+                            );
+                            Navigator.of(context).pushNamed(RideBoardScreen.routeName);
+                          } else if (ride.riderIds.contains(user.tagAlongUser!.id)) {
+                            // print('already booked');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('You have already reserved a seat on this ride'),
+                              ),
+                            );
+                            Navigator.of(context).pushNamed(RideBoardScreen.routeName);
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) {
+                                return RideStripePaymentScreen(ride: ride);
+                              },
+                            ));
+                          }
                         }
                       : () {
                           showDialog(
