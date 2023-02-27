@@ -74,21 +74,26 @@ class RegisterUserViewModel extends ChangeNotifier {
   /// Validates and updates [emailAddress] and notifies listeners
   ///
   /// Returns error string on invalid input and null on correct.
+  // String? validateAndUpdateEmail(String? emailAddress) {
+  //   // 1. client-side validation
+  //   if (emailAddress == null) {
+  //     return "Please enter a school email";
+  //   }
+  //   if (emailExp.hasMatch(emailAddress) == false) {
+  //     return "Please enter a valid school email";
+  //   }
+  //   // TODO: Currently allowing all .edu emails for testing
+  //   // else {
+  //   //   if (emailAddress.contains("@vt.edu") == false) {
+  //   //     return "Please enter a valid Virginia Tech email";
+  //   //   }
+  //   // }
+  //   // 2. update
+  //   this.emailAddress = emailAddress;
+  //   notifyListeners();
+  //   return null;
+  // }
   String? validateAndUpdateEmail(String? emailAddress) {
-    // 1. client-side validation 
-    if (emailAddress == null) {
-      return "Please enter a school email";
-    }
-    if (emailExp.hasMatch(emailAddress) == false) {
-      return "Please enter a valid school email";
-    }
-    // TODO: Currently allowing all .edu emails for testing
-    // else {
-    //   if (emailAddress.contains("@vt.edu") == false) {
-    //     return "Please enter a valid Virginia Tech email";
-    //   }
-    // }
-    // 2. update
     this.emailAddress = emailAddress;
     notifyListeners();
     return null;

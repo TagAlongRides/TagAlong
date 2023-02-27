@@ -64,7 +64,8 @@ class _RegistrationGateState extends State<RegistrationGate> {
                   logger.log.fine('RegistrationGate - user was loaded in successfully!');
 
                   // User is verified - to Rideboard!
-                  if (us.tagalongUser.isEmailVerified == true) {
+                  //if (us.tagalongUser.isEmailVerified == true) {
+                  if (us.getFirebaseAuth().currentUser!.emailVerified == true) {
                     logger.log.fine('RegistrationGate - user is verified, headed to rideboard!');
                     return const Center(child: Text("RideboardScreen"));
                   }
