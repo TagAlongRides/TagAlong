@@ -41,6 +41,7 @@ import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
+import 'package:user_repo/user_repo.dart';
 import 'locator.dart';
 import 'screens/offer_ride/offer_ride_pickup.dart';
 import 'themes/tagalong_theme.dart';
@@ -59,7 +60,7 @@ void main() async {
   // Set up logging
   logger.setupLogger();
 
-  // Set up service locator
+  // Set up service locator - prepares ALL the Repositories and Services
   setUpServiceLocator();
 
   Stripe.publishableKey =
@@ -70,6 +71,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => RegisterUserViewModel()),
+      // TODO: TagAlongUserViewModel only exists to get app running - update as neccesary when ready
       ChangeNotifierProvider(create: (context) => TagAlongUserViewModel()),
     ],
     child: const TagAlongAppNew()
@@ -108,11 +110,11 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserService us = serviceLocator.get<UserService>();
+    UserRepository userRepo = serviceLocator.get<UserRepository>();
 
     // Check if the user is authenticated via Firebase and branch off of that
     return StreamBuilder<User?>(
-        stream: us.authStateChanges(),
+        stream: userRepo.authStateChanges(),
         builder: (context, snapshot) {
 
           // 1. WAITING - async op has begun

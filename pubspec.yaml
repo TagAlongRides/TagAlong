@@ -84,6 +84,8 @@ dependencies:
     path: packages/stripe_repo/
   ride_repo:
     path: packages/ride_repo/
+  user_repo:
+    path: packages/user_repo/
 
   webview_flutter: ^3.0.4
   bulleted_list: ^0.0.1+0.1a

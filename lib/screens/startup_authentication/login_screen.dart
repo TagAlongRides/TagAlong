@@ -6,6 +6,7 @@ import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:user_repo/user_repo.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
-    UserService us = serviceLocator.get<UserService>();
+    UserRepository userRepo = serviceLocator.get<UserRepository>();
 
     return Scaffold(
         body: SafeArea(
@@ -118,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       if (formKey.currentState!.validate()) {
 
                                         // Client-side validation passed - sign in user
-                                        String errorCode = await us.signInWithEmailAndPassword(
+                                        String errorCode = await userRepo.signInWithEmailAndPassword(
                                             email: vm.emailAddress!,
                                             password: password.text
                                         );

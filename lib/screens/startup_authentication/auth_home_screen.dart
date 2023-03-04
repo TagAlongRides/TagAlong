@@ -9,6 +9,7 @@ import 'package:tagalong/screens/startup_authentication/login_screen.dart';
 import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
+import 'package:user_repo/user_repo.dart';
 
 class AuthHomeScreen extends StatelessWidget {
   const AuthHomeScreen({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class AuthHomeScreen extends StatelessWidget {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
 
     // UserService singleton
-    UserService us = serviceLocator.get<UserService>();
+    UserRepository userRepo = serviceLocator.get<UserRepository>();
 
     return Scaffold(
       body: SafeArea(
@@ -70,7 +71,7 @@ class AuthHomeScreen extends StatelessWidget {
                           onPressed: () async {
 
                             // Sign in OR create Firebase User
-                            String errorCode = await us.signInWithFacebook();
+                            String errorCode = await userRepo.signInWithFacebook();
 
                             // Check [errorCode] and present:
                             // - AlertDialog on error and stay OR

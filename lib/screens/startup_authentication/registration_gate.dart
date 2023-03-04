@@ -3,6 +3,7 @@ import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
 import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:user_repo/user_repo.dart';
 
 
 /// [RegistrationGate] is a Widget that performs conditional logic based on where
@@ -22,7 +23,7 @@ class RegistrationGate extends StatefulWidget {
 class _RegistrationGateState extends State<RegistrationGate> {
 
   // UserService singleton - contains our singleton in-memory TagAlongUserNew
-  UserService us = serviceLocator.get<UserService>();
+  UserRepository userRepo = serviceLocator.get<UserRepository>();
 
   // async op that the FutureBuilder is based on - prepares in-memory TagAlongUserNew
   late Future<bool> loadTagAlongUserResult;
@@ -30,7 +31,7 @@ class _RegistrationGateState extends State<RegistrationGate> {
   @override
   void initState() {
     super.initState();
-    loadTagAlongUserResult = us.loadTagAlongUser();
+    loadTagAlongUserResult = userRepo.loadTagAlongUser();
   }
 
   @override
@@ -65,13 +66,13 @@ class _RegistrationGateState extends State<RegistrationGate> {
 
                   // User is verified - to Rideboard!
                   //if (us.tagalongUser.isEmailVerified == true) {
-                  if (us.getFirebaseAuth().currentUser!.emailVerified == true) {
+                  if (userRepo.getFirebaseAuth().currentUser!.emailVerified == true) {
                     logger.log.fine('RegistrationGate - user is verified, headed to rideboard!');
                     return const Center(child: Text("RideboardScreen"));
                   }
 
                   // User is registered, but NOT verified - to VerificationScreen
-                  else if (us.tagalongUser.isRegistered == true) {
+                  else if (userRepo.tagalongUser.isRegistered == true) {
                     logger.log.fine('RegistrationGate - user is registered, but not verified, headed to VerifyScreen!');
                     return const Center(child: Text("VerifyScreen"));
                   }

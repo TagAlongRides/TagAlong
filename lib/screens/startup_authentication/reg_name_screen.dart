@@ -5,6 +5,7 @@ import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
+import 'package:user_repo/user_repo.dart';
 
 /// [RegNameScreen] is a Screen that contains a Form for receiving the first and last
 /// name of a TagAlongUser.
@@ -30,7 +31,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
-    UserService us = serviceLocator.get<UserService>();
+    UserRepository userRepo = serviceLocator.get<UserRepository>();
 
     // Assign initial value of [fullName] controller to email if possible
     fullNameController.text = vm.getDisplayNameFromFirebaseUser() ?? '';
@@ -89,7 +90,7 @@ class _RegNameScreenState extends State<RegNameScreen> {
                       semanticLabel: "Go Back and sign out",
                     ),
                     onPressed: () {
-                      us.signOut();
+                      userRepo.signOut();
                     },
                   ),
                   IconButton(

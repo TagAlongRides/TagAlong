@@ -6,6 +6,7 @@ import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
+import 'package:user_repo/user_repo.dart';
 
 
 class RegisterScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
-    UserService us = serviceLocator.get<UserService>();
+    UserRepository userRepo = serviceLocator.get<UserRepository>();
 
     return Scaffold(
       body: SafeArea(
@@ -130,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             if (formKey.currentState!.validate()) {
 
                                               // Client-side validation passed - create user
-                                              String errorCode = await us.createUserWithEmailAndPassword(
+                                              String errorCode = await userRepo.createUserWithEmailAndPassword(
                                                   email: vm.emailAddress!,
                                                   password: confirmPassword.text
                                               );

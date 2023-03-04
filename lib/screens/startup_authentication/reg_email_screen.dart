@@ -8,6 +8,7 @@ import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:user_repo/user_repo.dart';
 
 /// [RegEmailScreen] is a Screen that contains a Form for receiving the email and potential password
 /// given the sign up provider
@@ -33,7 +34,7 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
   @override
   Widget build(BuildContext context) {
     RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
-    UserService us = serviceLocator.get<UserService>();
+    UserRepository userRepo = serviceLocator.get<UserRepository>();
 
     // Assign initial value of [emailAddress] controller to email if possible
     emailAddress.text = vm.getSchoolEmailFromFirebaseUser() ?? '';
@@ -114,14 +115,14 @@ class _RegEmailScreenState extends State<RegEmailScreen> {
                                         // with the data being stored in the RegisterUserViewModel.
                                         // Register the TagAlongUserNew in firestore, creating a
                                         // Registered, but not verified TagAlongUser
-                                        await us.registerTagAlongUser(
+                                        await userRepo.registerTagAlongUser(
                                           name: vm.name!,
                                           emailAddress: vm.emailAddress!,
                                           gradYear: vm.graduationYear
                                         );
 
                                         // Send email verification to User
-                                        bool emailWasSent = await us.sendEmailVerificationToUser();
+                                        bool emailWasSent = await userRepo.sendEmailVerificationToUser();
 
                                         // Pop all the routes and rebuild [RegistrationGate]
                                         await Navigator.pushNamedAndRemoveUntil(

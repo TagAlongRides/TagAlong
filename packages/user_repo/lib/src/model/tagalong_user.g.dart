@@ -1,13 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tagalong_user_new.dart';
+part of 'tagalong_user.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-TagAlongUserNew _$TagAlongUserNewFromJson(Map<String, dynamic> json) =>
-    TagAlongUserNew(
+TagAlongUser _$TagAlongUserFromJson(Map<String, dynamic> json) => TagAlongUser(
       id: json['id'] as String,
       isEmailVerified: json['isEmailVerified'] as bool,
       providerId: json['providerId'] as String,
@@ -17,12 +16,9 @@ TagAlongUserNew _$TagAlongUserNewFromJson(Map<String, dynamic> json) =>
       emailAddress: json['emailAddress'] as String?,
       password: json['password'] as String?,
       graduationYear: json['graduationYear'] as String?,
-      driverData: json['driverData'] == null
-          ? null
-          : Driver.fromJson(json['driverData'] as Map<String, dynamic>),
     )..isRegistered = json['isRegistered'] as bool;
 
-Map<String, dynamic> _$TagAlongUserNewToJson(TagAlongUserNew instance) =>
+Map<String, dynamic> _$TagAlongUserToJson(TagAlongUser instance) =>
     <String, dynamic>{
       'id': instance.id,
       'providerId': instance.providerId,
@@ -34,5 +30,4 @@ Map<String, dynamic> _$TagAlongUserNewToJson(TagAlongUserNew instance) =>
       'password': instance.password,
       'signUpTime': instance.signUpTime,
       'graduationYear': instance.graduationYear,
-      'driverData': instance.driverData,
     };
