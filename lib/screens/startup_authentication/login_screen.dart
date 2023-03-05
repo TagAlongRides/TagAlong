@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/register_screen.dart';
-import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;

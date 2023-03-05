@@ -6,7 +6,6 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/login_screen.dart';
-import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
 import 'package:user_repo/user_repo.dart';
@@ -16,8 +15,6 @@ class AuthHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ViewModel for holding Form data - name, year, email, etc..
-    RegisterUserViewModel vm = Provider.of<RegisterUserViewModel>(context, listen: false);
 
     // UserService singleton
     UserRepository userRepo = serviceLocator.get<UserRepository>();
@@ -103,7 +100,9 @@ class AuthHomeScreen extends StatelessWidget {
                         child: SignInButton(
                           Buttons.AppleDark,
                           text: "Continue with Apple",
+                          // TODO: must implement apple log in
                           onPressed: () {
+
                           },
                         ),
                       )

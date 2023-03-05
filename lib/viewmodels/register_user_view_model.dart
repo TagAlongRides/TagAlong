@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tagalong/locator.dart';
-import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:user_repo/user_repo.dart';
 
-/// The ViewModel for the User registration forms
+/// The ViewModel for the TagAlongUser registration flow (multiple form screens)
 class RegisterUserViewModel extends ChangeNotifier {
 
   static UserRepository userRepo = serviceLocator.get<UserRepository>();
@@ -75,26 +74,21 @@ class RegisterUserViewModel extends ChangeNotifier {
   /// Validates and updates [emailAddress] and notifies listeners
   ///
   /// Returns error string on invalid input and null on correct.
-  // String? validateAndUpdateEmail(String? emailAddress) {
-  //   // 1. client-side validation
-  //   if (emailAddress == null) {
-  //     return "Please enter a school email";
-  //   }
-  //   if (emailExp.hasMatch(emailAddress) == false) {
-  //     return "Please enter a valid school email";
-  //   }
-  //   // TODO: Currently allowing all .edu emails for testing
-  //   // else {
-  //   //   if (emailAddress.contains("@vt.edu") == false) {
-  //   //     return "Please enter a valid Virginia Tech email";
-  //   //   }
-  //   // }
-  //   // 2. update
-  //   this.emailAddress = emailAddress;
-  //   notifyListeners();
-  //   return null;
-  // }
   String? validateAndUpdateEmail(String? emailAddress) {
+    // 1. client-side validation
+    if (emailAddress == null) {
+      return "Please enter a school email";
+    }
+    if (emailExp.hasMatch(emailAddress) == false) {
+      return "Please enter a valid school email";
+    }
+    // TODO: Currently allowing all .edu emails for testing
+    // else {
+    //   if (emailAddress.contains("@vt.edu") == false) {
+    //     return "Please enter a valid Virginia Tech email";
+    //   }
+    // }
+    // 2. update
     this.emailAddress = emailAddress;
     notifyListeners();
     return null;
@@ -105,7 +99,7 @@ class RegisterUserViewModel extends ChangeNotifier {
   /// This will only return a String if the user registered with "password"
   String? getSchoolEmailFromFirebaseUser() {
     try {
-      final User user = userRepo.getFirebaseAuth().currentUser!;
+      final User user = userRepo.getFirebaseUser();
       return user.email;
     }
     catch (e) {
@@ -119,7 +113,7 @@ class RegisterUserViewModel extends ChangeNotifier {
   /// This will only return a String if the user registered with 3rd-party providers
   String? getDisplayNameFromFirebaseUser() {
     try {
-      final User user = userRepo.getFirebaseAuth().currentUser!;
+      final User user = userRepo.getFirebaseUser();
       return user.displayName;
     }
     catch (e) {

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/screens/startup_authentication/reg_email_screen.dart';
-import 'package:tagalong/screens/startup_authentication/registration_gate.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
-import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/form_sequence_utils.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';

@@ -33,7 +33,6 @@ import 'package:tagalong/screens/stripe_connect_registration/driver_stripe_conne
 import 'package:tagalong/screens/stripe_connect_registration/stripe_info_screen.dart';
 import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
-import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/filter_ride_view_model.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
@@ -71,6 +70,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => RegisterUserViewModel()),
+
       // TODO: TagAlongUserViewModel only exists to get app running - update as neccesary when ready
       ChangeNotifierProvider(create: (context) => TagAlongUserViewModel()),
     ],
@@ -198,6 +198,15 @@ class RegistrationFlowNavigator extends StatelessWidget {
             case 'reg/reg_email':
               builder = (BuildContext context) => const RegEmailScreen();
               break;
+            case DriverRegistrationPromptScreen.routeName:
+              builder = (BuildContext context) => const DriverRegistrationPromptScreen();
+              break;
+            case RegisterDriverScreen.routeName:
+              builder = (BuildContext context) => const RegisterDriverScreen();
+              break;
+            case RideBoardScreen.routeName:
+              builder = (BuildContext context) => const RideBoardScreen();
+              break;
             default:
               throw Exception('Invalid route: ${settings.name}');
           }
@@ -208,7 +217,7 @@ class RegistrationFlowNavigator extends StatelessWidget {
 }
 
 
-
+// TODO: To be deprecated...?
 class TagAlongApp extends StatelessWidget {
   const TagAlongApp({Key? key}) : super(key: key);
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/login_screen.dart';
-import 'package:tagalong/services/user_service.dart';
 import 'package:tagalong/util/constants.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/register_user_view_model.dart';
@@ -24,9 +23,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final emailAddress = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
-
-  // state for password obfuscation
-  bool _obscured = true;
 
   @override
   void dispose() {

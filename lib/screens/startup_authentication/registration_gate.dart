@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tagalong/locator.dart';
 import 'package:tagalong/screens/startup_authentication/reg_name_screen.dart';
-import 'package:tagalong/services/user_service.dart';
+import 'package:tagalong/screens/welcome_screen.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:user_repo/user_repo.dart';
 
@@ -26,20 +26,20 @@ class _RegistrationGateState extends State<RegistrationGate> {
   UserRepository userRepo = serviceLocator.get<UserRepository>();
 
   // async op that the FutureBuilder is based on - prepares in-memory TagAlongUserNew
-  late Future<bool> loadTagAlongUserResult;
+  late Future<TagAlongUser?> user;
 
   @override
   void initState() {
     super.initState();
-    loadTagAlongUserResult = userRepo.loadTagAlongUser();
+    user = userRepo.loadTagAlongUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: FutureBuilder<bool>(
-          future: loadTagAlongUserResult,
+        child: FutureBuilder<TagAlongUser?>(
+          future: user,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             logger.log.fine('loadTagAlongUserResult snapshot: ${snapshot.connectionState}');
 
@@ -57,24 +57,26 @@ class _RegistrationGateState extends State<RegistrationGate> {
               }
 
               // MAIN branch!
-              // Data was received (bool for status code)
+              // Data was received (TagAlongUser instance)
               if (snapshot.hasData) {
 
+                // Transform snapshot into [TagAlongUser]
+                final TagAlongUser tagAlongUser = snapshot.data;
+
                 // User was loaded in successfully!
-                if (snapshot.data == true) {
+                if (snapshot.data != null) {
                   logger.log.fine('RegistrationGate - user was loaded in successfully!');
 
                   // User is verified - to Rideboard!
-                  //if (us.tagalongUser.isEmailVerified == true) {
-                  if (userRepo.getFirebaseAuth().currentUser!.emailVerified == true) {
+                  if (userRepo.getFirebaseUser().emailVerified == true) {
                     logger.log.fine('RegistrationGate - user is verified, headed to rideboard!');
                     return const Center(child: Text("RideboardScreen"));
                   }
 
-                  // User is registered, but NOT verified - to VerificationScreen
-                  else if (userRepo.tagalongUser.isRegistered == true) {
+                  // User is registered, but NOT verified - to WelcomeScreen
+                  else if (tagAlongUser.isRegistered == true) {
                     logger.log.fine('RegistrationGate - user is registered, but not verified, headed to VerifyScreen!');
-                    return const Center(child: Text("VerifyScreen"));
+                    return const WelcomeScreen();
                   }
 
                   // User is NOT registered - to RegForms
@@ -102,11 +104,12 @@ class _RegistrationGateState extends State<RegistrationGate> {
           }
         ),
       ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () async => await us.signOut(),
-        // )
     // floatingActionButton: FloatingActionButton(
-    //   onPressed: () { us.signOut(); },
+    //   onPressed: () async { await userRepo.signOut(); },
+    //
+    //   ),
+    //   floatingActionButton: FloatingActionButton(
+    //     onPressed: ()  { Navigator.pop(context); },
     //
     //   ),
     );
