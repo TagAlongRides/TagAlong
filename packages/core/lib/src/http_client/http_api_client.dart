@@ -11,7 +11,7 @@ class HttpApiClient {
 
   HttpApiClient._internal() {
     final baseOptions = BaseOptions(
-      baseUrl: baseUrl + apiVersion,
+      baseUrl: (runEnvironment == Environment.production ? baseUrl : testUrl) + apiVersion,
       connectTimeout: 15000,
       receiveTimeout: 15000,
       contentType: 'application/json',
@@ -47,33 +47,27 @@ class HttpApiClient {
 
   Dio call() => _dio;
 
-  Future<dynamic> post(String path,
-      {dynamic data, Map<String, String>? headers}) async {
+  Future<dynamic> post(String path, {dynamic data, Map<String, String>? headers}) async {
     try {
-      final response =
-          await _dio.post(path, data: data, options: Options(headers: headers));
+      final response = await _dio.post(path, data: data, options: Options(headers: headers));
       return response.data;
     } on DioError catch (error) {
       _errorHandle(error);
     }
   }
 
-  Future<dynamic> put(String path,
-      {dynamic data, Map<String, String>? headers}) async {
+  Future<dynamic> put(String path, {dynamic data, Map<String, String>? headers}) async {
     try {
-      final response =
-          await _dio.put(path, data: data, options: Options(headers: headers));
+      final response = await _dio.put(path, data: data, options: Options(headers: headers));
       return response.data;
     } on DioError catch (error) {
       _errorHandle(error);
     }
   }
 
-  Future<dynamic> get(String path,
-      {dynamic data, Map<String, String>? headers}) async {
+  Future<dynamic> get(String path, {dynamic data, Map<String, String>? headers}) async {
     try {
-      final response = await _dio.get(path,
-          queryParameters: data, options: Options(headers: headers));
+      final response = await _dio.get(path, queryParameters: data, options: Options(headers: headers));
       return response.data;
     } on DioError catch (error) {
       _errorHandle(error);
