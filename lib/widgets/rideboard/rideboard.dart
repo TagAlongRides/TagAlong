@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
@@ -32,8 +31,11 @@ class _RideBoardState extends State<RideBoard> {
     //   log(value.toString());
     // });
     return RefreshIndicator(
-      onRefresh: rideBoardViewModel.getRidesBasedOnFilters,
-      child: FutureBuilder<void>(
+      onRefresh: () async {
+        await rideBoardViewModel.getRidesBasedOnFilters();
+        setState(() {});
+      },
+      child: FutureBuilder<List<RideModel>>(
         future: rideBoardViewModel.getRidesBasedOnFilters(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           // Case 1: Future has NOT completed yet and asynchronous
@@ -41,22 +43,14 @@ class _RideBoardState extends State<RideBoard> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           // Case 2: Future has completed and is no longer computing
           else if (snapshot.connectionState == ConnectionState.done) {
-            // Case 2a: Error
             if (snapshot.hasError) {
-              return Text('Error has occur ${snapshot.error.toString()}');
-            }
-            // Case 2b: Data has returned - cannot occur because Future
-            // does not return data, but updates ViewModel
-            else if (snapshot.hasData) {
-              logger.log.fine('RideBoard - Data has return but how!');
-              return getListViewOfRides(rideBoardViewModel.querySnapshot!);
-            }
-            // Case 2c: Future has completed, and ViewModel has hopefully
-            // been updated with updated data
-            else {
+              return Text(
+                  'Oops! An error has occurred. If the issue persists, please try again later. ${snapshot.error.toString()}');
+            } else if (snapshot.data.length == 0) {
+              return const Text('No rides are available right now. Check back soon for updates!');
+            } else {
               return Column(
                 children: [
                   if (!userViewModel.isEmailVerified() && !_bannerDismissed)
@@ -92,7 +86,7 @@ class _RideBoardState extends State<RideBoard> {
                         ],
                       ),
                     ),
-                  Expanded(child: getListViewOfRides(rideBoardViewModel.querySnapshot!)),
+                  Expanded(child: _getListViewOfRides(snapshot.data!)),
                 ],
               );
             }
@@ -108,12 +102,11 @@ class _RideBoardState extends State<RideBoard> {
   ///
   /// [querySnapshot] is the QuerySnapshot from RideBoardViewModel, most likely
   /// calling [getRidesBasedOnFilters] method.
-  ListView getListViewOfRides(QuerySnapshot<Object?> querySnapshot) {
+  ListView _getListViewOfRides(List<RideModel> rideData) {
     return ListView.builder(
-        itemCount: querySnapshot.docs.length,
+        itemCount: rideData.length,
         itemBuilder: (context, i) {
-          RideModel ride = RideModel.fromJson(querySnapshot.docs[i].data() as Map<String, dynamic>);
-          return RideBoardCard(ride: ride);
+          return RideBoardCard(ride: rideData[i]);
         });
   }
 }

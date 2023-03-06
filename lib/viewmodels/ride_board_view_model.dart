@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/services/auth_service.dart';
@@ -16,6 +17,7 @@ class RideBoardViewModel extends ChangeNotifier {
 
   /// Data from a query to the [rides] Firestore collection
   QuerySnapshot<Object?>? querySnapshot;
+  List<RideModel>? querySnapshotMap;
 
   /// Updates this instance's [filters] and notifies listeners,
   /// mainly for the [RideBoard] so that it will re-update with new Rides
@@ -27,42 +29,63 @@ class RideBoardViewModel extends ChangeNotifier {
 
   /// Returns a Future<QuerySnapshot<Map<String, dynamic>>> of ALL rides
   /// ordered by the `departure_date_time` field, from `rides` collection.
-  Future<QuerySnapshot<Object?>> getAllRidesData() {
-    return databaseService.rides.orderBy('departure_date_time').get();
+
+  Future<List<RideModel>> getAllRidesData() async {
+    try {
+      final rideData = await HttpApiClient.instance.get('rideboard/');
+
+      if (rideData['message'] == 'Rideboard rides successfully retrieved - no rides found') {
+        return [];
+      }
+      final rideDataParsed = (rideData['data'] as List<dynamic>).map((ride) {
+        final rideMap = ride as Map<String, dynamic>;
+        return RideModel.fromJson(rideMap);
+      }).toList();
+
+      querySnapshotMap = rideDataParsed;
+      return rideDataParsed;
+    } on Exception catch (e) {
+      logger.log.fine(e.toString());
+      return [];
+    }
   }
 
   /// Asynchronously updates our current QuerySnapshot, which contains the result of the last
   /// query we had, based on the user's filters.
-  Future<void> getRidesBasedOnFilters() async {
-    Timestamp currentTimestamp = Timestamp.fromDate(DateTime.now());
-    Query ridesToReturn = databaseService.rides
-        .where('status', isEqualTo: RideStatus.scheduled.name)
-        .where('departure_date_time', isGreaterThan: currentTimestamp);
+  Future<List<RideModel>> getRidesBasedOnFilters() async {
+    // Get all available rides
+    List<RideModel> ridesToReturn = await getAllRidesData();
 
-    // Default Query is when `filters` is null
+    // Exclude results where the user is the driver or has already booked
+    final userId = authService.getUser()!.uid;
+    ridesToReturn = ridesToReturn.where((ride) => ride.driverId != userId && !ride.riderIds.contains(userId)).toList();
+
+    // Filter ride results based on the filters applied by the user
     if (filters == null) {
       logger.log.fine('RideBoardViewModel Querying - Filters is NULL');
     } else {
       // 1. ToCampus
       if (filters!['to_campus'] != null) {
         logger.log.fine('RideBoardViewModel Querying - Filters has to_campus: ${filters!['to_campus']}');
-        ridesToReturn = ridesToReturn.where('to_campus', isEqualTo: filters!['to_campus']);
+        ridesToReturn = ridesToReturn.where((ride) => ride.toCampus == filters!['to_campus']).toList();
       }
 
       // 2. Departure Date
       if (filters!['departure_date_time'] != null) {
         logger.log
             .fine('RideBoardViewModel Querying - Filters has departure_date_time: ${filters!['departure_date_time']}');
-        Timestamp departTimeStamp = Timestamp.fromDate(filters!['departure_date_time']);
-        Timestamp dayAheadDepartTimeStamp =
-            Timestamp.fromDate(filters!['departure_date_time'].add(const Duration(hours: 24)));
+        DateTime departTimeStamp = filters!['departure_date_time'];
+        DateTime dayAheadDepartTimeStamp = filters!['departure_date_time'].add(const Duration(hours: 24));
         ridesToReturn = ridesToReturn
-            .where('departure_date_time', isGreaterThanOrEqualTo: departTimeStamp)
-            .where('departure_date_time', isLessThanOrEqualTo: dayAheadDepartTimeStamp);
+            .where((ride) =>
+                ride.departureDateTime.isAfter(departTimeStamp.subtract(const Duration(seconds: 1))) &&
+                ride.departureDateTime.isBefore(dayAheadDepartTimeStamp.add(const Duration(seconds: 1))))
+            .toList();
       }
     }
-    // Update our QuerySnapshot with the queried data
-    querySnapshot = await ridesToReturn.orderBy('departure_date_time').get();
-    return;
+    // Return our results with filters applied
+    ridesToReturn.sort((ride1, ride2) => ride1.departureDateTime.compareTo(ride2.departureDateTime));
+    return ridesToReturn;
+    //'departure_date_time'
   }
 }
