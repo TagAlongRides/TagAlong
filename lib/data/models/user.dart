@@ -6,20 +6,20 @@ import 'package:tagalong/util/user_data.dart';
 /// A user model containing pertinent data
 class TagAlongUser implements TADataModel {
   String id;
-  String profilePictureUrl;
-  DateTime createdAt;
-  DateTime updatedAt;
-  String institution;
-  String firstName;
-  String lastName;
-  String? graduationYear;
-  String phoneNumber;
-  String emailAddress;
-  String stripeCustomerId;
-  String? stripeAccountId;
-  Driver? driverData;
-  bool registered;
-  String signInMethod;
+  String profilePictureUrl;   // checked - optional now
+  DateTime createdAt;         // TODO: Don't need really as FirebaseAuth User has this
+  DateTime updatedAt;         // TODO: Does this really provide any value if we don't know what they updated?
+  String institution;         // checked
+  String firstName;           // name = firstName + lastName
+  String lastName;            // name = firstName + lastName
+  String? graduationYear;     // checked
+  String phoneNumber;         // TODO: Need to make a check on this
+  String emailAddress;        // checked
+  String stripeCustomerId;    // added
+  String? stripeAccountId;    // added
+  Driver? driverData;         // TODO: Need to add
+  bool registered;            // checked
+  String signInMethod;        // providerId equivalent
 
   /// Initializes an Unregistered User.
   ///

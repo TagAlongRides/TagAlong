@@ -9,18 +9,27 @@ part 'tagalong_user.g.dart';
 /// Run `flutter pub run build_runner build --delete-conflicting-outputs` for one-time generation.
 @JsonSerializable()
 class TagAlongUser {
+
+  // REQUIRED Fields
   String id;                          // User.uid
   String providerId;                  // User.providerData[0].providerId
-  bool isEmailVerified;               // User.emailVerified  --> Proves [TagAlongUser] is "Registered"
   bool isRegistered = false;
+  // bool isEmailVerified;            // User.emailVerified  --> Proves [TagAlongUser] is "Registered"
+
+  // OPTIONAL Fields
+  String? stripeAccountId;
+  String? stripeCustomerId;
+  String? profilePictureUrl;
   String? name;
   String? institution;
   String? emailAddress;               // School email, not provider email
   String? password;
-  // TODO: need to have verification for this as well eventually..
-  // String phoneNumber;
-  int? signUpTime;
   String? graduationYear;
+
+  // TODO: need to have verification for this as well eventually. Need Mike's direction
+  // String phoneNumber;
+
+  // TODO: Need to create DriverRepository
   //Driver? driverData;
 
 
@@ -30,20 +39,22 @@ class TagAlongUser {
   /// the user is NOT registered (isRegistered) OR verified (isEmailVerified)
   TagAlongUser({
     required this.id,
-    required this.isEmailVerified,
     required this.providerId,
+    this.stripeAccountId,
+    this.stripeCustomerId,
     this.name,
     this.institution,
-    this.signUpTime,
     this.emailAddress,
     this.password,
     this.graduationYear,
     // this.driverData,
   });
 
+  /// Returns a [TagAlongUser] from a FirebaseAuth [User] instance
+  ///
+  /// Should not be used public unless registration phase.
   TagAlongUser.fromFireBaseUser(User user):
     id = user.uid,
-    isEmailVerified = user.emailVerified,
     providerId = user.providerData[0].providerId;
 
   factory TagAlongUser.fromJson(Map<String, dynamic> json) => _$TagAlongUserFromJson(json);
