@@ -4,4 +4,8 @@ extension DateExtension on DateTime {
   String format({String dateFormat = 'EEEE d MMMM'}) {
     return DateFormat(dateFormat).format(this);
   }
+
+  DateTime toDate() {
+    return DateTime(year, month, day);
+  }
 }

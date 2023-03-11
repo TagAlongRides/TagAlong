@@ -74,13 +74,9 @@ class RideBoardViewModel extends ChangeNotifier {
       if (filters!['departure_date_time'] != null) {
         logger.log
             .fine('RideBoardViewModel Querying - Filters has departure_date_time: ${filters!['departure_date_time']}');
-        DateTime departTimeStamp = filters!['departure_date_time'];
-        DateTime dayAheadDepartTimeStamp = filters!['departure_date_time'].add(const Duration(hours: 24));
-        ridesToReturn = ridesToReturn
-            .where((ride) =>
-                ride.departureDateTime.isAfter(departTimeStamp.subtract(const Duration(seconds: 1))) &&
-                ride.departureDateTime.isBefore(dayAheadDepartTimeStamp.add(const Duration(seconds: 1))))
-            .toList();
+        DateTime filterDateTime = filters!['departure_date_time'];
+        ridesToReturn =
+            ridesToReturn.where((ride) => ride.departureDateTime.toDate() == filterDateTime.toDate()).toList();
       }
     }
     // Return our results with filters applied
