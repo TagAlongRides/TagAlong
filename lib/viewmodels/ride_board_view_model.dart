@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ride_repo/ride_repo.dart';
@@ -15,9 +14,7 @@ class RideBoardViewModel extends ChangeNotifier {
   /// updated via the Modal Bottom Sheet for filtering
   Map<String, dynamic>? filters;
 
-  /// Data from a query to the [rides] Firestore collection
-  QuerySnapshot<Object?>? querySnapshot;
-  List<RideModel>? querySnapshotMap;
+  List<RideModel>? results;
 
   /// Updates this instance's [filters] and notifies listeners,
   /// mainly for the [RideBoard] so that it will re-update with new Rides
@@ -27,9 +24,8 @@ class RideBoardViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Returns a Future<QuerySnapshot<Map<String, dynamic>>> of ALL rides
-  /// ordered by the `departure_date_time` field, from `rides` collection.
-
+  /// Gets all rides available to book from cloud function (status is scheduled, has available seat)
+  /// Parses results to RideModel
   Future<List<RideModel>> getAllRidesData() async {
     try {
       final rideData = await HttpApiClient.instance.get('rideboard/');
@@ -42,7 +38,7 @@ class RideBoardViewModel extends ChangeNotifier {
         return RideModel.fromJson(rideMap);
       }).toList();
 
-      querySnapshotMap = rideDataParsed;
+      results = rideDataParsed;
       return rideDataParsed;
     } on Exception catch (e) {
       logger.log.fine(e.toString());
@@ -50,30 +46,27 @@ class RideBoardViewModel extends ChangeNotifier {
     }
   }
 
-  /// Asynchronously updates our current QuerySnapshot, which contains the result of the last
-  /// query we had, based on the user's filters.
+  /// Retrieves list of RideModels from getAllRidesData() and applies user-selected filters
   Future<List<RideModel>> getRidesBasedOnFilters() async {
     // Get all available rides
     List<RideModel> ridesToReturn = await getAllRidesData();
+    logger.log.fine('Rideboard filters applied: ${filters.toString()}');
 
     // Exclude results where the user is the driver or has already booked
     final userId = authService.getUser()!.uid;
     ridesToReturn = ridesToReturn.where((ride) => ride.driverId != userId && !ride.riderIds.contains(userId)).toList();
 
     // Filter ride results based on the filters applied by the user
-    if (filters == null) {
-      logger.log.fine('RideBoardViewModel Querying - Filters is NULL');
-    } else {
+    if (filters != null) {
       // 1. ToCampus
-      if (filters!['to_campus'] != null) {
-        logger.log.fine('RideBoardViewModel Querying - Filters has to_campus: ${filters!['to_campus']}');
-        ridesToReturn = ridesToReturn.where((ride) => ride.toCampus == filters!['to_campus']).toList();
+      final toCampusFilter = filters?['to_campus'];
+      final fromCampusFilter = filters?['from_campus'];
+      if (toCampusFilter != fromCampusFilter) {
+        ridesToReturn = ridesToReturn.where((ride) => ride.toCampus == toCampusFilter).toList();
       }
 
       // 2. Departure Date
       if (filters!['departure_date_time'] != null) {
-        logger.log
-            .fine('RideBoardViewModel Querying - Filters has departure_date_time: ${filters!['departure_date_time']}');
         DateTime filterDateTime = filters!['departure_date_time'];
         ridesToReturn =
             ridesToReturn.where((ride) => ride.departureDateTime.toDate() == filterDateTime.toDate()).toList();
@@ -82,6 +75,5 @@ class RideBoardViewModel extends ChangeNotifier {
     // Return our results with filters applied
     ridesToReturn.sort((ride1, ride2) => ride1.departureDateTime.compareTo(ride2.departureDateTime));
     return ridesToReturn;
-    //'departure_date_time'
   }
 }

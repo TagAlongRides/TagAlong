@@ -90,7 +90,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                 padding: const EdgeInsets.all(8),
                 child: Consumer<FilterRideViewModel>(builder: (context, filterRideViewModel, child) {
                   return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                    ChoiceChip(
+                    FilterChip(
                       label: SizedBox(
                         width: 120,
                         child: Container(
@@ -101,7 +101,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                       selected: filterRideViewModel.toCampus,
                       onSelected: (bool selected) => filterRideViewModel.toCampusChoice(),
                     ),
-                    ChoiceChip(
+                    FilterChip(
                         label: SizedBox(
                           width: 120,
                           child: Container(
@@ -109,7 +109,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                             alignment: Alignment.center,
                           ),
                         ),
-                        selected: !filterRideViewModel.toCampus,
+                        selected: filterRideViewModel.fromCampus,
                         onSelected: (bool selected) => filterRideViewModel.fromCampusChoice())
                   ]);
                 })),
@@ -175,6 +175,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                       // [RideBoard] to Re-query and rebuild the ListView
                       Map<String, dynamic> filters = {
                         'to_campus': filterRideViewModel.toCampus,
+                        'from_campus': filterRideViewModel.fromCampus,
                         'departure_date_time': filterRideViewModel.departureDate
                       };
                       rideBoardViewModel.updateFilters(filters);
