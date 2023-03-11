@@ -139,8 +139,9 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                         context: context,
                         initialDate: filterRideViewModel.departureDate ?? DateTime.now(),
                         firstDate: DateTime.now(),
-                        lastDate: DateTime(2022, 12),
+                        lastDate: DateTime.now().add(const Duration(days: 180)),
                         helpText: 'Select a date to leave',
+                        currentDate: DateTime.now(),
                       );
                       filterRideViewModel.updateDepartureDate(newDate);
                     });
