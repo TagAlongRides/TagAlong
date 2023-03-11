@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:ride_repo/src/enum/ride_status_enum.dart';
 
@@ -66,11 +67,6 @@ class RideModel {
   DateTime? updatedAt;
 
   factory RideModel.fromJson(Map<String, dynamic> json) {
-    DateTime epochToDateTime(Map<String, dynamic> time) {
-      final timeFromSeconds = DateTime.fromMillisecondsSinceEpoch((time['_seconds'] as int) * 1000);
-      return timeFromSeconds;
-    }
-
     return RideModel(
       rideId: json["ride_id"],
       driverId: json["driver_id"],
@@ -81,20 +77,20 @@ class RideModel {
       university: json["university"],
       driverFullName: json["driver_full_name"],
       noBags: json["no_bags"],
-      createdAt: epochToDateTime(json["created_at"]),
+      createdAt: convertToDateTime(json["created_at"]),
       toCampus: json["to_campus"],
       vehicle: Vehicle.fromJson(json["vehicle"]),
       departureTimeOfDay: json["departure_time_of_day"],
       driverProfilePictureUrl: json["driver_profile_picture_url"],
       price: json["price"],
-      departureDateTime: epochToDateTime(json["departure_date_time"]),
+      departureDateTime: convertToDateTime(json["departure_date_time"]),
       noPassengers: json["no_passengers"],
       remainingSeats: json["remaining_seats"],
       vaccinationCard: json["vaccination_card"],
       dropoffLocation: Location.fromJson(json["dropoff_location"]),
       status: RideStatus.values.byName(json["status"].toString().toLowerCase()),
       stripeAccountId: json["stripe_account_id"] ?? '',
-      updatedAt: json["updated_at"] == null ? null : epochToDateTime(json["updated_at"]),
+      updatedAt: json["updated_at"] == null ? null : convertToDateTime(json["updated_at"]),
     );
   }
 
@@ -191,15 +187,10 @@ class Vehicle {
   final String make;
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
-    DateTime epochToDateTime(Map<String, dynamic> time) {
-      final timeFromSeconds = DateTime.fromMillisecondsSinceEpoch((time['_seconds'] * 1000) as int);
-      return timeFromSeconds;
-    }
-
     return Vehicle(
       color: json["color"],
       // year: json["year"],
-      createdAt: epochToDateTime(json["created_at"]),
+      createdAt: convertToDateTime(json["created_at"]),
       model: json["model"],
       vehicleId: json["vehicle_id"],
       make: json["make"],
