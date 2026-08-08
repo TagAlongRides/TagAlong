@@ -9,7 +9,7 @@ import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
-import 'package:tagalong/widgets/rideboard/rideboard.dart';
+import 'package:tagalong/util/pricing.dart';
 
 class RideDetailPricing extends StatelessWidget {
   const RideDetailPricing({
@@ -45,59 +45,18 @@ class RideDetailPricing extends StatelessWidget {
           if (isDriver || !isInFuture)
             Text(
               isDriver ? (isInFuture ? 'Estimated Earnings' : 'Earnings') : (isInFuture ? '' : 'Receipt'),
-              style: TagAlongTheme.lightTextTheme.headline6,
+              style: TagAlongTheme.lightTextTheme.titleLarge,
             ),
           const SizedBox(height: 16),
-          // Subtotal
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: isDriver
-                ? [
-                    const Text('Number of Passengers'),
-                    //TODO - Create a more robust way to manage the number of currently booked passengers
-                    Text('${ride.noPassengers - ride.remainingSeats}'),
-                  ]
-                : [
-                    const Text('Subtotal'),
-                    Text('\$${ride.price}'),
-                  ],
-          ),
-          const SizedBox(height: 16),
 
-          // Service Fee
-          Row(
-            children: isDriver
-                ? [
-                    const Text('Price per Passenger'),
-                    Spacer(),
-                    Text('\$${ride.price}'),
-                  ]
-                : [
-                    const Text('Service Fee'),
-                    if (isInFuture) const SizedBox(width: 16),
-                    if (isInFuture)
-                      IconButton(
-                          padding: const EdgeInsets.all(0),
-                          constraints: const BoxConstraints(),
-                          icon: const Icon(Icons.info_outline),
-                          onPressed: () async {
-                            return showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                      title: const Text('Pricing Details'),
-                                      content: const Text(
-                                          'This fee helps support TagAlong’s platform and covers a broad range of operating costs including app maintenance and support.'),
-                                      actions: <Widget>[
-                                        TextButton(child: const Text('OK'), onPressed: () => Navigator.pop(context))
-                                      ]);
-                                });
-                          }),
-                    const Spacer(),
-                    Text('\$${rideDetailsViewModel.getServiceFee()}'),
-                  ],
-          ),
-          // "Continue" Button
+          if (isDriver) ..._driverEarnings(),
+
+          // Passengers see the full price breakdown. Before booking it is
+          // collapsed behind an expandable "Total price for 1 passenger"
+          // header; on a receipt it is always open.
+          if (!isDriver) _PriceBreakdown(ride: ride, alwaysExpanded: isMyRides),
+
+          // "Pay with Credit Card or Debit Card" Button
           const SizedBox(height: 16),
           if (!isMyRides)
             Consumer<TagAlongUserViewModel>(
@@ -105,23 +64,10 @@ class RideDetailPricing extends StatelessWidget {
                 final _isVerified = user.isEmailVerified();
                 return ElevatedButton(
                   style: _isVerified ? null : ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey)),
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          _isVerified ? 'Continue' : 'Email Verification Needed',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          _isVerified ? '\$${rideDetailsViewModel.getTotalPrice()}' : '',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                      )
-                    ],
+                  child: Text(
+                    _isVerified ? 'Pay with Credit Card or Debit Card' : 'Email Verification Needed',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   onPressed: _isVerified
                       ? () {
@@ -133,10 +79,16 @@ class RideDetailPricing extends StatelessWidget {
                             );
                             Navigator.of(context).pushNamed(RideBoardScreen.routeName);
                           } else if (ride.riderIds.contains(user.tagAlongUser!.id)) {
-                            // print('already booked');
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('You have already reserved a seat on this ride'),
+                              ),
+                            );
+                            Navigator.of(context).pushNamed(RideBoardScreen.routeName);
+                          } else if (ride.remainingSeats <= 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Sorry! This ride has no more seats remaining.'),
                               ),
                             );
                             Navigator.of(context).pushNamed(RideBoardScreen.routeName);
@@ -155,10 +107,10 @@ class RideDetailPricing extends StatelessWidget {
                                 return AlertDialog(
                                     title: const Text('Please verify email'),
                                     content: const Text(
-                                        'To keep your travel safe, Tagalong requires every user to verify their email address before posting or booking a ride.'),
+                                        'Heads up! In order to book a ride you’ll need to confirm your email. Would you like us to resend your confirmation email?'),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: const Text('Resend Verification'),
+                                        child: const Text('Yes, please!'),
                                         onPressed: () {
                                           user.sendEmailVerificationToUser();
                                           ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +124,7 @@ class RideDetailPricing extends StatelessWidget {
                                         },
                                       ),
                                       TextButton(
-                                        child: const Text('OK'),
+                                        child: const Text('No, thanks.'),
                                         onPressed: () => Navigator.pop(context),
                                       ),
                                     ]);
@@ -181,27 +133,20 @@ class RideDetailPricing extends StatelessWidget {
                 );
               },
             ),
-          if (isMyRides)
-            Column(
+
+          if (isMyRides && isDriver)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isDriver ? 'Total Earnings' : 'Subtotal',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      //TODO - Create a more robust way to manage the number of currently booked passengers
-                      isDriver
-                          ? '\$${(ride.noPassengers - ride.remainingSeats) * ride.price}'
-                          : '\$${rideDetailsViewModel.getTotalPrice()}',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                const Text('Total Earnings', style: TextStyle(fontWeight: FontWeight.bold)),
+                //TODO - Create a more robust way to manage the number of currently booked passengers
+                Text(
+                  '\$${(ride.noPassengers - ride.remainingSeats) * ride.price}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
+
           if (isMyRides && isInFuture && !isCancelled)
             Padding(
               padding: const EdgeInsets.only(top: 24),
@@ -211,8 +156,6 @@ class RideDetailPricing extends StatelessWidget {
                   foregroundColor: MaterialStateProperty.all(TagAlongTheme.colorHighEmphasis),
                 ),
                 onPressed: () async {
-                  final rideBookings = await RideBookingRepository.instance
-                      .getBookingsForRideAndUser(rideId: ride.rideId, userId: userId!, isCanceled: false);
                   InfoDialog.show(
                     context,
                     message: isDriver
@@ -228,6 +171,28 @@ class RideDetailPricing extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// The driver's side of the ledger — headcount and per-passenger take.
+  List<Widget> _driverEarnings() {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Number of Passengers'),
+          //TODO - Create a more robust way to manage the number of currently booked passengers
+          Text('${ride.noPassengers - ride.remainingSeats}'),
+        ],
+      ),
+      const SizedBox(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Price per Passenger'),
+          Text('\$${ride.price}'),
+        ],
+      ),
+    ];
   }
 
   Future<void> _handleCancel() async {
@@ -277,5 +242,101 @@ class RideDetailPricing extends StatelessWidget {
     // Pop the dialog box and My Ride detail screen to return to main My Rides page
     Navigator.of(context).pop();
     Navigator.of(context).pop();
+  }
+}
+
+/// "Total price for 1 passenger" with an expandable breakdown of the driver's
+/// price, the service fee, and taxes (Milestone 3, §2.1.3).
+///
+/// Collapsed by default when the passenger is deciding whether to book; a
+/// receipt for an already-booked ride passes [alwaysExpanded] so the breakdown
+/// is not hidden behind a tap.
+class _PriceBreakdown extends StatefulWidget {
+  const _PriceBreakdown({Key? key, required this.ride, this.alwaysExpanded = false}) : super(key: key);
+
+  final RideModel ride;
+  final bool alwaysExpanded;
+
+  @override
+  State<_PriceBreakdown> createState() => _PriceBreakdownState();
+}
+
+class _PriceBreakdownState extends State<_PriceBreakdown> {
+  bool _expanded = false;
+
+  bool get _isOpen => widget.alwaysExpanded || _expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    final price = widget.ride.price;
+    // Expanding partitions the total from the rest of the page by making it
+    // bold, per the requirements.
+    final totalStyle = TextStyle(
+      fontWeight: _isOpen ? FontWeight.bold : FontWeight.normal,
+      fontSize: 16,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: widget.alwaysExpanded ? null : () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Text('Total price for 1 passenger', style: totalStyle),
+                if (!widget.alwaysExpanded)
+                  Icon(_isOpen ? Icons.expand_less : Icons.expand_more, size: 20),
+                const Spacer(),
+                Text(Pricing.format(Pricing.total(price)), style: totalStyle),
+              ],
+            ),
+          ),
+        ),
+        if (_isOpen) ...[
+          const Divider(),
+          _breakdownRow(label: const Text("Driver's price"), amount: Pricing.format(Pricing.subtotal(price))),
+          const SizedBox(height: 8),
+          _breakdownRow(
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Service fee'),
+                IconButton(
+                  padding: const EdgeInsets.only(left: 8),
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.info_outline, size: 18),
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Service fee'),
+                      content: const Text(
+                          'This fee helps support TagAlong’s platform and covers a broad range of operating costs including app maintenance and support.'),
+                      actions: <Widget>[
+                        TextButton(child: const Text('OK'), onPressed: () => Navigator.pop(context)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            amount: Pricing.format(Pricing.serviceFee(price)),
+          ),
+          const SizedBox(height: 8),
+          _breakdownRow(label: const Text('Taxes'), amount: Pricing.format(Pricing.tax(price))),
+        ],
+      ],
+    );
+  }
+
+  Widget _breakdownRow({required Widget label, required String amount}) {
+    return Row(
+      children: [
+        label,
+        const Spacer(),
+        Text(amount),
+      ],
+    );
   }
 }

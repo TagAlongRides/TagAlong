@@ -6,6 +6,7 @@ import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/services/notification_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 
@@ -55,7 +56,7 @@ class TagAlongUserViewModel with ChangeNotifier {
           } else {
             logger.log.fine('Reauthenticating user');
             final authToken = await FacebookAuth.instance.accessToken;
-            final facebookAuthCredential = FacebookAuthProvider.credential(authToken!.token);
+            final facebookAuthCredential = FacebookAuthProvider.credential(authToken!.tokenString);
             await user.reauthenticateWithCredential(facebookAuthCredential);
             logger.log.fine('Sending email verification to updated email');
             await user.verifyBeforeUpdateEmail(studentEmail);
@@ -164,6 +165,18 @@ class TagAlongUserViewModel with ChangeNotifier {
         logger.log.fine('setUpUser() - User exists! Looks like:');
         logger.log.fine('setUpUser() - ${userData.toString()}');
         tagAlongUser = TagAlongUser.fromJson(userData);
+        // Users who registered before we started capturing the Facebook id
+        // have none stored; backfill it from their linked auth provider so
+        // their profile is still linkable from the Ride Details page.
+        if (tagAlongUser!.facebookId.isEmpty) {
+          final facebookId = _authService.getFacebookId();
+          if (facebookId.isNotEmpty) {
+            tagAlongUser!.facebookId = facebookId;
+            await databaseService.users.doc(uid).update({'facebook_id': facebookId});
+          }
+        }
+        // So we can push this user ride notifications on this device.
+        await NotificationService.instance.registerDevice(uid);
         return;
       }
       // User does not exist - create an unregisteredUser and add to Firestore
@@ -181,6 +194,7 @@ class TagAlongUserViewModel with ChangeNotifier {
             profilePictureUrl: url,
             createdAt: time,
             updatedAt: time,
+            facebookId: _authService.getFacebookId(),
           );
         } else {
           // Get the User's Facebook profile picture
@@ -195,6 +209,7 @@ class TagAlongUserViewModel with ChangeNotifier {
       logger.log.fine('setUpUser() - TagAlongUser was initialized.');
       logger.log.fine('setUpUser() - The TagAlongUser is: $tagAlongUser}');
       await addTagAlongUserToFirestore(uid);
+      await NotificationService.instance.registerDevice(uid);
     }
   }
 

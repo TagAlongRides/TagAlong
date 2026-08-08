@@ -8,6 +8,7 @@
 .buildlog/
 .history
 .svn/
+reqs/
 
 # IntelliJ related
 *.iml
@@ -44,3 +45,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Native build output produced by the Android Gradle plugin
+/android/app/.cxx/

@@ -45,80 +45,80 @@ class TagAlongTheme {
   // Defaulting color to black in most cases, but may use .copyWith() to
   // contextually override these colors (e.g. displaying error message)
   static TextTheme lightTextTheme = TextTheme(
-    headline1: GoogleFonts.nunitoSans(
+    displayLarge: GoogleFonts.nunitoSans(
       fontSize: 96.0,
       fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    headline2: GoogleFonts.nunitoSans(
+    displayMedium: GoogleFonts.nunitoSans(
       fontSize: 60.0,
       fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    headline3: GoogleFonts.nunitoSans(
+    displaySmall: GoogleFonts.nunitoSans(
       fontSize: 48.0,
       fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    headline4: GoogleFonts.nunitoSans(
+    headlineMedium: GoogleFonts.nunitoSans(
       fontSize: 34.0,
       fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    headline5: GoogleFonts.nunitoSans(
+    headlineSmall: GoogleFonts.nunitoSans(
       fontSize: 28.0,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    headline6: GoogleFonts.nunitoSans(
+    titleLarge: GoogleFonts.nunitoSans(
       fontSize: 22.0,
       fontWeight: FontWeight.w400,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    subtitle1: GoogleFonts.nunitoSans(
+    titleMedium: GoogleFonts.nunitoSans(
       fontSize: 16.0,
       fontWeight: FontWeight.w600,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    subtitle2: GoogleFonts.nunitoSans(
+    titleSmall: GoogleFonts.nunitoSans(
       fontSize: 14.0,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    bodyText1: GoogleFonts.nunitoSans(
+    bodyLarge: GoogleFonts.nunitoSans(
       fontSize: 16.0,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    bodyText2: GoogleFonts.nunitoSans(
+    bodyMedium: GoogleFonts.nunitoSans(
       fontSize: 14.0,
       fontWeight: FontWeight.w400,
       fontStyle: FontStyle.normal,
       color: Colors.black,
     ),
-    button: GoogleFonts.nunitoSans(
+    labelLarge: GoogleFonts.nunitoSans(
       fontSize: 14.0,
       fontWeight: FontWeight.w300,
       fontStyle: FontStyle.normal,
       color: colorHighEmphasis,
       letterSpacing: 1,
     ),
-    caption: GoogleFonts.nunitoSans(
+    bodySmall: GoogleFonts.nunitoSans(
       fontSize: 12.0,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
       color: colorHighEmphasis,
     ),
-    overline: GoogleFonts.nunitoSans(
+    labelSmall: GoogleFonts.nunitoSans(
       fontSize: 10.0,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
@@ -129,7 +129,7 @@ class TagAlongTheme {
   // Widget theming
   static AppBarTheme appBarTheme = AppBarTheme(
     backgroundColor: primarySwatch.shade700,
-    titleTextStyle: lightTextTheme.headline6!.copyWith(
+    titleTextStyle: lightTextTheme.titleLarge!.copyWith(
       color: secondarySwatch.shade50,
     ),
     iconTheme: IconThemeData(
@@ -151,8 +151,8 @@ class TagAlongTheme {
     selectedItemColor: Colors.yellow[200],
     unselectedItemColor: secondarySwatch.shade50,
     backgroundColor: primarySwatch.shade700,
-    unselectedLabelStyle: lightTextTheme.caption,
-    selectedLabelStyle: lightTextTheme.caption!.copyWith(fontWeight: FontWeight.bold),
+    unselectedLabelStyle: lightTextTheme.bodySmall,
+    selectedLabelStyle: lightTextTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
     type: BottomNavigationBarType.fixed,
   );
 
@@ -163,7 +163,7 @@ class TagAlongTheme {
 
   static ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      textStyle: lightTextTheme.button!.copyWith(
+      foregroundColor: secondarySwatch.shade50, textStyle: lightTextTheme.labelLarge!.copyWith(
         fontWeight: FontWeight.bold,
       ),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(1000))),
@@ -171,7 +171,6 @@ class TagAlongTheme {
         vertical: 10,
         horizontal: 20,
       ),
-      onPrimary: secondarySwatch.shade50,
     ),
   );
 
@@ -180,7 +179,7 @@ class TagAlongTheme {
       foregroundColor: MaterialStateProperty.all(colorHighEmphasis),
       backgroundColor: MaterialStateProperty.all(Colors.transparent),
       textStyle: MaterialStateProperty.all(
-        lightTextTheme.button!.copyWith(
+        lightTextTheme.labelLarge!.copyWith(
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
@@ -191,14 +190,13 @@ class TagAlongTheme {
   static OutlinedButtonThemeData outlinedButtonTheme = OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       alignment: Alignment.center,
-      textStyle: lightTextTheme.button!.copyWith(
+      textStyle: lightTextTheme.labelLarge!.copyWith(
         fontWeight: FontWeight.bold,
-      ),
+      ), disabledForegroundColor: secondarySwatch.shade50.withOpacity(0.38),
       padding: const EdgeInsets.symmetric(
         vertical: 10,
         horizontal: 20,
       ),
-      onSurface: secondarySwatch.shade50,
       // side: BorderSide.none,
       shape: RoundedRectangleBorder(
         // Using very large number to create semicircle ends of button; Flutter sets borderRadius to max allowable
@@ -223,8 +221,8 @@ class TagAlongTheme {
     selectedColor: primarySwatch.shade700,
     secondarySelectedColor: primarySwatch.shade700,
     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-    labelStyle: lightTextTheme.subtitle2!,
-    secondaryLabelStyle: lightTextTheme.subtitle2!.copyWith(color: secondarySwatch.shade50),
+    labelStyle: lightTextTheme.titleSmall!,
+    secondaryLabelStyle: lightTextTheme.titleSmall!.copyWith(color: secondarySwatch.shade50),
     brightness: Brightness.light,
     showCheckmark: true,
     checkmarkColor: Colors.white,

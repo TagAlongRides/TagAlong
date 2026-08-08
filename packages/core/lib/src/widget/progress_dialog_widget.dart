@@ -94,7 +94,7 @@ class ProgressDialog extends StatelessWidget {
               child: Text(
                 message,
                 textAlign: TextAlign.justify,
-                style: _themeData.textTheme.subtitle1!
+                style: _themeData.textTheme.titleMedium!
                     .copyWith(color: Colors.black),
               ),
             ),

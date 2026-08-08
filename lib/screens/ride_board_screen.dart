@@ -50,13 +50,25 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
     );
   }
 
+  /// Loads the Point B dropdown options for the direction currently selected.
+  Future<void> _loadDestinationOptions(BuildContext context) async {
+    final filterRideViewModel = Provider.of<FilterRideViewModel>(context, listen: false);
+    final rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
+
+    filterRideViewModel.setLoadingDestinations(true);
+    final options = await rideBoardViewModel.getDestinationOptions(toCampus: filterRideViewModel.toCampus);
+    filterRideViewModel.setDestinationOptions(options);
+  }
+
   /// UI for the filter Modal Bottom Sheet and its corresponding functionality.
   ///
-  /// The UI is built out of 4 main pieces:
+  /// The UI is built out of 6 main pieces:
   /// 1. The [AppBar]
   /// 2. To/From Campus [ChoiceChips]
-  /// 3. Departure Date [TextFormField] + DatePicker
-  /// 4. Row of filter buttons
+  /// 3. Departure Date [TextFormField] + DateRangePicker
+  /// 4. Day / Night [ChoiceChips]
+  /// 5. Point B destination dropdown
+  /// 6. Row of filter buttons
   Widget _getFilterModalBottomSheet(BuildContext context) {
     var filterRideViewModel = Provider.of<FilterRideViewModel>(context, listen: false);
     var rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
@@ -99,7 +111,10 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                         ),
                       ),
                       selected: filterRideViewModel.toCampus,
-                      onSelected: (bool selected) => filterRideViewModel.toCampusChoice(),
+                      onSelected: (bool selected) {
+                        filterRideViewModel.toCampusChoice();
+                        _loadDestinationOptions(context);
+                      },
                     ),
                     ChoiceChip(
                         label: SizedBox(
@@ -110,7 +125,10 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                           ),
                         ),
                         selected: !filterRideViewModel.toCampus,
-                        onSelected: (bool selected) => filterRideViewModel.fromCampusChoice())
+                        onSelected: (bool selected) {
+                          filterRideViewModel.fromCampusChoice();
+                          _loadDestinationOptions(context);
+                        })
                   ]);
                 })),
 
@@ -119,7 +137,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
               endIndent: 16,
             ),
 
-            // 3. Departure Date [TextFormField] + DatePicker
+            // 3. Departure Date [TextFormField] + DateRangePicker
             const Padding(padding: EdgeInsets.all(8), child: Text('When are you leaving?')),
             Padding(
               padding: const EdgeInsets.all(8),
@@ -133,19 +151,100 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
                         suffixIcon: const Icon(Icons.date_range)),
 
-                    // Show the DatePicker
+                    // Show the DateRangePicker - a single day is a range whose
+                    // start and end are the same date.
                     onTap: () async {
-                      final DateTime? newDate = await showDatePicker(
+                      final now = DateTime.now();
+                      final range = await showDateRangePicker(
                         context: context,
-                        initialDate: filterRideViewModel.departureDate ?? DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2022, 12),
-                        helpText: 'Select a date to leave',
+                        initialDateRange: filterRideViewModel.departureRange,
+                        firstDate: DateTime(now.year, now.month, now.day),
+                        // Drivers can post up to 6 months out.
+                        lastDate: now.add(const Duration(days: 190)),
+                        helpText: 'Select when you want to leave',
                       );
-                      filterRideViewModel.updateDepartureDate(newDate);
+                      filterRideViewModel.updateDepartureRange(range);
                     });
               }),
             ),
+
+            // 4. Day / Night ChoiceChips
+            const Padding(padding: EdgeInsets.all(8), child: Text('What time of day?')),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Consumer<FilterRideViewModel>(builder: (context, filterRideViewModel, child) {
+                return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                  ChoiceChip(
+                    avatar: const Icon(Icons.wb_sunny_outlined, size: 18),
+                    label: const SizedBox(
+                      width: 100,
+                      child: Text('Day', textAlign: TextAlign.center),
+                    ),
+                    selected: filterRideViewModel.day,
+                    onSelected: (_) => filterRideViewModel.toggleDay(),
+                  ),
+                  ChoiceChip(
+                    avatar: const Icon(Icons.nightlight_outlined, size: 18),
+                    label: const SizedBox(
+                      width: 100,
+                      child: Text('Night', textAlign: TextAlign.center),
+                    ),
+                    selected: filterRideViewModel.night,
+                    onSelected: (_) => filterRideViewModel.toggleNight(),
+                  ),
+                ]);
+              }),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                'Day is 6:00am - 5:59pm, night is 6:00pm - 5:59am. Pick both or neither to see all times.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+            ),
+
+            const Divider(
+              indent: 16,
+              endIndent: 16,
+            ),
+
+            // 5. Point B destination dropdown
+            Consumer<FilterRideViewModel>(builder: (context, filterRideViewModel, child) {
+              // The dropdown lists the non-campus end of the trip, which flips
+              // depending on the direction the user picked above.
+              final label = filterRideViewModel.toCampus ? 'Where are you coming from?' : 'Where are you going?';
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(padding: const EdgeInsets.all(8), child: Text(label)),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: filterRideViewModel.loadingDestinations
+                        ? const Center(child: CircularProgressIndicator())
+                        : DropdownButtonFormField<String?>(
+                            value: filterRideViewModel.destination,
+                            isExpanded: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            ),
+                            hint: Text(filterRideViewModel.destinationOptions.isEmpty
+                                ? 'No locations available'
+                                : 'Anywhere'),
+                            items: [
+                              const DropdownMenuItem<String?>(value: null, child: Text('Anywhere')),
+                              ...filterRideViewModel.destinationOptions.map(
+                                (option) => DropdownMenuItem<String?>(value: option, child: Text(option)),
+                              ),
+                            ],
+                            onChanged: filterRideViewModel.destinationOptions.isEmpty
+                                ? null
+                                : filterRideViewModel.updateDestination,
+                          ),
+                  ),
+                ],
+              );
+            }),
 
             const Padding(
               padding: EdgeInsets.all(8),
@@ -155,7 +254,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
               ),
             ),
 
-            // 4. Row of filter buttons
+            // 6. Row of filter buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -169,14 +268,9 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                       // 1. Pop the BottomModelSheet
                       Navigator.pop(context);
 
-                      // 2. Gathers all the filters and updates the
-                      // [RideBoardViewModel]'s filters, which will then notify
-                      // [RideBoard] to Re-query and rebuild the ListView
-                      Map<String, dynamic> filters = {
-                        'to_campus': filterRideViewModel.toCampus,
-                        'departure_date_time': filterRideViewModel.departureDate
-                      };
-                      rideBoardViewModel.updateFilters(filters);
+                      // 2. Hand the selections to the [RideBoardViewModel],
+                      // which reloads the board only if they actually changed.
+                      rideBoardViewModel.updateFilters(filterRideViewModel.toRideFilters());
                     },
                     child: const Text('Filter'))
               ],
@@ -198,6 +292,12 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
                 icon: const Icon(Icons.filter_alt_rounded),
                 // Filtering Button
                 onPressed: () {
+                  // Show the sheet reflecting whatever is currently applied to
+                  // the board, then fetch the destination options for it.
+                  Provider.of<FilterRideViewModel>(context, listen: false)
+                      .loadFrom(Provider.of<RideBoardViewModel>(context, listen: false).filters);
+                  _loadDestinationOptions(context);
+
                   showModalBottomSheet(
                     isScrollControlled: true,
                     context: context,

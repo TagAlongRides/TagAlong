@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -24,43 +23,48 @@ class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConn
   TagAlongUser? _tagAlongUser;
   late TagAlongUserViewModel _tagAlongUserViewModel;
 
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
+  /// Built once the Stripe onboarding URL comes back, since webview_flutter 4
+  /// takes the URL through the controller rather than the widget.
+  WebViewController? _controller;
 
   @override
   void initState() {
     super.initState();
-
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _fetchStripeConnectUrl();
     });
   }
 
+  /// Points the web view at Stripe's hosted onboarding flow and watches for the
+  /// return URL that means the driver finished.
+  void _loadConnectFlow(String url) {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            log('STRIPE CONNECT : ${request.url}');
+            //Stripe Connect Flow is completed
+            //Update the account id and registration status
+            if (request.url.contains('returnurl')) {
+              Navigator.of(context).pop(_connectResponse);
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(url));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final _themeData = Theme.of(context);
     _tagAlongUserViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
     _tagAlongUser = _tagAlongUserViewModel.tagAlongUser;
 
-    return _connectResponse != null
-        ? WebView(
-            initialUrl: _connectResponse!.data.url,
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController webViewController) async {
-              _controller.complete(webViewController);
-            },
-            navigationDelegate: (NavigationRequest request) {
-              log('STRIPE CONNECT : ${request.url}');
-              //Stripe Connect Flow is completed
-              //Update the account id and registration status
-              if (request.url.contains('returnurl')) {
-                Navigator.of(context).pop(_connectResponse);
-                return NavigationDecision.prevent;
-              }
-              return NavigationDecision.navigate;
-            },
-          )
+    return _controller != null
+        ? WebViewWidget(controller: _controller!)
         : Container(
             alignment: Alignment.center,
             decoration: const BoxDecoration(color: Colors.white),
@@ -110,6 +114,7 @@ class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConn
         .then((value) {
       setState(() {
         _connectResponse = value;
+        _loadConnectFlow(value.data.url);
       });
     }).onError((error, stackTrace) {
       showDialog<String>(

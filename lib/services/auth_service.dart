@@ -34,6 +34,24 @@ class AuthService with ChangeNotifier {
     return _auth.currentUser;
   }
 
+  /// Returns the signed-in user's Facebook account id, taken from their linked
+  /// auth providers, or an empty string if they did not sign in with Facebook.
+  ///
+  /// This is what lets us deep-link to a driver's Facebook profile from the
+  /// Ride Details page.
+  String getFacebookId() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return '';
+    }
+    for (final provider in user.providerData) {
+      if (provider.providerId == 'facebook.com') {
+        return provider.uid ?? '';
+      }
+    }
+    return '';
+  }
+
   Future<void> reloadUser() async {
     final user = await getUser()?.reload();
     notifyListeners();
@@ -48,7 +66,7 @@ class AuthService with ChangeNotifier {
 
     // Log-in was successful
     if (result.status == LoginStatus.success && result.accessToken != null) {
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken!.token);
+      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken!.tokenString);
       try {
         UserCredential? userCred = await _auth.signInWithCredential(facebookAuthCredential);
         return userCred;
@@ -95,7 +113,7 @@ class AuthService with ChangeNotifier {
     // // Log-in was successful
     // if (result.status == LoginStatus.success && result.accessToken != null) {
     //   final OAuthCredential facebookAuthCredential =
-    //       FacebookAuthProvider.credential(result.accessToken!.token);
+    //       FacebookAuthProvider.credential(result.accessToken!.tokenString);
     //   try {
     //     UserCredential? user_cred =
     //         await _auth.signInWithCredential(facebookAuthCredential);

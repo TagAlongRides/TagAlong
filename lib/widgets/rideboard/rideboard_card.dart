@@ -85,7 +85,7 @@ class RideBoardCard extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       (ride.pickupLocation.label ?? ride.pickupLocation.city).toTitleCase() as String,
-                      style: TagAlongTheme.lightTextTheme.headline6,
+                      style: TagAlongTheme.lightTextTheme.titleLarge,
                     ),
                   ),
                 ),
@@ -108,7 +108,7 @@ class RideBoardCard extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         (ride.dropoffLocation.label ?? ride.dropoffLocation.city).toTitleCase() as String,
-                        style: TagAlongTheme.lightTextTheme.headline6,
+                        style: TagAlongTheme.lightTextTheme.titleLarge,
                       ),
                     ),
                   ),
@@ -136,7 +136,7 @@ class RideBoardCard extends StatelessWidget {
           ),
           Text(
             firstNameWithInitial,
-            style: TagAlongTheme.lightTextTheme.bodyText1,
+            style: TagAlongTheme.lightTextTheme.bodyLarge,
           ),
         ],
       ),
@@ -148,7 +148,7 @@ class RideBoardCard extends StatelessWidget {
       child: Container(
         child: Text(
           "\$${ride.price}",
-          style: TagAlongTheme.lightTextTheme.headline5,
+          style: TagAlongTheme.lightTextTheme.headlineSmall,
           // textAlign: TextAlign.right,
         ),
         alignment: Alignment.topRight,
@@ -162,7 +162,7 @@ class RideBoardCard extends StatelessWidget {
       children: [
         Text(
           DateFormat('EEEE MMM d').format(ride.departureDateTime),
-          style: TagAlongTheme.lightTextTheme.bodyText1,
+          style: TagAlongTheme.lightTextTheme.bodyLarge,
         ),
         const SizedBox(
           width: 3,
@@ -181,7 +181,7 @@ class RideBoardCard extends StatelessWidget {
       children: [
         Text(
           ride.departureTimeOfDay,
-          style: TagAlongTheme.lightTextTheme.bodyText1,
+          style: TagAlongTheme.lightTextTheme.bodyLarge,
         ),
         const SizedBox(
           width: 3,
@@ -202,7 +202,7 @@ class RideBoardCard extends StatelessWidget {
           alignment: Alignment.bottomRight,
           child: Text(
             "$seatsRemaining SEATS REMAINING",
-            style: TagAlongTheme.lightTextTheme.caption,
+            style: TagAlongTheme.lightTextTheme.bodySmall,
           ),
         ),
       );
@@ -212,7 +212,7 @@ class RideBoardCard extends StatelessWidget {
           alignment: Alignment.bottomRight,
           child: Text(
             "$seatsRemaining SEAT REMAINING",
-            style: TagAlongTheme.lightTextTheme.caption,
+            style: TagAlongTheme.lightTextTheme.bodySmall,
           ),
         ),
       );

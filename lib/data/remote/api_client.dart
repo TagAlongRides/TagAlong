@@ -12,8 +12,8 @@ class ApiClient {
     if (dio == null) {
       BaseOptions baseOptions = BaseOptions(
         baseUrl: Constants.BASE_URL,
-        connectTimeout: 60000,
-        receiveTimeout: 60000,
+        connectTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
         responseType: ResponseType.json,
       );
 

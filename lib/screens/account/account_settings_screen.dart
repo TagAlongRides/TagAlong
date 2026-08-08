@@ -6,6 +6,7 @@ import 'package:tagalong/screens/account/payment_prefs_screen.dart';
 import 'package:tagalong/screens/account/privacy_policy_screen.dart';
 import 'package:tagalong/screens/account/update_personal_info_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/services/notification_service.dart';
 import '../../viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
@@ -41,7 +42,7 @@ class AccountSettingsScreen extends StatelessWidget {
                 children: [
                   Text(
                     '${users.tagAlongUser!.firstName} ${users.tagAlongUser!.lastName}',
-                    style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.TagAlongTheme.lightTextTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
                   ),
                   Text(
                     users.tagAlongUser?.graduationYear == null
@@ -102,8 +103,15 @@ class AccountSettingsScreen extends StatelessWidget {
           icon: Icons.logout_outlined,
           title: 'Log Out',
           isLogout: true,
-          onTap: () {
-            auth.signOut();
+          onTap: () async {
+            // Stop pushing ride notifications to a device this user has just
+            // signed out of.
+            final userId = Provider.of<TagAlongUserViewModel>(context, listen: false).tagAlongUser?.id;
+            if (userId != null) {
+              await NotificationService.instance.unregisterDevice(userId);
+            }
+            await auth.signOut();
+            if (!context.mounted) return;
             Navigator.of(context).pop();
             Navigator.of(context).pushNamed('/');
           },

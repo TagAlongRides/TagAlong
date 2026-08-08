@@ -48,7 +48,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
               padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
               child: RichText(
                 text: TextSpan(
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                   children: const [
                     TextSpan(
                       text: 'What is the ',
@@ -87,7 +87,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                           ),
                         ),
                       ),
-                      child: Text('\$${offerRideViewModel.price}', style: Theme.of(context).textTheme.headline2),
+                      child: Text('\$${offerRideViewModel.price}', style: Theme.of(context).textTheme.displayMedium),
                     ),
                     IconButton(
                         icon: Icon(
@@ -103,7 +103,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
               padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
               child: RichText(
                 text: TextSpan(
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                   text: 'Any notes for the passenger?',
                 ),
               ),
@@ -118,7 +118,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                     hintText: 'Are you on the talkative or quiet side?'
                         ' Are there some car rules? Any specific music you like listening to?'
                         ' If there\'s anything you\'d like people to know, this is the place to put it.',
-                    hintStyle: theme.TagAlongTheme.lightTextTheme.bodyText1!.copyWith(
+                    hintStyle: theme.TagAlongTheme.lightTextTheme.bodyLarge!.copyWith(
                       fontStyle: FontStyle.italic,
                       color: theme.TagAlongTheme.colorMediumEmphasis,
                     ),
@@ -138,7 +138,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                 Flexible(
                   child: RichText(
                     text: TextSpan(
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                       children: const [
                         TextSpan(
                           text: 'If you require proof of vaccination or wearing a mask, check the box.',
@@ -197,7 +197,7 @@ class _OfferRidePricePrefsState extends State<OfferRidePricePrefs> {
                     child: OutlinedButton(
                       child: Text(
                         'Post Ride',
-                        style: theme.TagAlongTheme.lightTextTheme.button!.copyWith(
+                        style: theme.TagAlongTheme.lightTextTheme.labelLarge!.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

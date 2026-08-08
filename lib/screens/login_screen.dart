@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // 2. TagAlong Header
                   Text(
                     "TagAlong",
-                    style: Theme.of(context).textTheme.headline2,
+                    style: Theme.of(context).textTheme.displayMedium,
                   ),
 
                   // 3. Description
@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         "Get a ride home for the holidays",
-                        style: Theme.of(context).textTheme.bodyText2,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ))
                 ])),
             Expanded(

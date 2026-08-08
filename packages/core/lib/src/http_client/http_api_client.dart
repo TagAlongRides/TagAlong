@@ -12,8 +12,8 @@ class HttpApiClient {
   HttpApiClient._internal() {
     final baseOptions = BaseOptions(
       baseUrl: baseUrl + apiVersion,
-      connectTimeout: 15000,
-      receiveTimeout: 15000,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
       contentType: 'application/json',
       responseType: ResponseType.json,
     );
@@ -21,10 +21,13 @@ class HttpApiClient {
     _dio = Dio(baseOptions);
 
     _dio.interceptors.add(QueuedInterceptorsWrapper(
-      onRequest: (options, handler) {
-        //Pass auth header here
-        if (_token != null && _token!.isNotEmpty) {
-          options.headers[HttpHeaders.authorizationHeader] = 'Bearer $_token';
+      onRequest: (options, handler) async {
+        // Every API route requires a Firebase ID token. Fetched per request
+        // rather than cached, because they expire after an hour and the
+        // provider hands back a refreshed one.
+        final token = await _resolveToken();
+        if (token != null && token.isNotEmpty) {
+          options.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
         }
         handler.next(options);
       },
@@ -36,12 +39,30 @@ class HttpApiClient {
           log(logs as String);
         }));
 
-    DioError;
   }
 
   String? _token;
 
+  /// Supplies a fresh Firebase ID token for each request.
+  ///
+  /// Set by the app at startup. Kept as a callback so this package doesn't
+  /// have to depend on firebase_auth.
+  Future<String?> Function()? tokenProvider;
+
   set token(String? token) => _token = token;
+
+  /// Prefers the provider, falling back to a token set directly via [token].
+  Future<String?> _resolveToken() async {
+    if (tokenProvider != null) {
+      try {
+        return await tokenProvider!();
+      } catch (error) {
+        log('Could not obtain an auth token: $error');
+        return null;
+      }
+    }
+    return _token;
+  }
 
   late Dio _dio;
 
@@ -53,7 +74,7 @@ class HttpApiClient {
       final response =
           await _dio.post(path, data: data, options: Options(headers: headers));
       return response.data;
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       _errorHandle(error);
     }
   }
@@ -64,7 +85,7 @@ class HttpApiClient {
       final response =
           await _dio.put(path, data: data, options: Options(headers: headers));
       return response.data;
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       _errorHandle(error);
     }
   }
@@ -75,21 +96,18 @@ class HttpApiClient {
       final response = await _dio.get(path,
           queryParameters: data, options: Options(headers: headers));
       return response.data;
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       _errorHandle(error);
     }
   }
 
-  void _errorHandle(DioError error) {
-    switch (error.type) {
-      case DioErrorType.connectTimeout:
-      case DioErrorType.sendTimeout:
-      case DioErrorType.receiveTimeout:
-      case DioErrorType.cancel:
-      case DioErrorType.other:
-        throw Exception('Somthing Went Wrong, Please try again');
-      case DioErrorType.response:
-        throw HttpApiException(ErrorModel.fromJson(error.response!.data));
+  void _errorHandle(DioException error) {
+    // The server answered and told us what went wrong - surface that.
+    if (error.type == DioExceptionType.badResponse && error.response?.data != null) {
+      throw HttpApiException(ErrorModel.fromJson(error.response!.data));
     }
+    // Timeouts, cancellation, TLS and connection failures all read the same to
+    // the user.
+    throw Exception('Somthing Went Wrong, Please try again');
   }
 }

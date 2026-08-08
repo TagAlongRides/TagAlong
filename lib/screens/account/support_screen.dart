@@ -118,7 +118,7 @@ class FAQHeadline extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Text(
         headlineText,
-        style: TagAlongTheme.lightTextTheme.headline6!.copyWith(fontWeight: FontWeight.bold),
+        style: TagAlongTheme.lightTextTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
       ),
     );
   }
