@@ -1,0 +1,26 @@
+{
+  "indexes": [
+    {
+      "comment": "Ride Board default view: upcoming scheduled rides at the user's school.",
+      "collectionGroup": "rides",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "university", "order": "ASCENDING"},
+        {"fieldPath": "departure_date_time", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "comment": "Ride Board filtered by direction, and the Point B dropdown options.",
+      "collectionGroup": "rides",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "status", "order": "ASCENDING"},
+        {"fieldPath": "university", "order": "ASCENDING"},
+        {"fieldPath": "to_campus", "order": "ASCENDING"},
+        {"fieldPath": "departure_date_time", "order": "ASCENDING"}
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
