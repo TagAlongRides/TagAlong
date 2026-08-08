@@ -2,8 +2,9 @@ class SignInMethod {
   static const String INVALID = 'Invalid';
   static const String FACEBOOK = 'Facebook';
   static const String APPLE = 'Apple';
+  static const String GOOGLE = 'Google';
 
-  static List<String> values = [FACEBOOK];
+  static List<String> values = [FACEBOOK, GOOGLE, APPLE];
 }
 
 class Institution {

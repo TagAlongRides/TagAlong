@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
@@ -54,10 +53,10 @@ class TagAlongUserViewModel with ChangeNotifier {
             logger.log.fine('Sending email verification');
             await user.sendEmailVerification();
           } else {
-            logger.log.fine('Reauthenticating user');
-            final authToken = await FacebookAuth.instance.accessToken;
-            final facebookAuthCredential = FacebookAuthProvider.credential(authToken!.tokenString);
-            await user.reauthenticateWithCredential(facebookAuthCredential);
+            // Changing the account's email needs a fresh credential from
+            // whichever provider the user actually signed in with.
+            logger.log.fine('Reauthenticating user via ${_authService.currentProviderId()}');
+            await _authService.reauthenticate();
             logger.log.fine('Sending email verification to updated email');
             await user.verifyBeforeUpdateEmail(studentEmail);
           }
@@ -112,6 +111,19 @@ class TagAlongUserViewModel with ChangeNotifier {
     // 2. User unsuccessful in Facebook Login
     else {
       return;
+    }
+  }
+
+  /// Triggers a Google Sign-in event via [AuthService].
+  ///
+  /// Rethrows [SignInFailure] so the login screen can tell the user what went
+  /// wrong — most usefully when the address already belongs to a Facebook or
+  /// Apple account.
+  Future<void> createOrSignInGoogle() async {
+    final UserCredential? userCred = await _authService.googleLogin();
+
+    if (userCred?.user != null) {
+      await setUpUser(userCred!.user!.uid, signInMethod: SignInMethod.GOOGLE);
     }
   }
 
@@ -194,15 +206,19 @@ class TagAlongUserViewModel with ChangeNotifier {
             profilePictureUrl: url,
             createdAt: time,
             updatedAt: time,
+            signInMethod: signInMethod,
             facebookId: _authService.getFacebookId(),
           );
         } else {
-          // Get the User's Facebook profile picture
+          // Google and Apple both hand Firebase a photo URL where they have
+          // one; Apple never does, so this is empty for those accounts and the
+          // UI falls back to showing no avatar.
           tagAlongUser = TagAlongUser(
             id: uid,
-            profilePictureUrl: '',
+            profilePictureUrl: getUser()?.photoURL ?? '',
             createdAt: time,
             updatedAt: time,
+            signInMethod: signInMethod,
           );
         }
       }
