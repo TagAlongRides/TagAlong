@@ -7,6 +7,7 @@ import 'package:tagalong/screens/account/privacy_policy_screen.dart';
 import 'package:tagalong/screens/account/update_personal_info_screen.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/notification_service.dart';
+import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import '../../viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
@@ -104,13 +105,22 @@ class AccountSettingsScreen extends StatelessWidget {
           title: 'Log Out',
           isLogout: true,
           onTap: () async {
+            final userViewModel = Provider.of<TagAlongUserViewModel>(context, listen: false);
+            final rideBoardViewModel = Provider.of<RideBoardViewModel>(context, listen: false);
+
             // Stop pushing ride notifications to a device this user has just
             // signed out of.
-            final userId = Provider.of<TagAlongUserViewModel>(context, listen: false).tagAlongUser?.id;
+            final userId = userViewModel.tagAlongUser?.id;
             if (userId != null) {
               await NotificationService.instance.unregisterDevice(userId);
             }
             await auth.signOut();
+
+            // Drop this user's state, or whoever signs in next on this device
+            // inherits it.
+            userViewModel.clear();
+            rideBoardViewModel.reset();
+
             if (!context.mounted) return;
             Navigator.of(context).pop();
             Navigator.of(context).pushNamed('/');

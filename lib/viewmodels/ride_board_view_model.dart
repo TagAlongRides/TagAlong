@@ -81,6 +81,20 @@ class RideBoardViewModel extends ChangeNotifier {
     await refresh();
   }
 
+  /// Forgets the board entirely, including which school it was showing.
+  ///
+  /// Used on sign-out so the next user doesn't briefly see the previous
+  /// user's board before their own loads.
+  void reset() {
+    _rides.clear();
+    _lastDocument = null;
+    _hasMore = true;
+    _error = null;
+    university = null;
+    filters = const RideFilters();
+    notifyListeners();
+  }
+
   /// Throws away what's on the board and loads the first page.
   Future<void> refresh() async {
     _rides.clear();

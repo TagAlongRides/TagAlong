@@ -79,6 +79,31 @@ class TagAlongUserViewModel with ChangeNotifier {
     }
   }
 
+  /// Maps the Firebase provider id to the registration method we store on
+  /// the user record (Milestone 1, section 2.4).
+  String _signInMethodFromProvider() {
+    switch (_authService.currentProviderId()) {
+      case 'google.com':
+        return SignInMethod.GOOGLE;
+      case 'apple.com':
+        return SignInMethod.APPLE;
+      case 'facebook.com':
+        return SignInMethod.FACEBOOK;
+      default:
+        return SignInMethod.INVALID;
+    }
+  }
+
+  /// Forgets the signed-in user.
+  ///
+  /// Must be called on sign-out. [setUpUser] keeps the cached user when the id
+  /// matches, so leaving a stale one behind would show the previous account to
+  /// whoever signs in next on this device.
+  void clear() {
+    tagAlongUser = null;
+    notifyListeners();
+  }
+
   /// Returns a bool on whether [tagAlongUser] instance exists (in-memory).
   bool userExists() {
     if (tagAlongUser == null) {
@@ -153,12 +178,23 @@ class TagAlongUserViewModel with ChangeNotifier {
   /// user must exist within the FirebaseAuth system.
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
-  Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
+  /// [signInMethod] defaults to whichever provider the user actually signed
+  /// in with, rather than assuming Facebook.
+  Future<void> setUpUser(String uid, {String? signInMethod}) async {
+    signInMethod ??= _signInMethodFromProvider();
     logger.log.fine('setUpUser()');
-    // 1. [user] exists in memory
-    if (tagAlongUser != null) {
-      logger.log.fine('setUpUser() - TagAlongUser instance already in memory.');
+    // 1. The user we are being asked for is already in memory.
+    //
+    // This guard compares ids deliberately. It used to short-circuit on any
+    // cached user at all, so once anyone had signed in during an app session,
+    // every later sign-in kept showing that first account's details.
+    if (tagAlongUser != null && tagAlongUser!.id == uid) {
+      logger.log.fine('setUpUser() - TagAlongUser $uid already in memory.');
       return;
+    }
+    if (tagAlongUser != null) {
+      logger.log.fine('setUpUser() - switching user from ${tagAlongUser!.id} to $uid');
+      tagAlongUser = null;
     }
     if (uid.isEmpty) {
       logger.log.fine('setUpUser() - TagAlongUser uid is null');
