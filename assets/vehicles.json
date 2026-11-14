@@ -1,5 +1,5 @@
 {
-  "_comment": "Fallback vehicle make/model data, used when the carmakemodeldb API is unavailable. Covers makes commonly on US roads; not exhaustive.",
+  "_comment": "Vehicle make/model options for driver registration. Covers makes commonly on US roads; not exhaustive, so an Other entry is included. Edit this file to extend the list; vehicles_asset_test.dart pins its shape.",
   "makes": {
     "Acura": ["ILX", "Integra", "MDX", "RDX", "TLX", "ZDX"],
     "Audi": ["A3", "A4", "A5", "A6", "A7", "A8", "e-tron", "Q3", "Q5", "Q7", "Q8", "TT"],

@@ -1,124 +1,79 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:http/http.dart' as http;
 import 'package:tagalong/util/log.dart' as logger;
 
-/// Supplies the vehicle make and model options for driver registration.
+/// Supplies the vehicle make and model options for driver registration, from
+/// a dataset bundled with the app (`assets/vehicles.json`).
 ///
-/// Prefers the carmakemodeldb API and falls back to a dataset bundled with the
-/// app. The fallback exists because the API answers an expired subscription
-/// with `HTTP 200` and a plain string body rather than an error status:
+/// This used to call the carmakemodeldb API with a token hardcoded in this
+/// file. That subscription lapsed, and the API reports that as `HTTP 200`
+/// with a plain string body rather than an error status:
 ///
 ///     "You need an active subscription to access this data."
 ///
-/// The previous implementation checked only the status code and then cast the
-/// decoded body straight to `List`, so a lapsed subscription surfaced as an
-/// unhandled type error, an empty dropdown, and a driver registration page
-/// nobody could complete or leave.
+/// which the old code cast straight to `List`, stranding drivers on a
+/// registration form they could neither complete nor leave. Milestone 1
+/// section 6.1.1 only calls for "a pre-existing vehicle year-make-model
+/// dataset", so the data is bundled instead: no token to leak, no network
+/// call on the registration path, and nothing to renew.
+///
+/// To extend the list, edit `assets/vehicles.json`; `vehicles_asset_test.dart`
+/// pins its shape.
 class CarMakeModelService {
-  // TODO: The REST API token should be encrypted or hidden?
-  final String _apiToken = 'bE6g4vzFSz57rjH8D4ipn8cTKL6o6HOnV8VeowYo37xyFoQgeAfIMpsrS8EI';
-
   static const String _assetPath = 'assets/vehicles.json';
 
-  /// Bundled make -> models, loaded once.
-  static Map<String, List<String>>? _bundled;
+  /// Earliest model year offered. Bounded rather than open-ended so the
+  /// dropdown stays usable.
+  static const int _earliestYear = 1995;
 
-  /// Whether the last API call fell back to bundled data. Lets the UI say so.
-  bool usedFallback = false;
+  /// Parsed once and shared; the asset never changes at runtime.
+  static Map<String, List<String>>? _vehicles;
 
-  Future<Map<String, List<String>>> _loadBundled() async {
-    if (_bundled != null) return _bundled!;
+  static Future<Map<String, List<String>>> _load() async {
+    if (_vehicles != null) return _vehicles!;
     try {
       final raw = json.decode(await rootBundle.loadString(_assetPath)) as Map<String, dynamic>;
       final makes = raw['makes'] as Map<String, dynamic>;
-      _bundled = makes.map((make, models) => MapEntry(make, List<String>.from(models as List)));
-    } catch (error) {
-      logger.log.warning('Could not load bundled vehicle data: $error');
-      _bundled = <String, List<String>>{};
+      _vehicles = makes.map((make, models) => MapEntry(make, List<String>.from(models as List)));
+    } catch (error, stack) {
+      // Only reachable if the asset is missing or malformed, which is a build
+      // problem rather than a runtime one. Return empty so the dropdowns show
+      // their error state instead of throwing.
+      logger.log.severe('Could not load $_assetPath: $error', error, stack);
+      _vehicles = <String, List<String>>{};
     }
-    return _bundled!;
+    return _vehicles!;
   }
 
-  /// Calls [url] and returns the decoded list, or null if the response was not
-  /// a list — which is how this API reports an expired subscription.
-  Future<List<dynamic>?> _getList(Uri url, String what) async {
-    try {
-      final response = await http.get(url).timeout(const Duration(seconds: 10));
-
-      if (response.statusCode != 200) {
-        logger.log.warning('Vehicle API $what returned HTTP ${response.statusCode}');
-        return null;
-      }
-
-      final decoded = json.decode(response.body);
-      if (decoded is! List) {
-        // e.g. "You need an active subscription to access this data."
-        logger.log.warning('Vehicle API $what did not return a list: $decoded');
-        return null;
-      }
-      return decoded;
-    } catch (error) {
-      logger.log.warning('Vehicle API $what failed: $error');
-      return null;
-    }
-  }
-
-  /// Exposes a List<String> of `Make` values.
+  /// Exposes a List<String> of `Make` values, alphabetically.
   Future<List<String>> getMakes() async {
-    final makes = await _getList(
-      Uri.parse('https://carmakemodeldb.com/api/v1/car-lists/get/all/makes?api_token=$_apiToken'),
-      'makes',
-    );
-
-    if (makes != null) {
-      usedFallback = false;
-      return makes.map((make) => make['make'] as String).toList();
-    }
-
-    usedFallback = true;
-    final bundled = await _loadBundled();
-    return bundled.keys.toList()..sort();
+    final vehicles = await _load();
+    return vehicles.keys.toList()..sort();
   }
 
   /// Exposes a List<String> of `Model` values for [make].
+  ///
+  /// An unrecognised make still gets an option, so a driver with an unlisted
+  /// car is not stuck on a form they cannot complete.
   Future<List<String>> getModels({required String make}) async {
-    final models = await _getList(
-      Uri.parse('https://carmakemodeldb.com/api/v1/car-lists/get/all/models/$make?api_token=$_apiToken'),
-      'models for $make',
-    );
-
-    if (models != null) {
-      usedFallback = false;
-      return models.map((model) => model['model'] as String).toList();
+    final vehicles = await _load();
+    final models = vehicles[make];
+    if (models == null || models.isEmpty) {
+      logger.log.fine('No bundled models for "$make"; offering Other');
+      return const ['Other'];
     }
-
-    usedFallback = true;
-    final bundled = await _loadBundled();
-    // A make we don't carry still has to offer something, or the driver is
-    // stuck on a form they cannot complete.
-    return bundled[make] ?? const ['Other'];
+    return List<String>.from(models)..sort();
   }
 
-  /// Exposes a List<String> of `year` values.
+  /// Exposes a List<String> of `year` values, newest first.
   ///
   /// The Vehicle model does not currently store a year and the dropdown is
-  /// commented out of the registration form, so this is unused; it falls back
-  /// to a plain range rather than a per-model one.
+  /// commented out of the registration form, so this is unused. Kept because
+  /// the requirements ask for a year field and the view model still exposes
+  /// it.
   Future<List<String>> getYears({required String make, required String model}) async {
-    final years = await _getList(
-      Uri.parse('https://carmakemodeldb.com/api/v1/car-lists/get/year-range/$make/$model?api_token=$_apiToken'),
-      'years for $make $model',
-    );
-
-    if (years != null) {
-      usedFallback = false;
-      return years.map((year) => year['year'] as String).toList();
-    }
-
-    usedFallback = true;
-    final currentYear = DateTime.now().year;
-    return [for (var y = currentYear + 1; y >= 1995; y--) y.toString()];
+    final nextYear = DateTime.now().year + 1;
+    return [for (var year = nextYear; year >= _earliestYear; year--) year.toString()];
   }
 }
