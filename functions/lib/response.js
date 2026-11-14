@@ -33,10 +33,14 @@ const serverError = (res, error) => {
   // Logged as well as returned. Without this a failing route produced a 500
   // with no entry in Cloud Logging at all, so the only evidence was an
   // ERROR-severity request log with an empty message.
+  // Deliberately not using `message` as a key: firebase-functions/logger
+  // treats it as the log's own message and overwrites it with a stack trace,
+  // which hid the Stripe error this was added to surface.
   logger.error("Request failed", {
-    message: error && error.message,
-    type: error && error.type,
-    code: error && error.code,
+    detail: error && error.message,
+    stripeType: error && error.type,
+    stripeCode: error && error.code,
+    stripeParam: error && error.param,
   });
   return res.status(500).send(new BaseResponseModel(500, false, `Something went wrong: ${error}`));
 };

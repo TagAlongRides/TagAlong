@@ -4,6 +4,31 @@ const {ok, badRequest, serverError, missingBodyFields} = require("../lib/respons
 
 const router = express.Router();
 
+/**
+ * Stripe wants a phone number it can parse. The app stores bare 10-digit US
+ * numbers, because Milestone 1 validation asks for exactly that ("your 10
+ * digit phone number without spaces or hyphens").
+ *
+ * Returns undefined for anything unrecognised rather than passing it through,
+ * so the driver fills it in during Stripe's own onboarding instead of having
+ * account creation rejected outright.
+ */
+function toE164(phone) {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  return undefined;
+}
+
+/** Strips undefined/null/empty entries; Stripe rejects explicit nulls. */
+function defined(obj) {
+  return Object.fromEntries(
+      Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ""),
+  );
+}
+
+
+
 /*
  * Only the endpoints the TagAlong app actually calls are here. The previous
  * backend also exposed subscriptions, products, prices, setup intents, generic
@@ -69,12 +94,12 @@ router.post("/stripeConnect/account/", async (req, res) => {
         transfers: {requested: true},
       },
       business_type: "individual",
-      individual: {
+      individual: defined({
         email: req.body.email,
         first_name: req.body.first_name,
         last_name: req.body.last_name,
-        phone: req.body.phone,
-      },
+        phone: toE164(req.body.phone),
+      }),
       business_profile: {
         product_description: "Providing rides to other users via the TagAlong app",
         mcc: "4789",
