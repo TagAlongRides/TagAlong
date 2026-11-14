@@ -238,6 +238,16 @@ class TagAlongTheme {
 
   static ThemeData light() {
     return ThemeData(
+      // This theme is built the Material 2 way - a primarySwatch, no
+      // ColorScheme, and button colours chosen to sit on a coloured
+      // background. Flutter turns Material 3 on by default from 3.16, which
+      // gives ElevatedButton a pale surface background instead of the primary
+      // colour, so the theme's light foreground ended up pale-on-pale and
+      // every enabled button read as disabled.
+      // Opting out restores the intended design. Moving the palette to a
+      // ColorScheme and turning this back on is worth doing, but it is a
+      // visual redesign rather than a bug fix.
+      useMaterial3: false,
       primarySwatch: primarySwatch,
       canvasColor: secondarySwatch.shade50,
       textTheme: lightTextTheme,

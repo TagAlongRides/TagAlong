@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tagalong/services/auth_service.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
+import 'package:tagalong/themes/tagalong_theme.dart';
 import 'package:tagalong/widgets/driver_registration_form.dart';
 
 class RegisterDriverScreen extends StatefulWidget {
@@ -19,6 +20,20 @@ class _RegisterDriverScreenState extends State<RegisterDriverScreen> {
             elevation: 0,
             centerTitle: false,
             toolbarHeight: 100,
+            // Driver registration is optional, so there is always a way out of
+            // it. This screen is reached by pushReplacement from the prompt,
+            // which leaves no route to pop back to, so without this a driver
+            // whose car details fail to load has nowhere to go.
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context)
+                    .pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false),
+                child: Text(
+                  'Not now',
+                  style: TextStyle(color: TagAlongTheme.secondarySwatch.shade50),
+                ),
+              ),
+            ],
             title: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,

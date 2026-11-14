@@ -43,6 +43,27 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
               // therefore the new `DropdownButton.value` will automatically be updated.
               onChanged: null,
             );
+          } else if (snapshot.hasError || (snapshot.data?.isEmpty ?? true)) {
+            // Previously this branch was unreachable: `done` was checked
+            // first and matched even when the future had failed, leaving an
+            // empty dropdown with no explanation and no way forward.
+            logger.log.warning('Could not load car makes: ${snapshot.error}');
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'We could not load the list of car makes right now.',
+                  style: TextStyle(color: Colors.red),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Try again'),
+                  onPressed: () => setState(() {
+                    makeList = _registerDriverViewModel.getMakes();
+                  }),
+                ),
+              ],
+            );
           } else if (snapshot.connectionState == ConnectionState.done) {
             logger.log.fine('Done!');
             // By this time, `makeList` is a completed Future and contains
