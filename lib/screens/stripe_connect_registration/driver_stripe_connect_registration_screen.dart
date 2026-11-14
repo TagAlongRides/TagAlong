@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/screens/ride_board_screen.dart';
+import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -72,7 +74,15 @@ class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConn
           );
   }
 
-  void _fetchStripeConnectUrl() async {
+  /// Creates the driver's Stripe account if they don't have one, then opens
+  /// Stripe's hosted onboarding.
+  ///
+  /// Everything is inside one try/finally because the progress dialog is
+  /// dismissed by completing [completer]. The account-creation await used to
+  /// sit outside the error handling, so any failure there escaped the method,
+  /// left the completer uncompleted, and span the dialog forever with no way
+  /// out of the screen.
+  Future<void> _fetchStripeConnectUrl() async {
     final completer = Completer<void>();
 
     ProgressDialog.showWithCompleter(
@@ -81,54 +91,84 @@ class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConn
       message: 'Loading',
     );
 
-    String? stripeAccountId;
-    if (_tagAlongUser?.stripeAccountId == null || _tagAlongUser!.stripeAccountId!.isEmpty) {
-      final StripeAccountCreateResponse accountCreateResponse = await StripeAccountRepository.instance.createAccount(
-        StripeAccountCreateRequest(
+    try {
+      String? stripeAccountId = _tagAlongUser?.stripeAccountId;
+
+      if (stripeAccountId == null || stripeAccountId.isEmpty) {
+        final StripeAccountCreateResponse accountCreateResponse =
+            await StripeAccountRepository.instance.createAccount(
+          StripeAccountCreateRequest(
+            email: _tagAlongUser!.emailAddress,
+            firstName: _tagAlongUser!.firstName,
+            lastName: _tagAlongUser!.lastName,
+            phone: _tagAlongUser!.phoneNumber,
+            type: 'express',
+          ),
+        );
+
+        /// save the account_id in the user profile
+        _tagAlongUserViewModel.updateDriverAccountId(accountCreateResponse.data.id);
+        await _tagAlongUserViewModel.updateTagAlongUserFirestore();
+        stripeAccountId = accountCreateResponse.data.id;
+      }
+
+      final connectResponse = await StripeConnectRepository.instance.getStripeConnectLink(
+        StripeConnectRequest(
           email: _tagAlongUser!.emailAddress,
-          firstName: _tagAlongUser!.firstName,
-          lastName: _tagAlongUser!.lastName,
-          phone: _tagAlongUser!.phoneNumber,
-          type: 'express',
+          accountId: stripeAccountId,
+          refreshUrl: AppConfig.stripeConnectRefreshUrl,
+          returnUrl: AppConfig.stripeConnectReturnUrl,
+          type: 'account_onboarding',
         ),
       );
 
-      ///save the account_id in the user profile
-      _tagAlongUserViewModel.updateDriverAccountId(accountCreateResponse.data.id);
-      await _tagAlongUserViewModel.updateTagAlongUserFirestore();
-      stripeAccountId = accountCreateResponse.data.id;
-    } else {
-      stripeAccountId = _tagAlongUser!.stripeAccountId;
-    }
-
-    StripeConnectRepository.instance
-        .getStripeConnectLink(
-      StripeConnectRequest(
-        email: _tagAlongUser!.emailAddress,
-        accountId: stripeAccountId!,
-        refreshUrl: stripeConnectRefreshUrl,
-        returnUrl: stripeConnectReturnUrl,
-        type: 'account_onboarding',
-      ),
-    )
-        .then((value) {
+      if (!mounted) return;
       setState(() {
-        _connectResponse = value;
-        _loadConnectFlow(value.data.url);
+        _connectResponse = connectResponse;
+        _loadConnectFlow(connectResponse.data.url);
       });
-    }).onError((error, stackTrace) {
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text(error.toString()),
-            actions: <Widget>[
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Ok')),
-            ],
-          );
-        },
-      );
-    }).then((value) => completer.complete());
+    } catch (error, stackTrace) {
+      logger.log.warning('Stripe Connect setup failed: $error', error, stackTrace);
+      if (mounted) _showSetupFailed(error);
+    } finally {
+      // Dismisses the progress dialog. Must happen on every path.
+      if (!completer.isCompleted) completer.complete();
+    }
+  }
+
+  /// Payment setup is not something the driver can retry their way out of if
+  /// the backend is unhappy, so this always offers a way off the screen.
+  void _showSetupFailed(Object error) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('We could not set up payments'),
+          content: Text(
+            'Something went wrong connecting your account to Stripe. You can '
+            'try again, or come back to this later from your account settings.'
+            '\n\n$error',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _fetchStripeConnectUrl();
+              },
+              child: const Text('Try again'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
+              },
+              child: const Text('Not now'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

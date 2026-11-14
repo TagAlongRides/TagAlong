@@ -1,3 +1,5 @@
+const logger = require("firebase-functions/logger");
+
 /**
  * The response envelope every endpoint returns.
  *
@@ -27,8 +29,17 @@ const badRequest = (res, message) =>
  * Note the old backend sent `success: true` on its 500s, which made failures
  * hard to distinguish client-side. This reports them honestly.
  */
-const serverError = (res, error) =>
-  res.status(500).send(new BaseResponseModel(500, false, `Something went wrong: ${error}`));
+const serverError = (res, error) => {
+  // Logged as well as returned. Without this a failing route produced a 500
+  // with no entry in Cloud Logging at all, so the only evidence was an
+  // ERROR-severity request log with an empty message.
+  logger.error("Request failed", {
+    message: error && error.message,
+    type: error && error.type,
+    code: error && error.code,
+  });
+  return res.status(500).send(new BaseResponseModel(500, false, `Something went wrong: ${error}`));
+};
 
 /**
  * Rejects the request unless every named field is present on the body.

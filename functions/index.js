@@ -170,6 +170,16 @@ exports.payments = onRequest({secrets: [stripeSecretKey]}, async (req, res) => {
     return;
   }
 
+  // Same bar as /v1/payment. These endpoints capture and refund money, so
+  // they must not be callable by anyone holding the URL.
+  let authed = false;
+  await requireAuth(req, res, () => {
+    authed = true;
+  });
+  if (!authed) {
+    return;
+  }
+
   try {
     switch (req.path) {
       case "/hold":
