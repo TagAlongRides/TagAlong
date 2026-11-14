@@ -1,5 +1,5 @@
 const express = require("express");
-const {stripe} = require("../lib/stripe");
+const {stripe, logPlatformIdentity} = require("../lib/stripe");
 const {ok, badRequest, serverError, missingBodyFields} = require("../lib/response");
 
 const router = express.Router();
@@ -108,6 +108,9 @@ router.post("/stripeConnect/account/", async (req, res) => {
     });
     ok(res, "Account Created Successfully", account);
   } catch (error) {
+    // Stripe's account-creation policy is scoped to one account and one mode,
+    // so a rejection here is worth pairing with which account the key is for.
+    await logPlatformIdentity("accounts.create");
     serverError(res, error);
   }
 });
@@ -133,27 +136,37 @@ router.get("/stripeConnect/account/:id", async (req, res) => {
 router.post("/stripeConnect/", async (req, res) => {
   if (missingBodyFields(req, res, ["email", "refresh_url", "return_url"])) return;
   try {
-    const account = await stripe().accounts.create({
-      type: "express",
-      country: "US",
-      email: req.body.email,
-      capabilities: {
-        card_payments: {requested: true},
-        transfers: {requested: true},
-      },
-    });
+    // The client sends the account it already created and stored against the
+    // driver. The previous implementation ignored it and created another
+    // Express account on every call, so every attempt at onboarding minted an
+    // orphan account and linked the driver to that one instead of their own.
+    let accountId = req.body.account_id;
+
+    if (!accountId) {
+      const account = await stripe().accounts.create({
+        type: "express",
+        country: "US",
+        email: req.body.email,
+        capabilities: {
+          card_payments: {requested: true},
+          transfers: {requested: true},
+        },
+      });
+      accountId = account.id;
+    }
 
     const accountLink = await stripe().accountLinks.create({
-      account: account.id,
+      account: accountId,
       refresh_url: req.body.refresh_url,
       return_url: req.body.return_url,
       type: "account_onboarding",
     });
 
     // The client reads account_id off the link to store against the driver.
-    accountLink.account_id = account.id;
+    accountLink.account_id = accountId;
     ok(res, "Stripe Connect Account link Url fetch successfully", accountLink);
   } catch (error) {
+    await logPlatformIdentity("accountLinks.create");
     serverError(res, error);
   }
 });
