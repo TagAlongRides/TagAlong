@@ -66,8 +66,7 @@ void main() async {
   // Set up logging
   logger.setupLogger();
 
-  Stripe.publishableKey =
-      'pk_test_51KrmEeHOJhcBOg6eRUYQ0r274bFJuDrXl87YoDf32FiU3KozWxYtUi5sgxBJfmw8ZvZQM9SjzWkgmYJMbnHTekEK00HyDQBaBU';
+  Stripe.publishableKey = AppConfig.stripePublishableKey;
   await Stripe.instance.applySettings();
 
   // Run the TagAlong Application

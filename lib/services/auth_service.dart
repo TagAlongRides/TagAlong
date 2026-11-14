@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -96,30 +97,13 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  /// The project's **web** OAuth client, which Google Sign-In uses as the
-  /// server client id and Firebase uses to verify the resulting token.
-  ///
-  /// Passed explicitly rather than relying on the `default_web_client_id`
-  /// string resource that the google-services Gradle plugin generates from
-  /// google-services.json. That resource silently disappears if the web client
-  /// is missing from the config file, and the only symptom is a runtime
-  /// "CredentialManager requires a serverClientId" when someone taps the
-  /// button. This is not a secret - client ids ship inside the app.
-  ///
-  /// Override at build time with:
-  ///   flutter build apk --dart-define=GOOGLE_SERVER_CLIENT_ID=...
-  static const String googleServerClientId = String.fromEnvironment(
-    'GOOGLE_SERVER_CLIENT_ID',
-    defaultValue: '296547975151-sssur02gulngthf4619u1ievlpl5o862.apps.googleusercontent.com',
-  );
-
   /// google_sign_in 7 requires an explicit one-off initialize before any
   /// authenticate call.
   bool _googleInitialized = false;
 
   Future<void> _ensureGoogleInitialized() async {
     if (_googleInitialized) return;
-    await GoogleSignIn.instance.initialize(serverClientId: googleServerClientId);
+    await GoogleSignIn.instance.initialize(serverClientId: AppConfig.googleServerClientId);
     _googleInitialized = true;
   }
 
