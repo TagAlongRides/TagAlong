@@ -69,19 +69,24 @@ class AppConfig {
 
   /// Where Stripe sends a driver back to after hosted Connect onboarding.
   ///
-  /// TODO: these are placeholder domains that TagAlong does not own, carried
-  /// over from the original implementation. Stripe redirects drivers here when
-  /// onboarding finishes, and the app watches for `returnurl` in the URL to
-  /// know it is done, so a domain we control (or a deep link) is needed before
-  /// release.
+  /// Served from this project's own Firebase Hosting site (`public/stripe/`).
+  /// These replaced `returnurl.com` and `refreshurl.com`, placeholder domains
+  /// TagAlong does not own and which finished drivers were being sent to.
+  ///
+  /// The app intercepts both in the onboarding web view, so the pages
+  /// themselves are a fallback. Matching is by URL prefix, which is why these
+  /// must stay in step with the files under `public/stripe/`.
   static const String stripeConnectReturnUrl = String.fromEnvironment(
     'STRIPE_CONNECT_RETURN_URL',
-    defaultValue: 'https://www.returnurl.com',
+    defaultValue: 'https://tagalong-1c5fb.web.app/stripe/return',
   );
 
+  /// Where Stripe sends a driver whose account link expired or was already
+  /// used. Account links are single use and last minutes, so this is a normal
+  /// path, not an error case.
   static const String stripeConnectRefreshUrl = String.fromEnvironment(
     'STRIPE_CONNECT_REFRESH_URL',
-    defaultValue: 'https://www.refreshurl.com',
+    defaultValue: 'https://tagalong-1c5fb.web.app/stripe/refresh',
   );
 }
 
