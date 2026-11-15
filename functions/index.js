@@ -22,7 +22,8 @@ const cors = require("cors");
 
 admin.initializeApp();
 
-const {stripe, stripeSecretKey} = require("./lib/stripe");
+const {stripe, stripeSecretKey, stripeWebhookSecret} = require("./lib/stripe");
+const {onDisputeCreated, onDisputeClosed} = require("./lib/disputes");
 const {requireAuth} = require("./lib/auth");
 const paymentRoutes = require("./routes/payment");
 const {markRideComplete, markRidePaid} = require("./jobs/rideStatus");
@@ -43,6 +44,67 @@ app.use((req, res) => {
 });
 
 exports.api = onRequest({secrets: [stripeSecretKey]}, app);
+
+// ---------------------------------------------------------- Stripe events
+
+/**
+ * Stripe webhooks.
+ *
+ * Its own function rather than another route on `api`, because signature
+ * verification needs the unparsed request body and `api` mounts
+ * express.json() over everything.
+ *
+ * Only disputes are handled today. TagAlong takes passenger money as a
+ * destination charge, so Stripe debits a disputed amount from the *platform*
+ * balance and recovering the driver's share needs an explicit transfer
+ * reversal - there is no `reverse_transfer` shortcut as there is for refunds.
+ */
+exports.stripeWebhook = onRequest(
+    {secrets: [stripeSecretKey, stripeWebhookSecret]},
+    async (req, res) => {
+      const signature = req.headers["stripe-signature"];
+      if (!signature) {
+        res.status(400).send("Missing stripe-signature header");
+        return;
+      }
+
+      let event;
+      try {
+        event = stripe().webhooks.constructEvent(
+            req.rawBody, signature, stripeWebhookSecret.value());
+      } catch (error) {
+        // An unverified payload did not come from Stripe, whatever it says
+        // about itself. This endpoint is public, so this matters.
+        logger.warn("Rejected a webhook with an invalid signature", {
+          detail: error && error.message,
+        });
+        res.status(400).send("Signature verification failed");
+        return;
+      }
+
+      try {
+        switch (event.type) {
+          case "charge.dispute.created":
+            await onDisputeCreated(db, event.data.object);
+            break;
+          case "charge.dispute.closed":
+            await onDisputeClosed(db, event.data.object);
+            break;
+          default:
+            logger.debug(`Ignoring ${event.type}`);
+        }
+        res.json({received: true});
+      } catch (error) {
+        // 500 so Stripe retries. Swallowing this would mean silently losing a
+        // dispute we needed to act on, which costs real money.
+        logger.error("Webhook handling failed", {
+          eventType: event.type,
+          eventId: event.id,
+          detail: error && error.message,
+        });
+        res.status(500).send("Handler failed");
+      }
+    });
 
 // -------------------------------------------------------------- Scheduled
 

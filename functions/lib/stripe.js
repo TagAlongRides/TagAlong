@@ -12,6 +12,16 @@ const logger = require("firebase-functions/logger");
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 
 /**
+ * The signing secret for the Stripe webhook endpoint.
+ *
+ * Separate from the API key: it proves a request came from Stripe, and nothing
+ * else. Set it with
+ * `firebase functions:secrets:set STRIPE_WEBHOOK_SECRET`, taking the value
+ * from the endpoint's "Signing secret" in the Stripe Dashboard.
+ */
+const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
+
+/**
  * The API version every existing v1 call is pinned to.
  *
  * stripe-node sends its own pinned `Stripe-Version` header, so upgrading the
@@ -109,6 +119,7 @@ module.exports = {
   stripe,
   stripeV2,
   stripeSecretKey,
+  stripeWebhookSecret,
   keyMode,
   logPlatformIdentity,
   V1_API_VERSION,

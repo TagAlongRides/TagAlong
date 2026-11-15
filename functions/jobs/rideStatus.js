@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const {stripe} = require("../lib/stripe");
+const {isWithheld} = require("../lib/disputes");
 
 /**
  * How long after departure a completed ride waits before the driver is paid,
@@ -79,6 +80,7 @@ async function markRidePaid() {
   let paid = 0;
   let waiting = 0;
   let failed = 0;
+  let withheld = 0;
 
   await Promise.all(rides.docs.map(async (doc) => {
     const ride = doc.data();
@@ -103,7 +105,27 @@ async function markRidePaid() {
       return;
     }
 
-    const amount = bookings.size * ride.price;
+    // A disputed fare must not reach the driver's bank account. Recovering a
+    // destination-charge dispute means reversing the transfer, and that only
+    // works cleanly while the money is still sitting in the driver's Stripe
+    // balance. Filtering here rather than in the query keeps this off the
+    // composite indexes, and a ride has a handful of bookings at most.
+    const payable = bookings.docs.filter((booking) => !isWithheld(booking.data()));
+    const held = bookings.size - payable.length;
+
+    if (payable.length === 0) {
+      if (bookings.docs.some((booking) => booking.data().disputeStatus === "open")) {
+        // Leave the ride "complete" so it is reconsidered once the dispute
+        // resolves one way or the other.
+        withheld += bookings.size;
+        return;
+      }
+      // Every fare was lost to a dispute, so there is nothing left to pay.
+      await doc.ref.update({status: "paid"});
+      return;
+    }
+
+    const amount = payable.length * ride.price;
 
     try {
       const payout = await stripe().payouts.create(
@@ -111,11 +133,21 @@ async function markRidePaid() {
           {stripeAccount: ride.stripe_account_id},
       );
 
-      await Promise.all(bookings.docs.map((booking) => booking.ref.update({status: "paid"})));
-      await doc.ref.update({status: "paid"});
+      await Promise.all(payable.map((booking) => booking.ref.update({status: "paid"})));
+
+      if (held === 0) {
+        await doc.ref.update({status: "paid"});
+      } else {
+        // Leave the ride open so the withheld fares can still be paid once
+        // their disputes resolve. The bookings just paid are now "paid", so
+        // the next run will not pay them twice.
+        withheld += held;
+        logger.info(
+            `Ride ${ride.ride_id} partially paid; ${held} fare(s) withheld pending a dispute`);
+      }
 
       paid++;
-      logger.info(`Ride ${ride.ride_id} paid out $${amount} (${payout.id})`);
+      logger.info(`Ride ${ride.ride_id} paid out ${amount} (${payout.id})`);
     } catch (error) {
       // One driver's payout failing must not abandon the rest. The ride stays
       // "complete" and will be retried on the next run.
@@ -124,7 +156,8 @@ async function markRidePaid() {
     }
   }));
 
-  await log("markRidePaid", `${paid} paid, ${waiting} in cool-off, ${failed} failed`);
+  await log("markRidePaid",
+      `${paid} paid, ${waiting} in cool-off, ${withheld} withheld for disputes, ${failed} failed`);
 }
 
 module.exports = {markRideComplete, markRidePaid};
