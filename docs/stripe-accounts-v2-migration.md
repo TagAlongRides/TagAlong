@@ -410,3 +410,50 @@ exactly as account creation failed after the account already existed.
 `transferGroup` is typed non-nullable there, among others. Worth its own
 change, and worth verifying against a real test booking rather than by
 reading.
+
+### Step 4 - done, and the last assumption holds
+
+A driver registered end to end on Accounts v2 and reported the onboarding flow
+as a clear improvement.
+
+The assumption the probe could not test - that `canReceivePayouts` turns true
+on a *completed* onboarding - is confirmed from live data rather than by
+inference. `users/rO0CEJr3nlcCHITs4a3Ri9J3yJc2` holds
+`stripe_account_id: acct_1Ubs03FVwQR3rnvh` with
+`driver_data.is_stripe_active: true`.
+
+That flag defaults to `false` (`lib/data/models/driver.dart`) and is only ever
+set from `StripeAccount.canReceivePayouts`, which requires both
+`payouts_enabled` and an active `transfers` capability. So both held on a
+recipient-only v2 account, and `charges_enabled` - which stayed false, as
+predicted - was correctly not used.
+
+### Step 5 - safe to do
+
+Every account and account-link creation now goes through `stripeV2()`:
+
+```
+lib/driverAccount.js   stripeV2().v2.core.accounts.create     (x2, the phone retry)
+routes/payment.js      stripeV2().v2.core.accountLinks.create
+```
+
+The remaining v1 calls are `accounts.retrieve`, `accounts.update`, `balance`,
+`paymentIntents`, `refunds`, `payouts`, `customers` and `paymentMethods`. The
+Accounts v1 support policy governs `POST /v1/accounts` only, so none of them
+are affected.
+
+**Turn the Accounts v1 toggle off in the Dashboard** (test mode,
+`acct_1U2F4RFVwQCYt59V`). Nothing should change. That is the point: it proves
+nothing still depends on v1 account creation, and it closes the compatibility
+escape hatch this migration existed to get off.
+
+Existing v1 connected accounts - the 2023 one and anything created while the
+toggle was on - keep working either way. Only creation was ever gated.
+
+## What this migration did not fix
+
+- **Dispute recovery.** Still absent. See the CAUTION section above.
+- **The remaining brittle response models**, above all
+  `stripe_payment_intent_create_response.dart` in the booking path.
+- **The platform profile.** `details_submitted` is still false on the platform
+  account. It did not block v2 creation, but it is still worth completing.
