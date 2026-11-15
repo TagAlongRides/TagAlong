@@ -11,31 +11,64 @@ const logger = require("firebase-functions/logger");
  */
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 
-let client = null;
+/**
+ * The API version every existing v1 call is pinned to.
+ *
+ * stripe-node sends its own pinned `Stripe-Version` header, so upgrading the
+ * package from 17.7.0 to 23.x would otherwise have moved payment intents,
+ * refunds, payouts and balance reads from 2025-02-24.acacia straight onto
+ * 2026-10-28.endive as a side effect of the upgrade. Pinning it explicitly
+ * keeps "upgrade the SDK" and "change the API version" as two separate,
+ * separately testable changes.
+ */
+const V1_API_VERSION = "2025-02-24.acacia";
 
 /**
- * The Stripe client, built on first use.
- *
- * Lazy because the secret is only readable once the function is running, not
- * while the module is being loaded for deployment analysis.
+ * The version the Accounts v2 API requires. stripe@23 pins this by default;
+ * we ask for it per client rather than globally, so it applies only to the
+ * calls that need it.
  */
-function stripe() {
-  if (!client) {
+const V2_API_VERSION = "2026-10-28.endive";
+
+const clients = new Map();
+
+function clientFor(apiVersion) {
+  if (!clients.has(apiVersion)) {
     const key = stripeSecretKey.value();
     if (!key) {
       throw new Error(
           "STRIPE_SECRET_KEY is not set. Run: firebase functions:secrets:set STRIPE_SECRET_KEY",
       );
     }
-    client = new Stripe(key);
+    clients.set(apiVersion, new Stripe(key, {apiVersion}));
   }
-  return client;
+  return clients.get(apiVersion);
+}
+
+/**
+ * The Stripe client for v1 endpoints, built on first use.
+ *
+ * Lazy because the secret is only readable once the function is running, not
+ * while the module is being loaded for deployment analysis.
+ */
+function stripe() {
+  return clientFor(V1_API_VERSION);
+}
+
+/**
+ * The Stripe client for the Accounts v2 endpoints (`/v2/core/...`).
+ *
+ * Deliberately a separate client on a separate API version, so reaching for
+ * v2 is explicit at the call site and cannot drag v1 behaviour along with it.
+ */
+function stripeV2() {
+  return clientFor(V2_API_VERSION);
 }
 
 /**
  * Which *kind* of key is configured, never the key itself.
  *
- * Stripe settings — including the Accounts v1 policy toggle — are scoped to one
+ * Stripe settings - including the Accounts v1 policy toggle - are scoped to one
  * account and one mode, and a sandbox is a separate account with its own
  * settings. So when a request is refused by policy, the first thing worth
  * knowing is which account and mode the server is authenticating as.
@@ -72,4 +105,12 @@ async function logPlatformIdentity(context) {
   }
 }
 
-module.exports = {stripe, stripeSecretKey, keyMode, logPlatformIdentity};
+module.exports = {
+  stripe,
+  stripeV2,
+  stripeSecretKey,
+  keyMode,
+  logPlatformIdentity,
+  V1_API_VERSION,
+  V2_API_VERSION,
+};

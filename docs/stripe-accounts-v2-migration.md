@@ -193,3 +193,53 @@ confirms nothing still depends on v1 creation.
 - The SDK upgrade crosses six majors. The v1 call sites need an audit
   independent of anything v2.
 - Manual payouts on a v2 account is assumed, not yet proven (Step 2).
+
+## Progress
+
+### Step 1 - done
+
+`stripe` upgraded 17.7.0 to 23.1.0. `functions/lib/stripe.js` now holds two
+clients on two explicitly pinned API versions:
+
+- `stripe()` - `2025-02-24.acacia`, exactly what stripe@17.7.0 sent, so every
+  existing v1 call behaves as before.
+- `stripeV2()` - `2026-10-28.endive`, used only by `/v2/core/...` calls.
+
+Verified: the v1 client sends acacia, the v2 client sends endive, and
+`v2.core.accounts.create` exists on the v2 client.
+
+Also confirmed from the connect-recommend skill that our intended
+configuration is Stripe's documented recommended marketplace path
+(`express` + `fees_collector: application` + `losses_collector: application`
+with destination charges), rated CAUTION rather than blocked, and that
+`configuration.recipient` with `stripe_balance.stripe_transfers` and **no**
+`merchant` configuration is correct - Stripe's words: requesting
+`configuration.merchant` or `card_payments` for marketplace accounts is
+"unnecessary and causes longer onboarding". The preview-API-version caveat
+applies only to the direct-charge path we are not using, so our path is GA.
+
+### Carried constraint: `payment_method_types`
+
+stripe@23 removed `payment_method_types` from `PaymentIntentCreateParams`.
+`routes/payment.js` passes `payment_method_types: ["card"]` at both charge
+sites (destination and separate). This still works, because the code is plain
+JavaScript so the type removal is not enforced at build time, and because the
+v1 client is pinned to acacia where the API still accepts the parameter.
+
+It is left alone deliberately: changing it alters payment behaviour, which is
+not part of an SDK upgrade. **Whoever moves the v1 calls off acacia must deal
+with this first.**
+
+### Outstanding CAUTION from the compatibility matrix
+
+Express dashboard + destination charges means connected accounts cannot manage
+refunds, disputes or Radar rules from their own dashboard, and Stripe debits
+disputes to the *platform* first. Recovery depends on reversing the prior
+transfer, and unlike refunds - where `routes/payment.js` already sets
+`reverse_transfer: true` - **dispute recovery is not automatic**.
+
+TagAlong currently has no webhook handling at all, so a disputed ride would
+debit the platform with no recovery from the driver. This is a pre-existing
+gap, not something the migration introduces, but the configuration is only
+"viable when the platform runs webhook-driven refund or dispute recovery
+workflows". Worth its own piece of work.
