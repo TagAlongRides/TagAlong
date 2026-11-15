@@ -203,8 +203,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       if (paymentIntentResult.data.status == 'succeeded') {
         // Payment succeeded
 
-        final bookedRide =
-            await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
+        final bookedRide = await _bookRide(widget.ride, paymentIntentResult.data);
 
         await _showBookingConfirmed(bookedRide);
         return;
@@ -212,7 +211,15 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
 
       if (paymentIntentResult.data.status == 'requires_action') {
         // 4. if payment requires action calling handleNextAction
-        final paymentIntent = await Stripe.instance.handleNextAction(paymentIntentResult.data.clientSecret);
+        final clientSecret = paymentIntentResult.data.clientSecret;
+        if (clientSecret == null) {
+          // Stripe asked for further action but gave us nothing to act on.
+          logger.log.warning(
+              'Payment intent ${paymentIntentResult.data.id} requires action with no client secret');
+          await _showBookingFailed();
+          return;
+        }
+        final paymentIntent = await Stripe.instance.handleNextAction(clientSecret);
 
         if (paymentIntent.status == PaymentIntentsStatus.RequiresConfirmation) {
           log('Stripe payment intent ${paymentIntent.id} requires confirmation. Recommended action is: ${paymentIntent.nextAction}');
@@ -232,8 +239,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
         } else {
           // Payment succedeed
 
-          final bookedRide =
-              await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
+          final bookedRide = await _bookRide(widget.ride, paymentIntentResult.data);
 
           await _showBookingConfirmed(bookedRide);
         }
@@ -297,14 +303,23 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
 
   /// Records the booking and returns the ride as it now stands, with the seat
   /// taken and the rider attached.
-  Future<RideModel> _bookRide(RideModel ride, String paymentIntentId, String chargeId) async {
+  Future<RideModel> _bookRide(RideModel ride, StripePaymentIntent intent) async {
+    final chargeId = intent.latestChargeId;
+    if (chargeId == null) {
+      // The passenger has already paid at this point, so the booking has to be
+      // recorded regardless - losing it would be far worse than storing it
+      // without this id. A dispute can still be matched to the booking by its
+      // payment intent, which is what the dispute handler falls back to.
+      logger.log.warning('Payment intent ${intent.id} settled without a charge id');
+    }
+
     // Create Ride booking entry
     final rideBooking = await RideBookingRepository.instance.bookRide(RideBookingModel(
       rideId: ride.rideId,
       userId: tagAlongUser.id,
       creatadAt: DateTime.now(),
-      chargeId: chargeId,
-      paymentIntentId: paymentIntentId,
+      chargeId: chargeId ?? '',
+      paymentIntentId: intent.id,
     ));
 
     // Pull data from Firebase again in case of recent updates
