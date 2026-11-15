@@ -37,7 +37,7 @@ class OfferRideTripDetails extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
                 child: RichText(
                   text: TextSpan(
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                     children: const [
                       TextSpan(
                         text: 'How many passengers',
@@ -73,7 +73,7 @@ class OfferRideTripDetails extends StatelessWidget {
                     ),
                     child: Text(
                       '${offerRideViewModel.noPassengers}',
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.displayMedium,
                     ),
                   ),
                   IconButton(
@@ -89,7 +89,7 @@ class OfferRideTripDetails extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
                 child: RichText(
                   text: TextSpan(
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                     children: const [
                       TextSpan(
                         text: 'How many bags',
@@ -125,7 +125,7 @@ class OfferRideTripDetails extends StatelessWidget {
                           ),
                         ),
                       ),
-                      child: Text('${offerRideViewModel.noBags}', style: Theme.of(context).textTheme.headline2),
+                      child: Text('${offerRideViewModel.noBags}', style: Theme.of(context).textTheme.displayMedium),
                     ),
                     IconButton(
                         icon: Icon(

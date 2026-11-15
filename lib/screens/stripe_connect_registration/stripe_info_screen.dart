@@ -86,16 +86,16 @@ class StripeInfoScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Let' 's set up your payment info',
-                    style: TagAlongTheme.lightTextTheme.headline4!.copyWith(fontWeight: FontWeight.bold),
+                    style: TagAlongTheme.lightTextTheme.headlineMedium!.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'By setting up your payment information through Stripe:',
-                    style: TagAlongTheme.lightTextTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold),
+                    style: TagAlongTheme.lightTextTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   BulletedList(
-                    style: TagAlongTheme.lightTextTheme.bodyText2,
+                    style: TagAlongTheme.lightTextTheme.bodyMedium,
                     bullet: const Icon(Icons.check),
                     listItems: const [
                       'You never need to ask your passengers when or how they are going to pay you',

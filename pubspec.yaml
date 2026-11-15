@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,21 +31,21 @@ dependencies:
     sdk: flutter
 
   # 12/18/21 - Added Google Fonts, SignIn Buttons, font_awesome_icons, Facebook Auth
-  google_fonts: 2.2.0
+  google_fonts: ^6.3.2
   flutter_signin_button: ^2.0.0
-  font_awesome_flutter: ^9.0.0
-  flutter_facebook_auth: ^3.5.7
+  font_awesome_flutter: ^10.9.1
+  flutter_facebook_auth: ^7.1.6
   dio:
 
   # 1/2/22 - Added Firebase Core and Firebase Auth
-  firebase_core: ^1.10.6
-  firebase_auth: ^3.3.4
+  firebase_core: ^4.13.0
+  firebase_auth: ^6.5.7
 
   # 1/5/22 - Added Provider
   provider: ^6.0.2
 
   # 1/8/22 - Added Cloud Firestore
-  cloud_firestore: ^3.1.6
+  cloud_firestore: ^6.8.0
 
   # 1/22/22 - Added enum_to_string
   enum_to_string: ^2.0.1
@@ -61,16 +61,16 @@ dependencies:
   intl_phone_number_input: ^0.7.0
 
   # 2/15/22 - UUID
-  uuid: 3.0.5
+  uuid: ^4.6.0
 
   # 3/25/22 - intl
-  intl: ^0.17.0
+  intl: ^0.20.2
 
   # 4/12/22 - Added us_states - get US state data
   us_states: ^1.1.5
-  sign_in_with_apple: ^4.0.0
-  flutter_stripe: ^3.2.0
-  flutter_credit_card: ^3.0.1
+  sign_in_with_apple: ^7.0.1
+  flutter_stripe: ^11.5.0
+  flutter_credit_card: ^4.1.0
 
   core:
     path: packages/core/
@@ -79,8 +79,16 @@ dependencies:
   ride_repo:
     path: packages/ride_repo/
 
-  webview_flutter: ^3.0.4
+  webview_flutter: ^4.13.0
   bulleted_list: ^0.0.1+0.1a
+
+  # Deep-link out to a driver's Facebook profile from Ride Details
+  url_launcher: ^6.1.0
+
+  # Push notifications to drivers when a passenger books their ride
+  firebase_messaging: ^16.5.0
+  flutter_local_notifications: ^19.5.0
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:
@@ -91,7 +99,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -103,10 +111,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    # Vehicle make/model fallback for driver registration, used when the
+    # carmakemodeldb API is unavailable.
+    - assets/vehicles.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

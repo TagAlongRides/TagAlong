@@ -1,8 +1,13 @@
+import 'package:core/core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
+import 'package:ride_repo/ride_repo.dart';
+import 'package:tagalong/services/notification_service.dart';
 import 'package:tagalong/screens/account/account_settings_screen.dart';
 import 'package:tagalong/screens/account/add_payment_method_screen.dart';
 import 'package:tagalong/screens/account/support_screen.dart';
@@ -47,11 +52,21 @@ void main() async {
   );
   await Firebase.initializeApp();
 
+  // Must be registered before runApp so pushes that arrive while the app is
+  // backgrounded or terminated are handled.
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // Every call to the TagAlong API carries the signed-in user's Firebase ID
+  // token; the API rejects anything without one. Firebase caches the token and
+  // only hits the network when it is close to expiring.
+  HttpApiClient.instance.tokenProvider = () async {
+    return FirebaseAuth.instance.currentUser?.getIdToken();
+  };
+
   // Set up logging
   logger.setupLogger();
 
-  Stripe.publishableKey =
-      'pk_test_51KrmEeHOJhcBOg6eRUYQ0r274bFJuDrXl87YoDf32FiU3KozWxYtUi5sgxBJfmw8ZvZQM9SjzWkgmYJMbnHTekEK00HyDQBaBU';
+  Stripe.publishableKey = AppConfig.stripePublishableKey;
   await Stripe.instance.applySettings();
 
   // Run the TagAlong Application
@@ -66,6 +81,30 @@ class TagAlongApp extends StatefulWidget {
 }
 
 class _TagAlongAppState extends State<TagAlongApp> {
+  /// Lets us navigate in response to a notification tap, which happens outside
+  /// of any widget's context.
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    NotificationService.instance.onNotificationTapped = _openRideFromNotification;
+    NotificationService.instance.initialize();
+  }
+
+  /// A ride notification carries the id of the ride it is about; open that
+  /// ride so the driver can see who booked (Milestone 4, §2.1.1.1).
+  Future<void> _openRideFromNotification(RemoteMessage message) async {
+    final rideId = message.data['ride_id'];
+    if (rideId == null) return;
+    try {
+      final ride = await RideRepository.instance.getRideById(rideId);
+      _navigatorKey.currentState?.pushNamed(MyRideDetailScreen.routeName, arguments: ride);
+    } catch (error) {
+      logger.log.warning('Could not open ride $rideId from notification: $error');
+    }
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -92,6 +131,7 @@ class _TagAlongAppState extends State<TagAlongApp> {
             ChangeNotifierProvider<UploadRideViewModel>(create: (BuildContext context) => UploadRideViewModel())
           ],
           child: MaterialApp(
+            navigatorKey: _navigatorKey,
             theme: theme,
             title: 'TagAlong App',
             home: auth.getUser()?.refreshToken == null || auth.getUser()?.refreshToken == ''

@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "296547975151-uj810065vabdsu214ji03b4ou94laosv.apps.googleusercontent.com",
+          "client_id": "296547975151-l5aupgfhkg34raf41n6s5grgqrodlu17.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tagalong.tagalong",
+            "certificate_hash": "09c826d3b66d54ba86ed0660f100c5b43c4e1e84"
+          }
+        },
+        {
+          "client_id": "296547975151-sssur02gulngthf4619u1ievlpl5o862.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +35,15 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "296547975151-uj810065vabdsu214ji03b4ou94laosv.apps.googleusercontent.com",
+              "client_id": "296547975151-sssur02gulngthf4619u1ievlpl5o862.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "296547975151-n8ss6n1uov178etjtjrer3mkit38kiem.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tagalong.tagalong"
+              }
             }
           ]
         }

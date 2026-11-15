@@ -41,7 +41,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
               padding: const EdgeInsets.all(24),
               child: RichText(
                 text: TextSpan(
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                   children: const [
                     TextSpan(
                       text: 'When will you depart',
@@ -62,7 +62,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             margin: const EdgeInsets.only(left: 16, bottom: 10),
             child: Text(
               'Date',
-              style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
+              style: theme.TagAlongTheme.lightTextTheme.titleMedium!.copyWith(
                 color: theme.TagAlongTheme.primarySwatch.shade900,
                 fontWeight: FontWeight.w900,
               ),
@@ -104,7 +104,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                               fit: BoxFit.contain,
                               child: RichText(
                                 text: TextSpan(
-                                  style: Theme.of(context).textTheme.headline4,
+                                  style: Theme.of(context).textTheme.headlineMedium,
                                   children: [
                                     TextSpan(
                                       text: DateFormat('EEEE').format(offerRideViewModel.departureDateTime!),
@@ -125,7 +125,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                               ),
                             )
                           : Text("Choose a date",
-                              style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(
+                              style: theme.TagAlongTheme.lightTextTheme.titleLarge!.copyWith(
                                 color: Colors.black45,
                                 fontWeight: FontWeight.normal,
                               )),
@@ -150,7 +150,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             margin: const EdgeInsets.only(left: 16, bottom: 10),
             child: Text(
               'Time',
-              style: theme.TagAlongTheme.lightTextTheme.subtitle1!.copyWith(
+              style: theme.TagAlongTheme.lightTextTheme.titleMedium!.copyWith(
                 color: theme.TagAlongTheme.primarySwatch.shade900,
                 fontWeight: FontWeight.w900,
               ),
@@ -202,7 +202,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                           ? RichText(
                               textAlign: TextAlign.left,
                               text: TextSpan(
-                                style: Theme.of(context).textTheme.headline4,
+                                style: Theme.of(context).textTheme.headlineMedium,
                                 children: [
                                   TextSpan(
                                     text: offerRideViewModel.departureTimeOfDay,
@@ -215,7 +215,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                               ),
                             )
                           : Text("Choose a time",
-                              style: theme.TagAlongTheme.lightTextTheme.headline6!.copyWith(
+                              style: theme.TagAlongTheme.lightTextTheme.titleLarge!.copyWith(
                                 color: Colors.black45,
                               )),
                     ),

@@ -13,7 +13,7 @@ class RideDetailCancelledMessage extends StatelessWidget {
       child: Text(
         'Ride Cancelled',
         textAlign: TextAlign.center,
-        style: TagAlongTheme.lightTextTheme.headline6!.copyWith(
+        style: TagAlongTheme.lightTextTheme.titleLarge!.copyWith(
           color: TagAlongTheme.colorHighEmphasis,
           fontStyle: FontStyle.italic,
         ),

@@ -33,7 +33,7 @@ class OfferRideCampus extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: RichText(
             text: TextSpan(
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
               text: 'What are your travel plans?',
             ),
           ),

@@ -21,6 +21,15 @@ class TagAlongUser implements TADataModel {
   bool registered;
   String signInMethod;
 
+  /// The user's Facebook account id, taken from their Facebook login. Used to
+  /// deep-link to their profile from the Ride Details page. Empty for users who
+  /// signed up with a provider other than Facebook.
+  String facebookId;
+
+  /// Firebase Cloud Messaging token for this user's device, so we can push
+  /// them ride notifications.
+  String? fcmToken;
+
   /// Initializes an Unregistered User.
   ///
   /// The minimum definition for a valid user requires an ID, a creation date,
@@ -41,6 +50,8 @@ class TagAlongUser implements TADataModel {
       this.stripeAccountId = "",
       this.registered = false,
       this.graduationYear = null,
+      this.facebookId = "",
+      this.fcmToken,
       this.driverData = null});
 
   /// A Map<String, dynamic> into a [TagAlongUser] instance.
@@ -113,10 +124,13 @@ class TagAlongUser implements TADataModel {
         lastName: lastName,
         phoneNumber: phoneNumber,
         emailAddress: emailAddress,
-        stripeCustomerId: json['stripe_customer_id'],
+        // Users who registered before Stripe was wired up have none stored.
+        stripeCustomerId: json['stripe_customer_id'] ?? "",
         stripeAccountId: json['stripe_account_id'],
         registered: registered,
         graduationYear: graduationYear,
+        facebookId: json['facebook_id'] ?? "",
+        fcmToken: json['fcm_token'],
         driverData: driverData);
   }
 
@@ -179,6 +193,8 @@ class TagAlongUser implements TADataModel {
     emailAddress = data['email_address'] ?? emailAddress;
     stripeCustomerId = data['stripe_customer_id'] ?? stripeCustomerId;
     stripeAccountId = data['stripe_account_id'] ?? stripeAccountId;
+    facebookId = data['facebook_id'] ?? facebookId;
+    fcmToken = data['fcm_token'] ?? fcmToken;
     driverData = data['driver_data'] ?? driverData;
   }
 
@@ -200,6 +216,8 @@ class TagAlongUser implements TADataModel {
       'email_address': emailAddress,
       'stripe_customer_id': stripeCustomerId,
       'stripe_account_id': stripeAccountId,
+      'facebook_id': facebookId,
+      'fcm_token': fcmToken,
       'driver_data': driverData?.toJson()
     };
   }
@@ -208,6 +226,10 @@ class TagAlongUser implements TADataModel {
   String toString() {
     return toJson().toString();
   }
+
+  /// A link to this user's Facebook profile, or null if we never captured
+  /// their Facebook id (e.g. they signed up with Apple).
+  String? get facebookProfileUrl => facebookId.isEmpty ? null : 'https://www.facebook.com/$facebookId';
 
   /// Returns the result of whether a [TagAlongUser] is an active driver.
   bool isActiveDriver() {

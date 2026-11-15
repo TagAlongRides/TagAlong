@@ -7,6 +7,15 @@ class ManagePaymentMethodItem extends StatelessWidget {
 
   const ManagePaymentMethodItem(this.paymentMethod, {Key? key}) : super(key: key);
 
+  /// Card brand artwork ships with flutter_credit_card, but the package stopped
+  /// exporting its asset map in 4.x, so we name the ones we support here.
+  static const Map<CardType, String> _brandIcons = <CardType, String>{
+    CardType.visa: 'icons/visa.png',
+    CardType.americanExpress: 'icons/amex.png',
+    CardType.mastercard: 'icons/mastercard.png',
+    CardType.discover: 'icons/discover.png',
+  };
+
   @override
   Widget build(BuildContext context) {
     CardType cardType = CardType.otherBrand;
@@ -76,11 +85,13 @@ class ManagePaymentMethodItem extends StatelessWidget {
             tileColor: Colors.white,
             title: Text('$cardTypeName ending ${paymentMethod.card.last4}'),
             subtitle: Text('Exp ${paymentMethod.card.expMonth}/${paymentMethod.card.expYear}'),
-            leading: Image.asset(
-              CardTypeIconAsset[cardType].toString(),
-              height: 24,
-              package: 'flutter_credit_card',
-            ),
+            leading: _brandIcons.containsKey(cardType)
+                ? Image.asset(
+                    _brandIcons[cardType]!,
+                    height: 24,
+                    package: 'flutter_credit_card',
+                  )
+                : const Icon(Icons.credit_card, size: 24),
             // trailing: Icon(),
           ),
           Divider(

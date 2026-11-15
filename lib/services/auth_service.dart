@@ -1,8 +1,21 @@
+import 'package:core/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tagalong/util/log.dart' as logger;
+
+/// Raised when a sign-in fails in a way worth telling the user about, rather
+/// than silently returning them to the landing page.
+class SignInFailure implements Exception {
+  SignInFailure(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
 
 /// [AuthService] is the main service for our Firebase authentication.
 ///
@@ -34,6 +47,24 @@ class AuthService with ChangeNotifier {
     return _auth.currentUser;
   }
 
+  /// Returns the signed-in user's Facebook account id, taken from their linked
+  /// auth providers, or an empty string if they did not sign in with Facebook.
+  ///
+  /// This is what lets us deep-link to a driver's Facebook profile from the
+  /// Ride Details page.
+  String getFacebookId() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      return '';
+    }
+    for (final provider in user.providerData) {
+      if (provider.providerId == 'facebook.com') {
+        return provider.uid ?? '';
+      }
+    }
+    return '';
+  }
+
   Future<void> reloadUser() async {
     final user = await getUser()?.reload();
     notifyListeners();
@@ -48,7 +79,7 @@ class AuthService with ChangeNotifier {
 
     // Log-in was successful
     if (result.status == LoginStatus.success && result.accessToken != null) {
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken!.token);
+      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(result.accessToken!.tokenString);
       try {
         UserCredential? userCred = await _auth.signInWithCredential(facebookAuthCredential);
         return userCred;
@@ -63,6 +94,61 @@ class AuthService with ChangeNotifier {
     else {
       logger.log.fine('DEBUG: User could NOT log-in!');
       return null;
+    }
+  }
+
+  /// google_sign_in 7 requires an explicit one-off initialize before any
+  /// authenticate call.
+  bool _googleInitialized = false;
+
+  Future<void> _ensureGoogleInitialized() async {
+    if (_googleInitialized) return;
+    await GoogleSignIn.instance.initialize(serverClientId: AppConfig.googleServerClientId);
+    _googleInitialized = true;
+  }
+
+  /// Returns a Future<UserCredential?> that if the Google login is successful,
+  /// will create a user within the FirebaseAuth system and return a
+  /// UserCredential. Returns null if the user backs out of the picker.
+  ///
+  /// Throws [SignInFailure] when the attempt fails for a reason the user needs
+  /// to know about — most importantly when the address is already registered
+  /// against a different provider.
+  Future<UserCredential?> googleLogin() async {
+    try {
+      await _ensureGoogleInitialized();
+
+      if (!GoogleSignIn.instance.supportsAuthenticate()) {
+        throw SignInFailure('Google sign-in is not available on this device.');
+      }
+
+      final GoogleSignInAccount account = await GoogleSignIn.instance.authenticate();
+      final idToken = account.authentication.idToken;
+
+      if (idToken == null) {
+        throw SignInFailure('Google did not return a usable sign-in token. Please try again.');
+      }
+
+      // Firebase accepts the ID token on its own; google_sign_in 7 no longer
+      // hands back an access token from the authentication step.
+      final credential = GoogleAuthProvider.credential(idToken: idToken);
+      return await _auth.signInWithCredential(credential);
+    } on GoogleSignInException catch (e) {
+      // Backing out of the account picker is not an error worth surfacing.
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        logger.log.fine('DEBUG: Google sign-in cancelled by user');
+        return null;
+      }
+      logger.log.fine('DEBUG: Google sign-in failed - ${e.code}: ${e.description}');
+      throw SignInFailure('Google sign-in failed. Please try again.');
+    } on FirebaseAuthException catch (e) {
+      logger.log.fine('DEBUG: User could NOT log-in due to ${e.message}');
+      if (e.code == 'account-exists-with-different-credential') {
+        throw SignInFailure(
+            'That email is already registered with a different sign-in method. '
+            'Please sign in the way you did originally.');
+      }
+      throw SignInFailure('Google sign-in failed. Please try again.');
     }
   }
 
@@ -95,7 +181,7 @@ class AuthService with ChangeNotifier {
     // // Log-in was successful
     // if (result.status == LoginStatus.success && result.accessToken != null) {
     //   final OAuthCredential facebookAuthCredential =
-    //       FacebookAuthProvider.credential(result.accessToken!.token);
+    //       FacebookAuthProvider.credential(result.accessToken!.tokenString);
     //   try {
     //     UserCredential? user_cred =
     //         await _auth.signInWithCredential(facebookAuthCredential);
@@ -126,9 +212,75 @@ class AuthService with ChangeNotifier {
     return json;
   }
 
+  /// The provider the current user signed in with, as Firebase records it
+  /// (`facebook.com`, `google.com`, `apple.com`), or null if unknown.
+  String? currentProviderId() {
+    final providers = _auth.currentUser?.providerData;
+    if (providers == null || providers.isEmpty) {
+      return null;
+    }
+    return providers.first.providerId;
+  }
+
+  /// Re-authenticates the current user with whichever provider they signed in
+  /// with.
+  ///
+  /// Needed before sensitive changes such as swapping the account's email.
+  /// Previously this always built a Facebook credential, which threw for
+  /// anyone who had signed in another way.
+  Future<void> reauthenticate() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw SignInFailure('You are not signed in.');
+    }
+
+    switch (currentProviderId()) {
+      case 'facebook.com':
+        final authToken = await _fb.accessToken;
+        if (authToken == null) {
+          throw SignInFailure('Please sign in with Facebook again to continue.');
+        }
+        await user.reauthenticateWithCredential(
+          FacebookAuthProvider.credential(authToken.tokenString),
+        );
+        return;
+
+      case 'google.com':
+        await _ensureGoogleInitialized();
+        final account = await GoogleSignIn.instance.authenticate();
+        final idToken = account.authentication.idToken;
+        if (idToken == null) {
+          throw SignInFailure('Please sign in with Google again to continue.');
+        }
+        await user.reauthenticateWithCredential(
+          GoogleAuthProvider.credential(idToken: idToken),
+        );
+        return;
+
+      case 'apple.com':
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: [AppleIDAuthorizationScopes.email],
+        );
+        await user.reauthenticateWithCredential(
+          OAuthProvider('apple.com').credential(idToken: credential.identityToken),
+        );
+        return;
+
+      default:
+        throw SignInFailure('Please sign in again to continue.');
+    }
+  }
+
   /// Sign-out of TagAlong.
   Future<void> signOut() async {
-    _auth.signOut();
+    // Clear the Google session too, otherwise the next sign-in silently reuses
+    // the previous account instead of showing the picker.
+    try {
+      await GoogleSignIn.instance.signOut();
+    } catch (error) {
+      logger.log.fine('Google sign-out skipped: $error');
+    }
+    await _auth.signOut();
     notifyListeners();
   }
 

@@ -23,7 +23,7 @@ class DriverRegistrationPromptScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
                         'Would you like to register as a TagAlong Driver?',
-                        style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
+                        style: TagAlongTheme.lightTextTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       )),
                   Row(
@@ -56,13 +56,13 @@ class DriverRegistrationPromptScreen extends StatelessWidget {
                         child: Text(
                           'As a TagAlong driver:',
                           textAlign: TextAlign.left,
-                          style: TagAlongTheme.lightTextTheme.subtitle1!,
+                          style: TagAlongTheme.lightTextTheme.titleMedium!,
                         ),
                       ),
                       BulletedList(
                         bulletType: BulletType.conventional,
                         boxShape: BoxShape.circle,
-                        style: TagAlongTheme.lightTextTheme.subtitle2!,
+                        style: TagAlongTheme.lightTextTheme.titleSmall!,
                         listItems: const [
                           'Earn extra gas money by offering a ride to students going the same way as you are',
                           'Only give rides to students who have been verified through their school email address',

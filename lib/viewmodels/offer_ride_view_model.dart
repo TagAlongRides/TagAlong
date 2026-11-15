@@ -241,7 +241,9 @@ class OfferRideViewModel with ChangeNotifier {
       createdAt: DateTime.now(),
       rideId: rideId,
       driverId: tagAlongUserViewModel.tagAlongUser!.id,
-      university: Institution.VIRGINIA_TECH,
+      // The ride belongs to the driver's school, which is what the Ride Board
+      // filters on (Milestone 2, §9.2.2).
+      university: tagAlongUserViewModel.tagAlongUser!.institution,
       status: RideStatus.scheduled,
       toCampus: toCampus,
       pickupLocation: pickupLocation,

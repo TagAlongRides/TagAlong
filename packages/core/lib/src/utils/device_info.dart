@@ -21,10 +21,12 @@ class DeviceInfo {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       print('Running on ${androidInfo.model}'); // e.g. "Moto G (4)"
       Map<String, dynamic> dict = {};
-      dict.putIfAbsent('uuId', () => androidInfo.androidId);
+      // device_info_plus dropped androidId (it needed a permission Google no
+      // longer grants); the build fingerprint id is what's left.
+      dict.putIfAbsent('uuId', () => androidInfo.id);
       dict.putIfAbsent('model', () => androidInfo.model);
       dict.putIfAbsent('deviceName', () => androidInfo.brand);
-      dict.putIfAbsent('version', () => androidInfo.id);
+      dict.putIfAbsent('version', () => androidInfo.version.release);
       dict.putIfAbsent('deviceType', () => 'Android');
       return dict;
     }

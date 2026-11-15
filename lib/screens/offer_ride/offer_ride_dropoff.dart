@@ -57,7 +57,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                   padding: const EdgeInsets.all(24),
                   child: RichText(
                     text: TextSpan(
-                      style: Theme.of(context).textTheme.headline4,
+                      style: Theme.of(context).textTheme.headlineMedium,
                       children: const [
                         TextSpan(
                           text: 'Where will you ',
@@ -86,7 +86,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         decoration: InputDecoration(
                           icon: const Icon(Icons.edit_location_outlined),
                           labelText: 'Street Address',
-                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyText2!.copyWith(
+                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(
                             fontStyle: FontStyle.normal,
                             color: theme.TagAlongTheme.colorHighEmphasis,
                           ),
@@ -108,7 +108,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         decoration: InputDecoration(
                           icon: const Icon(Icons.location_city),
                           labelText: 'City',
-                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyText2!.copyWith(
+                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(
                             fontStyle: FontStyle.normal,
                             color: theme.TagAlongTheme.colorHighEmphasis,
                           ),
@@ -133,7 +133,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         decoration: InputDecoration(
                           icon: const Icon(FontAwesomeIcons.flagUsa),
                           labelText: 'State',
-                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyText2!.copyWith(
+                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(
                             fontStyle: FontStyle.normal,
                             color: theme.TagAlongTheme.colorHighEmphasis,
                           ),
@@ -155,7 +155,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         decoration: InputDecoration(
                           icon: const Icon(Icons.code),
                           labelText: 'Zip Code',
-                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyText2!.copyWith(
+                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(
                             fontStyle: FontStyle.normal,
                             color: theme.TagAlongTheme.colorHighEmphasis,
                           ),
@@ -181,7 +181,7 @@ class _OfferRideDropoffState extends State<OfferRideDropoff> {
                         decoration: InputDecoration(
                           icon: const Icon(Icons.edit_location_outlined),
                           labelText: 'Drop off Location',
-                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyText2!.copyWith(
+                          labelStyle: theme.TagAlongTheme.lightTextTheme.bodyMedium!.copyWith(
                             fontStyle: FontStyle.normal,
                             color: theme.TagAlongTheme.colorHighEmphasis,
                           ),

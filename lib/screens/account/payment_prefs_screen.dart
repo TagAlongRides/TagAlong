@@ -78,7 +78,7 @@ class PaymentPrefHeader extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.left,
-        style: TagAlongTheme.lightTextTheme.headline6,
+        style: TagAlongTheme.lightTextTheme.titleLarge,
       ),
     );
   }

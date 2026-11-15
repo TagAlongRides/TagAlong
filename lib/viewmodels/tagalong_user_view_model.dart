@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:tagalong/data/models/driver.dart';
 import 'package:tagalong/data/models/user.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/services/notification_service.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/util/user_data.dart';
 
@@ -53,10 +53,10 @@ class TagAlongUserViewModel with ChangeNotifier {
             logger.log.fine('Sending email verification');
             await user.sendEmailVerification();
           } else {
-            logger.log.fine('Reauthenticating user');
-            final authToken = await FacebookAuth.instance.accessToken;
-            final facebookAuthCredential = FacebookAuthProvider.credential(authToken!.token);
-            await user.reauthenticateWithCredential(facebookAuthCredential);
+            // Changing the account's email needs a fresh credential from
+            // whichever provider the user actually signed in with.
+            logger.log.fine('Reauthenticating user via ${_authService.currentProviderId()}');
+            await _authService.reauthenticate();
             logger.log.fine('Sending email verification to updated email');
             await user.verifyBeforeUpdateEmail(studentEmail);
           }
@@ -77,6 +77,31 @@ class TagAlongUserViewModel with ChangeNotifier {
     } else {
       return null;
     }
+  }
+
+  /// Maps the Firebase provider id to the registration method we store on
+  /// the user record (Milestone 1, section 2.4).
+  String _signInMethodFromProvider() {
+    switch (_authService.currentProviderId()) {
+      case 'google.com':
+        return SignInMethod.GOOGLE;
+      case 'apple.com':
+        return SignInMethod.APPLE;
+      case 'facebook.com':
+        return SignInMethod.FACEBOOK;
+      default:
+        return SignInMethod.INVALID;
+    }
+  }
+
+  /// Forgets the signed-in user.
+  ///
+  /// Must be called on sign-out. [setUpUser] keeps the cached user when the id
+  /// matches, so leaving a stale one behind would show the previous account to
+  /// whoever signs in next on this device.
+  void clear() {
+    tagAlongUser = null;
+    notifyListeners();
   }
 
   /// Returns a bool on whether [tagAlongUser] instance exists (in-memory).
@@ -114,6 +139,19 @@ class TagAlongUserViewModel with ChangeNotifier {
     }
   }
 
+  /// Triggers a Google Sign-in event via [AuthService].
+  ///
+  /// Rethrows [SignInFailure] so the login screen can tell the user what went
+  /// wrong — most usefully when the address already belongs to a Facebook or
+  /// Apple account.
+  Future<void> createOrSignInGoogle() async {
+    final UserCredential? userCred = await _authService.googleLogin();
+
+    if (userCred?.user != null) {
+      await setUpUser(userCred!.user!.uid, signInMethod: SignInMethod.GOOGLE);
+    }
+  }
+
   Future<void> createOrSignInApple() async {
     // Perform the Apple login
     UserCredential? userCred = await _authService.appleLogin();
@@ -140,12 +178,23 @@ class TagAlongUserViewModel with ChangeNotifier {
   /// user must exist within the FirebaseAuth system.
   /// If the User exists, pull data and populate `user`.
   /// If the User !exist, create an "unregistered User" and write to Firestore.
-  Future<void> setUpUser(String uid, {String signInMethod = SignInMethod.FACEBOOK}) async {
+  /// [signInMethod] defaults to whichever provider the user actually signed
+  /// in with, rather than assuming Facebook.
+  Future<void> setUpUser(String uid, {String? signInMethod}) async {
+    signInMethod ??= _signInMethodFromProvider();
     logger.log.fine('setUpUser()');
-    // 1. [user] exists in memory
-    if (tagAlongUser != null) {
-      logger.log.fine('setUpUser() - TagAlongUser instance already in memory.');
+    // 1. The user we are being asked for is already in memory.
+    //
+    // This guard compares ids deliberately. It used to short-circuit on any
+    // cached user at all, so once anyone had signed in during an app session,
+    // every later sign-in kept showing that first account's details.
+    if (tagAlongUser != null && tagAlongUser!.id == uid) {
+      logger.log.fine('setUpUser() - TagAlongUser $uid already in memory.');
       return;
+    }
+    if (tagAlongUser != null) {
+      logger.log.fine('setUpUser() - switching user from ${tagAlongUser!.id} to $uid');
+      tagAlongUser = null;
     }
     if (uid.isEmpty) {
       logger.log.fine('setUpUser() - TagAlongUser uid is null');
@@ -164,6 +213,18 @@ class TagAlongUserViewModel with ChangeNotifier {
         logger.log.fine('setUpUser() - User exists! Looks like:');
         logger.log.fine('setUpUser() - ${userData.toString()}');
         tagAlongUser = TagAlongUser.fromJson(userData);
+        // Users who registered before we started capturing the Facebook id
+        // have none stored; backfill it from their linked auth provider so
+        // their profile is still linkable from the Ride Details page.
+        if (tagAlongUser!.facebookId.isEmpty) {
+          final facebookId = _authService.getFacebookId();
+          if (facebookId.isNotEmpty) {
+            tagAlongUser!.facebookId = facebookId;
+            await databaseService.users.doc(uid).update({'facebook_id': facebookId});
+          }
+        }
+        // So we can push this user ride notifications on this device.
+        await NotificationService.instance.registerDevice(uid);
         return;
       }
       // User does not exist - create an unregisteredUser and add to Firestore
@@ -181,20 +242,26 @@ class TagAlongUserViewModel with ChangeNotifier {
             profilePictureUrl: url,
             createdAt: time,
             updatedAt: time,
+            signInMethod: signInMethod,
+            facebookId: _authService.getFacebookId(),
           );
         } else {
-          // Get the User's Facebook profile picture
+          // Google and Apple both hand Firebase a photo URL where they have
+          // one; Apple never does, so this is empty for those accounts and the
+          // UI falls back to showing no avatar.
           tagAlongUser = TagAlongUser(
             id: uid,
-            profilePictureUrl: '',
+            profilePictureUrl: getUser()?.photoURL ?? '',
             createdAt: time,
             updatedAt: time,
+            signInMethod: signInMethod,
           );
         }
       }
       logger.log.fine('setUpUser() - TagAlongUser was initialized.');
       logger.log.fine('setUpUser() - The TagAlongUser is: $tagAlongUser}');
       await addTagAlongUserToFirestore(uid);
+      await NotificationService.instance.registerDevice(uid);
     }
   }
 

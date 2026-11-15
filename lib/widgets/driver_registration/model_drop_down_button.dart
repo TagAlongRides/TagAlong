@@ -44,6 +44,24 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
               items: null,
               onChanged: null,
             );
+          } else if (snapshot.hasError || (snapshot.data?.isEmpty ?? true)) {
+            logger.log.warning('Could not load car models: ${snapshot.error}');
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'We could not load models for that make right now.',
+                  style: TextStyle(color: Colors.red),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Try again'),
+                  onPressed: () => setState(() {
+                    modelList = _registerDriverViewModel.getModels();
+                  }),
+                ),
+              ],
+            );
           } else if (snapshot.connectionState == ConnectionState.done) {
             logger.log.fine('Done!');
             // By this time, `modelList` is a completed Future and contains

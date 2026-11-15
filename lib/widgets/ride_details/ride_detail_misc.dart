@@ -26,7 +26,7 @@ class RideDetailMisc extends StatelessWidget {
                 children: [
                   Text(
                     '${ride.vehicle.make} ${ride.vehicle.model}',
-                    style: TagAlongTheme.lightTextTheme.bodyText2!,
+                    style: TagAlongTheme.lightTextTheme.bodyMedium!,
                   ),
                   Text(ride.vehicle.color),
                 ]),

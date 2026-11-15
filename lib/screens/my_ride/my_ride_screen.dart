@@ -65,14 +65,14 @@ class _MyRideScreenState extends State<MyRideScreen> {
                                       children: [
                                         Text(
                                           'Estimated Earnings for Upcoming Rides: ',
-                                          style: TagAlongTheme.lightTextTheme.headline5!
+                                          style: TagAlongTheme.lightTextTheme.headlineSmall!
                                               .copyWith(fontWeight: FontWeight.bold),
                                           softWrap: true,
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
                                           '\$${_upcomingEarnings.toString()}',
-                                          style: TagAlongTheme.lightTextTheme.headline5!
+                                          style: TagAlongTheme.lightTextTheme.headlineSmall!
                                               .copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -91,7 +91,7 @@ class _MyRideScreenState extends State<MyRideScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               child: Text(
                                 'Upcoming',
-                                style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
+                                style: TagAlongTheme.lightTextTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ),
 
@@ -114,7 +114,7 @@ class _MyRideScreenState extends State<MyRideScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: Text(
                               'Completed',
-                              style: TagAlongTheme.lightTextTheme.headline5!.copyWith(fontWeight: FontWeight.bold),
+                              style: TagAlongTheme.lightTextTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                           ListView.builder(
@@ -183,7 +183,7 @@ class MyRideTile extends StatelessWidget {
         trailing: _isCancelled
             ? Text(
                 'Cancelled',
-                style: TagAlongTheme.lightTextTheme.subtitle1,
+                style: TagAlongTheme.lightTextTheme.titleMedium,
               )
             : null,
         onTap: () {

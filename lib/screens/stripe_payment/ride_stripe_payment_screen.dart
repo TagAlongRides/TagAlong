@@ -2,15 +2,18 @@ import 'dart:developer';
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_credit_card/credit_card_widget.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/data/models/user.dart';
+import 'package:tagalong/screens/my_ride/my_ride_detail_screen.dart';
 import 'package:tagalong/screens/ride_board_screen.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/util/pricing.dart';
 
 class RideStripePaymentScreen extends StatefulWidget {
   const RideStripePaymentScreen({Key? key, required this.ride}) : super(key: key);
@@ -71,14 +74,14 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
               const SizedBox(height: 12),
               LoadingButton(
                 onPressed: controller.details.complete == true ? _handlePayPress : null,
-                text: 'Pay',
+                text: 'Confirm my ride · ${Pricing.format(Pricing.total(widget.ride.price))}',
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 12),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Save Card :',
-                  style: _themeData.textTheme.subtitle1,
+                  style: _themeData.textTheme.titleMedium,
                 ),
               ),
               FutureBuilder<StripePaymentMethodResponse>(
@@ -145,8 +148,11 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       String email = tagAlongUser.emailAddress;
       String customerId = tagAlongUser.stripeCustomerId;
       String driverAccountID = widget.ride.stripeAccountId;
-      String amount = (widget.ride.price * 1.20 * 100).toStringAsFixed(0); //Charges in cent
-      String applicationFee = (widget.ride.price * .20 * 100).toStringAsFixed(0); //Charges in cent
+      // The passenger is charged the driver's price plus the service fee and
+      // taxes; the driver receives their price and TagAlong keeps the rest
+      // (Milestone 4, §1.1.1).
+      String amount = Pricing.totalInCents(widget.ride.price); //Charges in cent
+      String applicationFee = Pricing.applicationFeeInCents(widget.ride.price); //Charges in cent
 
       final billingDetails = BillingDetails(
         email: email,
@@ -155,22 +161,28 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       final currentBookings =
           await RideBookingRepository.instance.getRideBookingForRideId(widget.ride.rideId, isCanceled: false);
 
-      // Do not allow user to book ride if all seats are already taken
+      // Do not allow user to book ride if all seats are already taken. This is
+      // an expected outcome, not a payment failure, so bail out before we
+      // charge anything rather than falling through to the error dialog.
       if (currentBookings.length >= widget.ride.noPassengers) {
+        logger.log.fine('Book ride failed - no seats remaining');
+        if (!mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Sorry! This ride has no more seats remaining.')));
-        logger.log.fine('Book ride failed - no seats remaining');
         Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
-        throw Exception('Book ride failed, no seats remaining');
+        return;
       }
 
       // 2. Create payment method
       if (paymentMethodId == null) {
-        final paymentMethod = await Stripe.instance.createPaymentMethod(PaymentMethodParams.card(
+        final paymentMethod = await Stripe.instance.createPaymentMethod(
+          params: PaymentMethodParams.card(
             paymentMethodData: PaymentMethodData(
               billingDetails: billingDetails,
             ),
-            options: const PaymentMethodOptions(setupFutureUsage: PaymentIntentsFutureUsage.OffSession)));
+          ),
+          options: const PaymentMethodOptions(setupFutureUsage: PaymentIntentsFutureUsage.OffSession),
+        );
         paymentMethodId = paymentMethod.id;
       }
 
@@ -191,11 +203,10 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       if (paymentIntentResult.data.status == 'succeeded') {
         // Payment succeeded
 
-        await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
+        final bookedRide =
+            await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
 
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Success!: The payment was confirmed successfully!')));
-        Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
+        await _showBookingConfirmed(bookedRide);
         return;
       }
 
@@ -221,21 +232,72 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
         } else {
           // Payment succedeed
 
-          await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
+          final bookedRide =
+              await _bookRide(widget.ride, paymentIntentResult.data.id, paymentIntentResult.data.charges.data[0].id);
 
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Success!: The payment was confirmed successfully!')));
-          Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
+          await _showBookingConfirmed(bookedRide);
         }
       }
     } catch (error, stacktrace) {
       logger.log.fine(stacktrace);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment failed, please try again.')));
+      await _showBookingFailed();
       // rethrow;
     }
   }
 
-  Future _bookRide(RideModel ride, String paymentIntentId, String chargeId) async {
+  /// Tells the passenger the booking worked, then drops them on the Upcoming
+  /// Ride page in My Rides (Milestone 3, §2.1.6 and Milestone 4, §2.2).
+  Future<void> _showBookingConfirmed(RideModel ride) async {
+    if (!mounted) return;
+
+    final dropoff = ride.dropoffLocation.label ?? ride.dropoffLocation.city;
+    final date = DateFormat('EEEE, MMMM d').format(ride.departureDateTime);
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hooray!'),
+        content: Text(
+            'You’ve successfully booked a ride with ${ride.getFirstNameAndInitial()} to $dropoff, departing on $date at ${ride.departureTimeOfDay}.'),
+        actions: <Widget>[
+          TextButton(child: const Text('View my ride'), onPressed: () => Navigator.pop(context)),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+    // Clear the booking flow, then open the ride so backing out lands on the
+    // Ride Board rather than the card form.
+    Navigator.of(context).pushNamedAndRemoveUntil(RideBoardScreen.routeName, (route) => false);
+    Navigator.of(context).pushNamed(MyRideDetailScreen.routeName, arguments: ride);
+  }
+
+  /// Milestone 3, §2.1.7 — a dismissible pop-up pointing the user at support.
+  Future<void> _showBookingFailed() async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Expanded(child: Text('Oops, that didn’t work!')),
+            IconButton(
+              icon: const Icon(Icons.close),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+        content: const Text(
+            'Please reach out to our support team at support@tagalongrides.com for assistance.'),
+      ),
+    );
+  }
+
+  /// Records the booking and returns the ride as it now stands, with the seat
+  /// taken and the rider attached.
+  Future<RideModel> _bookRide(RideModel ride, String paymentIntentId, String chargeId) async {
     // Create Ride booking entry
     final rideBooking = await RideBookingRepository.instance.bookRide(RideBookingModel(
       rideId: ride.rideId,
@@ -253,5 +315,6 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
     // Remove 1 remaining seat from the ride
     rideFromRepo.remainingSeats--;
     await RideRepository.instance.updateRide(rideFromRepo);
+    return rideFromRepo;
   }
 }

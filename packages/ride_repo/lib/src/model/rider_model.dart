@@ -66,28 +66,35 @@ class RideModel {
   final String stripeAccountId;
   DateTime? updatedAt;
 
+  /// Builds a [RideModel] from a Firestore document.
+  ///
+  /// Throws [UnsupportedError] naming the offending field when a required one
+  /// is missing or the wrong type, so a malformed ride is diagnosable instead
+  /// of surfacing as an opaque cast failure while the Ride Board builds.
   factory RideModel.fromJson(Map<String, dynamic> json) => RideModel(
-        rideId: json["ride_id"],
-        driverId: json["driver_id"],
-        notes: json["notes"],
-        riderIds: List<String>.from(json["rider_ids"] ?? [].map((x) => x)),
-        rideBookingIds: List<String>.from(json["ride_booking_ids"] ?? [].map((x) => x)),
-        pickupLocation: Location.fromJson(json["pickup_location"]),
-        university: json["university"],
-        driverFullName: json["driver_full_name"],
-        noBags: json["no_bags"],
-        createdAt: json["created_at"],
-        toCampus: json["to_campus"],
-        vehicle: Vehicle.fromJson(json["vehicle"]),
-        departureTimeOfDay: json["departure_time_of_day"],
-        driverProfilePictureUrl: json["driver_profile_picture_url"],
-        price: json["price"],
-        departureDateTime: (json["departure_date_time"] as Timestamp).toDate(),
-        noPassengers: json["no_passengers"],
-        remainingSeats: json["remaining_seats"],
-        vaccinationCard: json["vaccination_card"],
-        dropoffLocation: Location.fromJson(json["dropoff_location"]),
-        status: RideStatus.values.byName(json["status"].toString().toLowerCase()),
+        rideId: _require<String>(json, "ride_id"),
+        driverId: _require<String>(json, "driver_id"),
+        notes: json["notes"] ?? "",
+        riderIds: List<String>.from(json["rider_ids"] ?? const []),
+        rideBookingIds: List<String>.from(json["ride_booking_ids"] ?? const []),
+        pickupLocation: Location.fromJson(_require<Map<String, dynamic>>(json, "pickup_location")),
+        university: _require<String>(json, "university"),
+        driverFullName: _require<String>(json, "driver_full_name"),
+        noBags: _require<int>(json, "no_bags"),
+        createdAt: _require<Object>(json, "created_at"),
+        toCampus: _require<bool>(json, "to_campus"),
+        vehicle: Vehicle.fromJson(_require<Map<String, dynamic>>(json, "vehicle")),
+        departureTimeOfDay: _require<String>(json, "departure_time_of_day"),
+        driverProfilePictureUrl: json["driver_profile_picture_url"] ?? "",
+        price: _require<int>(json, "price"),
+        departureDateTime: _require<Timestamp>(json, "departure_date_time").toDate(),
+        noPassengers: _require<int>(json, "no_passengers"),
+        // A ride stored without a seat count has had nobody book it yet, so
+        // every seat the driver offered is still free.
+        remainingSeats: json["remaining_seats"] ?? _require<int>(json, "no_passengers"),
+        vaccinationCard: json["vaccination_card"] ?? false,
+        dropoffLocation: Location.fromJson(_require<Map<String, dynamic>>(json, "dropoff_location")),
+        status: RideStatus.values.byName(_require<String>(json, "status").toLowerCase()),
         stripeAccountId: json["stripe_account_id"] ?? '',
         updatedAt: json["updated_at"] == null ? null : (json["updated_at"] as Timestamp).toDate(),
       );
@@ -117,6 +124,15 @@ class RideModel {
         "stripe_account_id": stripeAccountId,
         "updated_at": updatedAt,
       };
+
+  /// Reads [field] from [json], or throws naming what was wrong with it.
+  static T _require<T>(Map<String, dynamic> json, String field) {
+    final value = json[field];
+    if (value is! T) {
+      throw UnsupportedError('Invalid ride - $field is $value');
+    }
+    return value;
+  }
 
   /// Returns a [TimeOfDay] instance given a stringified TimeOfDay
   static TimeOfDay timeOfDayFromString(String str) {
@@ -148,14 +164,27 @@ class Location {
   final String? label;
   final String state;
 
+  /// Builds a [Location] from a Firestore document.
+  ///
+  /// Throws [UnsupportedError] naming the offending field when a required one
+  /// is missing, rather than letting a raw cast fail somewhere further up.
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-        zip: json["zip"],
-        address: json["address"],
+        zip: _required(json, "zip"),
+        address: _required(json, "address"),
         locationImageUrl: json["location_image_url"],
-        city: json["city"],
+        city: _required(json, "city"),
         label: json["label"],
-        state: json["state"],
+        // Not every stored location carries a state.
+        state: json["state"] ?? "",
       );
+
+  static String _required(Map<String, dynamic> json, String field) {
+    final value = json[field];
+    if (value is! String) {
+      throw UnsupportedError('Invalid location - $field is $value');
+    }
+    return value;
+  }
 
   Map<String, dynamic> toJson() => {
         "zip": zip,
@@ -184,14 +213,29 @@ class Vehicle {
   final String vehicleId;
   final String make;
 
-  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
-        color: json["color"],
-        // year: json["year"],
-        createdAt: json["created_at"],
-        model: json["model"],
-        vehicleId: json["vehicle_id"],
-        make: json["make"],
-      );
+  /// Builds a [Vehicle] from a Firestore document, naming any missing field.
+  factory Vehicle.fromJson(Map<String, dynamic> json) {
+    final createdAt = json["created_at"];
+    if (createdAt == null) {
+      throw UnsupportedError('Invalid vehicle - created_at is null');
+    }
+    return Vehicle(
+      color: _required(json, "color"),
+      // year: json["year"],
+      createdAt: createdAt,
+      model: _required(json, "model"),
+      vehicleId: _required(json, "vehicle_id"),
+      make: _required(json, "make"),
+    );
+  }
+
+  static String _required(Map<String, dynamic> json, String field) {
+    final value = json[field];
+    if (value is! String) {
+      throw UnsupportedError('Invalid vehicle - $field is $value');
+    }
+    return value;
+  }
 
   Map<String, dynamic> toJson() => {
         "color": color,
