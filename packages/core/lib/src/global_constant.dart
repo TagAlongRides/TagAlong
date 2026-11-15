@@ -50,10 +50,19 @@ class AppConfig {
   /// Stripe's *publishable* key. Safe to ship; it can only create tokens, not
   /// move money. The secret key lives in Secret Manager and is used only by
   /// the Cloud Functions.
+  /// The publishable key, which must belong to the **same Stripe account** as
+  /// the backend's secret key (`acct_1U2F4RFVwQCYt59V`, test mode).
+  ///
+  /// This previously held a key from an older TagAlong account
+  /// (`pk_test_51KrmEeHOJhcBOg6e...`). The app tokenised cards against that
+  /// account while the server charged them on this one, so every booking died
+  /// with "No such PaymentMethod" - a payment method really does only exist on
+  /// the account that created it. Publishable keys are safe to ship in a
+  /// client; secrets are not, and belong in Secret Manager.
   static const String stripePublishableKey = String.fromEnvironment(
     'STRIPE_PUBLISHABLE_KEY',
-    defaultValue: 'pk_test_51KrmEeHOJhcBOg6eRUYQ0r274bFJuDrXl87YoDf32FiU3Koz'
-        'WxYtUi5sgxBJfmw8ZvZQM9SjzWkgmYJMbnHTekEK00HyDQBaBU',
+    defaultValue: 'pk_test_51U2F4RFVwQCYt59VuEtjG65geO3qnk0z04vmzfsEn0J9038Bo2toH4J'
+        '6hRnWYk5j4vLZC3NYLUCtEKGDs1ro3GjO00crKtKzq2',
   );
 
   /// The project's web OAuth client, used as Google Sign-In's server client id

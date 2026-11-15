@@ -245,9 +245,13 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
         }
       }
     } catch (error, stacktrace) {
-      logger.log.fine(stacktrace);
+      // The passenger only ever sees "contact support", so this log is the one
+      // record of what actually went wrong. It used to log the stack trace
+      // alone, without the error, at fine level - which the default INFO
+      // threshold then discarded, leaving a failed booking with nothing at all
+      // to diagnose.
+      logger.log.severe('Ride booking failed: $error', error, stacktrace);
       await _showBookingFailed();
-      // rethrow;
     }
   }
 
