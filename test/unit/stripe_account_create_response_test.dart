@@ -131,6 +131,47 @@ void main() {
       );
     });
 
+    test('a recipient-only account is not payable before onboarding', () {
+      final response = StripeAccountCreateResponse.fromJson(
+          v2AccountThroughV1Endpoint(payoutsEnabled: false, transfers: 'inactive'));
+
+      expect(response.data.canReceivePayouts, isFalse);
+    });
+
+    test('a fully onboarded recipient account is payable', () {
+      final response = StripeAccountCreateResponse.fromJson(
+          v2AccountThroughV1Endpoint(payoutsEnabled: true, transfers: 'active'));
+
+      // charges_enabled stays false forever on a recipient-only account, which
+      // is exactly why readiness must not be read from it.
+      expect(response.data.chargesEnabled, isFalse);
+      expect(response.data.canReceivePayouts, isTrue);
+    });
+
+    test('transfers alone is not enough to pay a driver', () {
+      final response = StripeAccountCreateResponse.fromJson(
+          v2AccountThroughV1Endpoint(payoutsEnabled: false, transfers: 'active'));
+
+      expect(response.data.canReceivePayouts, isFalse);
+    });
+
+    test('payouts alone is not enough either', () {
+      final response = StripeAccountCreateResponse.fromJson(
+          v2AccountThroughV1Endpoint(payoutsEnabled: true, transfers: 'inactive'));
+
+      expect(response.data.canReceivePayouts, isFalse);
+    });
+
+    test('a missing transfers capability is not payable', () {
+      final response = StripeAccountCreateResponse.fromJson({
+        'status': 200,
+        'success': true,
+        'data': {'id': 'acct_X', 'payouts_enabled': true},
+      });
+
+      expect(response.data.canReceivePayouts, isFalse);
+    });
+
     test('the raw payload is kept for debugging', () {
       final response = StripeAccountCreateResponse.fromJson(freshAccountPayload());
 
@@ -139,3 +180,31 @@ void main() {
     });
   });
 }
+
+/// What `GET /v1/accounts/{id}` actually returned for a recipient-only
+/// Accounts v2 driver account, before onboarding was completed. Taken from a
+/// real test-mode response.
+Map<String, dynamic> v2AccountThroughV1Endpoint({
+  required bool payoutsEnabled,
+  required String transfers,
+}) =>
+    {
+      'status': 200,
+      'success': true,
+      'message': 'Account Details',
+      'data': {
+        'id': 'acct_1UbraBFVwQR1SZeL',
+        'object': 'account',
+        // false even after onboarding: a recipient-only account has no
+        // merchant configuration and cannot accept card payments at all.
+        'charges_enabled': false,
+        'payouts_enabled': payoutsEnabled,
+        'details_submitted': payoutsEnabled,
+        'type': 'none',
+        'capabilities': {'transfers': transfers},
+        'settings': {
+          'branding': {'icon': null, 'logo': null},
+        },
+      },
+    };
+

@@ -321,3 +321,54 @@ drivers are never asked for it.
 
 Note also no card-payment requirements appear at all, which is the onboarding
 reduction this migration was meant to deliver.
+
+### Step 3 - done
+
+Driver account creation moved to Accounts v2.
+
+`functions/lib/driverAccount.js` is new. The payload builder and
+`createDriverAccount` live there rather than in the route file so the payload
+can be unit tested without standing up the Functions runtime, which
+`routes/payment.js` needs for its secret. `toE164` and `defined` moved with
+them, since nothing else used them once the v1 call was gone.
+
+- `POST /stripeConnect/account/` creates a v2 account with only the
+  `recipient` configuration, then sets the manual payout schedule through the
+  v1 endpoint. On `phone_invalid` it retries once without the phone.
+  `type` is no longer a required body field - v1's account type is `dashboard`
+  in v2 - but it is still honoured when sent.
+- `POST /stripeConnect/` creates a v2 account link, with
+  `collection_options: {fields: "currently_due"}` so onboarding asks for less,
+  and supports `type: "account_update"` for sending a driver back to fix a
+  lapsed requirement.
+- Everything else is untouched: destination charges, refunds, payouts, balance
+  reads, and `GET /stripeConnect/account/:id`, which still reads through the v1
+  endpoint and still returns the v1 shape.
+
+Client-side, `StripeAccount` gained `canReceivePayouts`, and both call sites
+that set `DriverData.isStripeActive` now use it instead of `chargesEnabled`.
+It requires *both* `payouts_enabled` and the `transfers` capability being
+`active`: transfers alone means a fare cannot reach the driver's bank, payouts
+alone means it can never reach their Stripe balance. Marking a driver active
+early is worse than marking them active late, because a booking would then
+fail part-way through taking a passenger's money.
+
+Tests: 13 in `functions/test/driverAccount.test.js` (run with `npm test` in
+`functions/`), covering the recipient-only configuration, the responsibilities,
+the profile pre-fill, phone normalisation and the retry payload; plus 5 more on
+the Flutter side pinning `canReceivePayouts` against the response shapes the
+probe actually returned.
+
+### Still to do
+
+- **Step 4** - deploy, then register a driver end to end and confirm
+  `canReceivePayouts` turns true on a *completed* onboarding. That is the one
+  assumption the probe could not test.
+- **Step 5** - turn the Accounts v1 toggle back off, which proves nothing still
+  depends on v1 creation.
+- **Real return and refresh URLs.** Still `https://www.returnurl.com`. v2
+  requires `refresh_url`, and the web view detects completion by string
+  matching `returnurl`, so onboarding appears to work while sending finished
+  drivers to a domain we do not own.
+- **Dispute recovery.** Unchanged by this work and still absent - see the
+  CAUTION note above.

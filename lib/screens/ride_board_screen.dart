@@ -407,7 +407,7 @@ class _RideBoardScreenState extends State<RideBoardScreen> with SingleTickerProv
 
             if (!(_driverData?.isStripeActive ?? false) && _driverData?.stripeAccountId != null) {
               final stripeAccount = await StripeAccountRepository.instance.getAccount(_driverData!.stripeAccountId!);
-              _driverData.isStripeActive = stripeAccount.data.chargesEnabled;
+              _driverData.isStripeActive = stripeAccount.data.canReceivePayouts;
 
               // 1. Update our [TagAlongUser] in-memory
               Map<String, dynamic> data = {'driver_data': _driverData};
