@@ -47,12 +47,24 @@ class _DriverStripeConnectRegistrationScreenState extends State<DriverStripeConn
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) {
             log('STRIPE CONNECT : ${request.url}');
-            //Stripe Connect Flow is completed
-            //Update the account id and registration status
-            if (request.url.contains('returnurl')) {
+
+            // Onboarding finished. This used to match the bare string
+            // 'returnurl', which worked only because the placeholder domain
+            // happened to contain it.
+            if (request.url.startsWith(AppConfig.stripeConnectReturnUrl)) {
               Navigator.of(context).pop(_connectResponse);
               return NavigationDecision.prevent;
             }
+
+            // The account link expired or had already been used. Stripe's
+            // guidance is to mint a new one and put the driver straight back
+            // into it, which matters because these links last minutes.
+            if (request.url.startsWith(AppConfig.stripeConnectRefreshUrl)) {
+              logger.log.fine('Stripe account link expired; requesting a new one');
+              _fetchStripeConnectUrl();
+              return NavigationDecision.prevent;
+            }
+
             return NavigationDecision.navigate;
           },
         ),

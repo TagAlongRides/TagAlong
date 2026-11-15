@@ -30,7 +30,7 @@ class StripeInfoScreen extends StatelessWidget {
 
           //0.1 - Check of Stripe Account dont have any required action
           final stripeAccount = await StripeAccountRepository.instance.getAccount(_connectResponse.data.accountId);
-          driver?.isStripeActive = stripeAccount.data.chargesEnabled;
+          driver?.isStripeActive = stripeAccount.data.canReceivePayouts;
 
           // 1. Update our [TagAlongUser] in-memory
           Map<String, dynamic> data = {'driver_data': driver};
