@@ -372,3 +372,41 @@ probe actually returned.
   drivers to a domain we do not own.
 - **Dispute recovery.** Unchanged by this work and still absent - see the
   CAUTION note above.
+
+### Step 4, first attempt: the account link model
+
+Deploying surfaced `type 'String' is not a subtype of type 'int'` from the
+connect flow. `StripeConnectResponse` typed `created` and `expires_at` as
+`int`, which held while links came from Accounts v1. Accounts v2 returns
+ISO-8601 strings for both.
+
+Rewritten the same way as the account model: `url` and `account_id` are the
+only fields the app reads, the timestamps now parse from either format, and
+`expiresAt` is a real `DateTime` - worth having, because v2 account links are
+single use and expire in minutes. `hasExpired` is available for that.
+
+Client-side only; no redeploy needed, just a rebuild.
+
+### The same brittleness remains elsewhere
+
+These response models are machine-generated over whole Stripe objects with
+`required` non-nullable fields throughout:
+
+| Model | Strict fields |
+| --- | --- |
+| `stripe_payment_intent_create_response.dart` | ~60 |
+| `stripe_payment_method_response.dart` | ~22 |
+| `stripe_customer_create_response.dart` | ~14 |
+| `stripe_refund_response.dart` | ~12 |
+| `stripe_account_balance_response.dart` | ~8 |
+
+All of them read v1 responses, and the v1 client is pinned to the same API
+version the app already worked against, so this migration does not change
+their behaviour. But it is the identical failure mode that has now bitten
+twice, and `stripe_payment_intent_create_response.dart` sits in the booking
+path - where the failure would land *after* the passenger's card is charged,
+exactly as account creation failed after the account already existed.
+
+`transferGroup` is typed non-nullable there, among others. Worth its own
+change, and worth verifying against a real test booking rather than by
+reading.
