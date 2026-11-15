@@ -447,8 +447,14 @@ are affected.
 nothing still depends on v1 account creation, and it closes the compatibility
 escape hatch this migration existed to get off.
 
-Existing v1 connected accounts - the 2023 one and anything created while the
-toggle was on - keep working either way. Only creation was ever gated.
+Accounts created while the toggle was on keep working either way. Only creation
+was ever gated.
+
+The 2023 connected account is a different matter, and not because of this
+toggle. `acct_1Md1cjH9gxtySUnr` belongs to an **older TagAlong platform
+account**, not to `acct_1U2F4RFVwQCYt59V`. The current secret key cannot
+see it at all, so any charge naming it as a destination fails with
+`No such destination`. It was never a v1-versus-v2 problem.
 
 ## What this migration did not fix
 
@@ -457,3 +463,13 @@ toggle was on - keep working either way. Only creation was ever gated.
   `stripe_payment_intent_create_response.dart` in the booking path.
 - **The platform profile.** `details_submitted` is still false on the platform
   account. It did not block v2 creation, but it is still worth completing.
+- **A ride can name a destination that cannot be paid.** `stripe_account_id` is
+  copied onto the ride document when the ride is posted, and nothing checks it
+  again. If the driver's connected account is gone, rejected, or - as with the
+  2023 account - on another platform entirely, the ride still appears bookable
+  and the passenger only finds out at the payment step, where they get the
+  generic "contact support" dialog. No money moves: Stripe rejects the
+  PaymentIntent at creation, so there is nothing to refund. But the ride stays
+  on the board failing for every passenger who tries it. Two things would fix
+  it: refuse to publish a ride whose driver cannot receive transfers, and read
+  the account id from the driver at booking time rather than from the snapshot.
