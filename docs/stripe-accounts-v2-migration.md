@@ -243,3 +243,81 @@ debit the platform with no recovery from the driver. This is a pre-existing
 gap, not something the migration introduces, but the configuration is only
 "viable when the platform runs webhook-driven refund or dispute recovery
 workflows". Worth its own piece of work.
+
+### Step 2 - done, all four risks retired
+
+Ran against test mode with the key read straight from Secret Manager into the
+probe process. Three throwaway accounts were created
+(`acct_1UbrZP…`, `acct_1UbrZa…`, `acct_1UbraB…`); they can be ignored.
+
+| Check | Result |
+| --- | --- |
+| `v2.core.accounts.create`, recipient only | OK - `applied_configurations: ["recipient"]` |
+| Manual payout schedule via `v1 accounts.update` | **OK - `schedule.interval: manual`** |
+| `v1 accounts.retrieve` of a v2 account | OK - returns v1 shape |
+| `v2.core.accountLinks.create` | OK - `connect.stripe.com`, expires ~30 min |
+
+The platform's `details_submitted: false` did **not** block v2 creation. No
+`connect_profile_not_submitted`, no `account_create_activation_required`. The
+platform profile is still worth completing, but it is not a blocker here.
+
+A v1 read of a v2 account returns `capabilities: {"transfers":"inactive"}` -
+no `card_payments` at all, which is the point of dropping the `merchant`
+configuration.
+
+### Three findings that change the plan
+
+**1. `charges_enabled` is the wrong readiness signal now.** I previously said
+the Flutter client would need no changes. That was wrong, and this is why
+Step 2 existed. A v1 read of the recipient-only account returns:
+
+```
+charges_enabled  : false
+payouts_enabled  : false
+capabilities     : {"transfers":"inactive"}
+```
+
+`charges_enabled` describes accepting card payments. A recipient-only account
+has no `merchant` configuration and cannot accept charges, so this almost
+certainly stays `false` forever - and `DriverData.isStripeActive` is driven by
+exactly that field in `ride_board_screen.dart` and `stripe_info_screen.dart`.
+Left alone, no driver would ever read as active.
+
+Fix: drive `isStripeActive` from `payouts_enabled`, or from the `transfers`
+capability being `active`. The rewritten response model already exposes
+`payoutsEnabled` and `capabilities`, so this is a small change at two call
+sites. Confirm against a *completed* onboarding in Step 4 - the probe can only
+show the pre-onboarding state.
+
+**2. Accounts v2 validates that a phone number is real, not just well-formed.**
+`+15551234567` is rejected with `phone_invalid` and the message "Phone number
+must follow the format of '+' sign, the country code, and the subscriber
+number" - which is misleading, because the format was correct. `555` numbers
+are refused; `+12064567890` is accepted. v1 accepted both.
+
+`toE164()` already emits the right shape, so real numbers are fine. But an
+implausible number now fails the whole account creation. Since `phone` is
+optional and the driver can supply it during onboarding, Step 3 should catch
+`phone_invalid` and retry once without the phone rather than failing the
+driver outright.
+
+**3. We dropped a field that reduces driver friction.** The v2 account's
+requirements, all `awaiting_action_from: user`:
+
+```
+defaults.profile.business_url
+external_account
+identity.attestations.terms_of_service.account   (x2)
+identity.individual.date_of_birth.{day,month,year}
+identity.individual.id_numbers.us_ssn_last_4
+```
+
+Date of birth, SSN last 4, a bank account and terms acceptance are all
+irreducible for a US payout recipient. But `business_url` is asked of the
+*driver*, and a student giving lifts has no business URL. The v1 code avoided
+this by sending `business_profile.product_description` and `mcc`; the v2 call
+does not set the equivalent. Step 3 should populate the v2 profile defaults so
+drivers are never asked for it.
+
+Note also no card-payment requirements appear at all, which is the onboarding
+reduction this migration was meant to deliver.
