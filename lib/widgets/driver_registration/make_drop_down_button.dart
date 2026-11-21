@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/widgets/driver_registration/dropdown_options.dart';
 
 class MakeDropDownButtonWidget extends StatefulWidget {
   final String? initValue;
@@ -21,7 +22,14 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
     // Prepare our car make list within initState for FutureBuilder
     _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: false);
     if (widget.initValue != null) {
-      _registerDriverViewModel.updateMake(make: widget.initValue!);
+      // Seeding notifies listeners, which the form is one of; doing that
+      // during initState rebuilds it mid-build. Wait for the frame to end.
+      // Make, model and color seed in that order, so each one's reset of the
+      // next field still lands before that field is seeded.
+      final initValue = widget.initValue!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _registerDriverViewModel.updateMake(make: initValue);
+      });
     }
     makeList = _registerDriverViewModel.getMakes();
   }
@@ -71,8 +79,8 @@ class _MakeDropDownButtonWidgetState extends State<MakeDropDownButtonWidget> {
             return DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: UnderlineInputBorder(), labelText: 'Car Make'),
               value: _registerDriverViewModel.make,
-              items: snapshot.data
-                  ?.map((makeOption) => DropdownMenuItem<String>(child: Text(makeOption), value: makeOption))
+              items: withCurrent(snapshot.data!, _registerDriverViewModel.make)
+                  .map((makeOption) => DropdownMenuItem<String>(child: Text(makeOption), value: makeOption))
                   .toList(),
               // When user chooses option, update our ViewModel's `make` which
               // will automatically cause a rebuild from `NewDriverRegistration`,

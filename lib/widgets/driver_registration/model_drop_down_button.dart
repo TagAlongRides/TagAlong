@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tagalong/viewmodels/register_driver_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:tagalong/widgets/driver_registration/dropdown_options.dart';
 
 class ModelDropDownButton extends StatefulWidget {
   final String? initValue;
@@ -13,7 +14,7 @@ class ModelDropDownButton extends StatefulWidget {
 
 class _ModelDropDownButtonState extends State<ModelDropDownButton> {
   late RegisterDriverViewModel _registerDriverViewModel;
-  late Future<List<String>> modelList;
+  Future<List<String>>? modelList;
 
   @override
   void initState() {
@@ -22,13 +23,30 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
     // Note: This widget builds ONLY if `make` exists
     _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: false);
     if (widget.initValue != null) {
-      _registerDriverViewModel.updateModel(model: widget.initValue!);
+      // Seeding notifies listeners, which the form is one of; doing that
+      // during initState rebuilds it mid-build. Wait for the frame to end.
+      // Make, model and color seed in that order, so each one's reset of the
+      // next field still lands before that field is seeded.
+      final initValue = widget.initValue!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _registerDriverViewModel.updateModel(model: initValue);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_registerDriverViewModel.hasMakeUpdated) {
+    // The saved make is seeded after the first frame, so on that frame there
+    // may be no make to list models for yet.
+    if (_registerDriverViewModel.make == null) {
+      return DropdownButtonFormField<String>(
+        decoration: const InputDecoration(border: UnderlineInputBorder(), labelText: 'Car Model'),
+        value: null,
+        items: null,
+        onChanged: null,
+      );
+    }
+    if (_registerDriverViewModel.hasMakeUpdated || modelList == null) {
       modelList = _registerDriverViewModel.getModels();
       // _registerDriverViewModel.hasMakeUpdated = false;
     }
@@ -69,8 +87,8 @@ class _ModelDropDownButtonState extends State<ModelDropDownButton> {
             return DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: UnderlineInputBorder(), labelText: 'Car Model'),
               value: _registerDriverViewModel.model,
-              items: snapshot.data
-                  ?.map((modelOption) => DropdownMenuItem<String>(child: Text(modelOption), value: modelOption))
+              items: withCurrent(snapshot.data!, _registerDriverViewModel.model)
+                  .map((modelOption) => DropdownMenuItem<String>(child: Text(modelOption), value: modelOption))
                   .toList(),
               // When user chooses option, update our ViewModel's `make` which
               // will automatically cause a rebuild from `NewDriverRegistration`,

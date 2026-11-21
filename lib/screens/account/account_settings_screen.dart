@@ -10,7 +10,9 @@ import 'package:tagalong/services/notification_service.dart';
 import 'package:tagalong/viewmodels/ride_board_view_model.dart';
 import '../../viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as logger;
+import 'package:stripe_repo/stripe_repo.dart';
 import 'package:tagalong/themes/tagalong_tokens.dart';
+import 'package:tagalong/util/card_brand.dart';
 import 'package:tagalong/widgets/common/tagalong_components.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
@@ -95,13 +97,7 @@ class AccountSettingsScreen extends StatelessWidget {
                   subtitle: 'Choose which messages you receive',
                   onTap: () => Navigator.of(context).pushNamed(NotificationPrefsScreen.routeName),
                 ),
-                TagAlongSettingsRow(
-                  icon: Icons.credit_card_rounded,
-                  tileColor: TagAlongColors.toCampus,
-                  title: 'Payment methods',
-                  subtitle: 'Your saved cards',
-                  onTap: () => Navigator.of(context).pushNamed(PaymentMethodsScreen.routeName),
-                ),
+                const _PaymentsRow(),
               ]),
               const SizedBox(height: TagAlongSpace.s6),
 
@@ -156,5 +152,60 @@ class AccountSettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.of(context).pop();
     Navigator.of(context).pushNamed('/');
+  }
+}
+
+/// The "Payments" row, summarising the user's cards: "Visa •••• 4242 · 2 saved
+/// cards". Re-reads them on returning from the Payments screen.
+class _PaymentsRow extends StatefulWidget {
+  const _PaymentsRow();
+
+  @override
+  State<_PaymentsRow> createState() => _PaymentsRowState();
+}
+
+class _PaymentsRowState extends State<_PaymentsRow> {
+  String _subtitle = 'Your saved cards';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final response = await StripeCustomerRepository.instance.getMyPaymentMethods();
+      final cards = response.data.data;
+      String subtitle;
+      if (cards.isEmpty) {
+        subtitle = 'Add a card for faster booking';
+      } else {
+        final main = cards.firstWhere(
+          (card) => card.id == response.data.defaultPaymentMethod,
+          orElse: () => cards.first,
+        );
+        final count = cards.length == 1 ? '1 saved card' : '${cards.length} saved cards';
+        subtitle = '${CardBrand.label(main.card.brand, main.card.last4)} · $count';
+      }
+      if (mounted) setState(() => _subtitle = subtitle);
+    } catch (error) {
+      // Keep the generic line; the Payments screen explains any failure.
+      logger.log.fine('Could not summarise saved cards: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TagAlongSettingsRow(
+      icon: Icons.credit_card_rounded,
+      tileColor: TagAlongColors.toCampus,
+      title: 'Payments',
+      subtitle: _subtitle,
+      onTap: () async {
+        await Navigator.of(context).pushNamed(PaymentMethodsScreen.routeName);
+        _load();
+      },
+    );
   }
 }

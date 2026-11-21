@@ -5,6 +5,9 @@ const {ok, badRequest, serverError, missingBodyFields, BaseResponseModel} = requ
 const {createDriverAccount} = require("../lib/driverAccount");
 const {parseCents, chargeAmountError, applicationFeeError} = require("../lib/amount");
 const {FUNDS_FLOW} = require("../lib/payouts");
+const {
+  ForbiddenError, customerIdFor, listCards, createSetupIntent, setDefaultCard, removeCard,
+} = require("../lib/paymentMethods");
 
 const router = express.Router();
 
@@ -52,6 +55,60 @@ router.get("/getPaymentMethods/:customer_id", async (req, res) => {
     ok(res, "Payment method fetched Successfully", paymentMethods);
   } catch (error) {
     serverError(res, error);
+  }
+});
+
+// ------------------------------------------------- The caller's saved cards
+
+/*
+ * `/me/...` routes act on the signed-in user's own Stripe customer, looked up
+ * from their uid. Nothing in the request names the customer.
+ */
+
+/** Answers a handler's error, as a 403 when the caller tried someone else's card. */
+function answerError(res, error) {
+  if (error instanceof ForbiddenError) {
+    return res.status(403).send(new BaseResponseModel(403, false, error.message));
+  }
+  return serverError(res, error);
+}
+
+const deps = () => ({stripe: stripe(), users: admin.firestore().collection("users")});
+
+router.get("/me/paymentMethods", async (req, res) => {
+  try {
+    const customerId = await customerIdFor(deps(), req.user.uid);
+    ok(res, "Payment method fetched Successfully", await listCards(stripe(), customerId));
+  } catch (error) {
+    answerError(res, error);
+  }
+});
+
+/** Starts saving a card; the app confirms the returned client secret. */
+router.post("/me/setupIntent", async (req, res) => {
+  try {
+    const customerId = await customerIdFor(deps(), req.user.uid);
+    ok(res, "Setup intent created", await createSetupIntent(stripe(), customerId));
+  } catch (error) {
+    answerError(res, error);
+  }
+});
+
+router.post("/me/paymentMethods/:id/default", async (req, res) => {
+  try {
+    const customerId = await customerIdFor(deps(), req.user.uid);
+    ok(res, "Default card updated", await setDefaultCard(stripe(), customerId, req.params.id));
+  } catch (error) {
+    answerError(res, error);
+  }
+});
+
+router.delete("/me/paymentMethods/:id", async (req, res) => {
+  try {
+    const customerId = await customerIdFor(deps(), req.user.uid);
+    ok(res, "Card removed", await removeCard(stripe(), customerId, req.params.id));
+  } catch (error) {
+    answerError(res, error);
   }
 });
 
