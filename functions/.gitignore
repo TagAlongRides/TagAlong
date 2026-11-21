@@ -1,3 +1,5 @@
 node_modules/
 *.log
 .env
+# Local emulator secrets (firebase emulators read these). Never commit.
+.secret.local

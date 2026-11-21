@@ -3,6 +3,7 @@ import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/data/globals.dart';
 import 'package:tagalong/services/auth_service.dart';
 import 'package:tagalong/services/data_service.dart';
+import 'package:tagalong/services/places_service.dart';
 import 'package:tagalong/util/user_data.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 
@@ -24,14 +25,16 @@ class OfferRideViewModel with ChangeNotifier {
   List<int> BAGS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   // User-inputted [Ride] attributes
-  // Note: We don't actually hold an instance of [Location], but
-  // rather create it at the end in "createRide"
   bool toCampus = true; // Default
-  String? pickupLocation;
-  String? dropoffLocation;
-  String? locationCity;
-  String? locationState;
-  String? locationZip;
+
+  /// The campus end of the ride: a [VirginiaTechLocation] name.
+  ///
+  /// It is the dropoff on a ride to campus and the pickup on one from campus,
+  /// so flipping [toCampus] keeps both ends the driver already chose.
+  String? campusSpot;
+
+  /// The off-campus end, as found on Google Maps.
+  ResolvedPlace? offCampusPlace;
   /// The day the driver picked (any time on it; only the date is used).
   DateTime? departureDate;
 
@@ -66,28 +69,13 @@ class OfferRideViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void updatePickupLocation(String? pickUpLocation) {
-    pickupLocation = pickUpLocation!;
+  void updateCampusSpot(String? spot) {
+    campusSpot = spot;
     notifyListeners();
   }
 
-  void updateDropoffLocation(String? dropOffLocation) {
-    dropoffLocation = dropOffLocation!;
-    notifyListeners();
-  }
-
-  void updateLocationCity(String? locationCity) {
-    this.locationCity = locationCity!;
-    notifyListeners();
-  }
-
-  void updateLocationState(String? locationState) {
-    this.locationState = locationState!;
-    notifyListeners();
-  }
-
-  void updateLocationZip(String? locationZip) {
-    this.locationZip = locationZip!;
+  void updateOffCampusPlace(ResolvedPlace? place) {
+    offCampusPlace = place;
     notifyListeners();
   }
 
@@ -157,19 +145,6 @@ class OfferRideViewModel with ChangeNotifier {
     toCampus = true;
   }
 
-  void resetPickupLocation() {
-    pickupLocation = null;
-  }
-
-  void resetDropoffLocation() {
-    dropoffLocation = null;
-  }
-
-  void resetCityAndZip() {
-    locationCity = null;
-    locationState = null;
-    locationZip = null;
-  }
 
   void resetDepartureDate() {
     departureDate = null;
@@ -197,11 +172,8 @@ class OfferRideViewModel with ChangeNotifier {
 
   void resetAll() {
     toCampus = true; // Default
-    pickupLocation = null;
-    dropoffLocation = null;
-    locationCity = null;
-    locationState = null;
-    locationZip = null;
+    campusSpot = null;
+    offCampusPlace = null;
     departureDate = null;
     departureTime = null;
     noPassengers = 2; // Default
@@ -215,38 +187,14 @@ class OfferRideViewModel with ChangeNotifier {
   /// to the "rides" collection in Firestore.
   Future<bool> createNewRide() async {
     late RideModel ride;
-    late Location pickupLocation;
-    late Location dropoffLocation;
 
-    // 1. Driver is going TO campus
-    if (toCampus) {
-      // Pickup Location - no Label needed
-      pickupLocation = Location(
-          address: this.pickupLocation!,
-          city: locationCity!,
-          state: locationState!,
-          zip: locationZip!,
-          locationImageUrl: null);
-      // Dropoff Location - Label needed
-      String dropoffFullAddress = VirginiaTechLocation.mappings[this.dropoffLocation!]!;
-      dropoffLocation =
-          VirginiaTechLocation.transformAddressIntoLocation(address: dropoffFullAddress, label: this.dropoffLocation);
-    }
-
-    // 2. Driver is going FROM campus
-    else {
-      // Pickup Location - Label NEEDED
-      String pickupFullAddress = VirginiaTechLocation.mappings[this.pickupLocation!]!;
-      pickupLocation =
-          VirginiaTechLocation.transformAddressIntoLocation(address: pickupFullAddress, label: this.pickupLocation);
-      // 1. Create first [Location] - direction depends on `toCampus`
-      dropoffLocation = Location(
-          address: this.dropoffLocation!,
-          city: locationCity!,
-          state: locationState!,
-          zip: locationZip!,
-          locationImageUrl: null);
-    }
+    // The campus end carries its spot name as a label; the off-campus end is
+    // whatever Google Maps resolved the driver's search to.
+    final campus = VirginiaTechLocation.transformAddressIntoLocation(
+        address: VirginiaTechLocation.mappings[campusSpot!]!, label: campusSpot);
+    final offCampus = offCampusPlace!.location;
+    final Location pickupLocation = toCampus ? offCampus : campus;
+    final Location dropoffLocation = toCampus ? campus : offCampus;
 
     // Create a [Ride] instance
     final String rideId = uuid.v4();
@@ -295,10 +243,8 @@ class OfferRideViewModel with ChangeNotifier {
   String toString() {
     Map<String, dynamic> map = {
       'toCampus': toCampus,
-      'pickupLocation': pickupLocation,
-      'dropoffLocation': dropoffLocation,
-      'locationCity': locationCity,
-      'locationZip': locationZip,
+      'campusSpot': campusSpot,
+      'offCampusPlace': offCampusPlace?.formattedAddress,
       'departureDateTime': departureDateTime,
       'noPassengers': noPassengers,
       // 'remainingSeats': remainingSeats,

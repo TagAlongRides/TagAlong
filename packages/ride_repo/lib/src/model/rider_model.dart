@@ -156,6 +156,9 @@ class Location {
     required this.city,
     this.label,
     required this.state,
+    this.placeId,
+    this.latitude,
+    this.longitude,
   });
 
   final String zip;
@@ -164,6 +167,12 @@ class Location {
   final String city;
   final String? label;
   final String state;
+
+  /// Google place id, when the address was found through Google Maps. Older
+  /// rides and the fixed campus spots have none.
+  final String? placeId;
+  final double? latitude;
+  final double? longitude;
 
   /// Builds a [Location] from a Firestore document.
   ///
@@ -177,6 +186,9 @@ class Location {
         label: json["label"],
         // Not every stored location carries a state.
         state: json["state"] ?? "",
+        placeId: json["place_id"] as String?,
+        latitude: (json["latitude"] as num?)?.toDouble(),
+        longitude: (json["longitude"] as num?)?.toDouble(),
       );
 
   static String _required(Map<String, dynamic> json, String field) {
@@ -194,6 +206,9 @@ class Location {
         "city": city,
         "label": label,
         "state": state,
+        if (placeId != null) "place_id": placeId,
+        if (latitude != null) "latitude": latitude,
+        if (longitude != null) "longitude": longitude,
       };
 }
 

@@ -3,7 +3,8 @@
  *
  * Replaces the Node 16 backend that lived outside this repository. Exports:
  *
- *  - `api`                 the payment API the app calls, now authenticated
+ *  - `api`                 the payment API the app calls, now authenticated,
+ *                          plus address lookup for Offer Ride (/v1/places)
  *  - `stripeWebhook`       Stripe dispute events
  *  - `markRideComplete`    hourly, closes rides whose departure has passed
  *  - `markRidePaid`        daily, pays each driver for rides completed before
@@ -29,6 +30,8 @@ const {stripe, stripeSecretKey, stripeWebhookSecret} = require("./lib/stripe");
 const {onDisputeCreated, onDisputeClosed} = require("./lib/disputes");
 const {requireAuth} = require("./lib/auth");
 const paymentRoutes = require("./routes/payment");
+const placesRoutes = require("./routes/places");
+const {googleMapsApiKey} = require("./lib/places");
 const {markRideComplete, markRidePaid} = require("./jobs/rideStatus");
 const {posterWallClock, readDeparture} = require("./lib/departure");
 
@@ -42,12 +45,13 @@ app.use(express.json());
 
 // Everything below the mount point requires a valid Firebase ID token.
 app.use("/v1/payment", requireAuth, paymentRoutes);
+app.use("/v1/places", requireAuth, placesRoutes);
 
 app.use((req, res) => {
   res.status(404).send({status: 404, success: false, message: `Unknown path ${req.path}`});
 });
 
-exports.api = onRequest({secrets: [stripeSecretKey]}, app);
+exports.api = onRequest({secrets: [stripeSecretKey, googleMapsApiKey]}, app);
 
 // ---------------------------------------------------------- Stripe events
 
