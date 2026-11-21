@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link expired</title>
+<!--
+  Stripe redirects here when an account link has expired or has already been
+  used. Account links are single use and short lived - minutes, not hours.
+
+  Stripe's guidance is that this URL should mint a fresh link and send the
+  driver straight back into onboarding. The app does exactly that: it
+  intercepts this URL in the web view and requests a new link, so this page is
+  a fallback for anyone who reaches it outside the app.
+-->
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #16202a;
+    --muted: #5b6b7a;
+    --accent: #b4802a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11171d;
+      --fg: #eef3f7;
+      --muted: #9fb0bf;
+      --accent: #d9a85a;
+    }
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    box-sizing: border-box;
+    color: var(--fg);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 26rem; text-align: center; }
+  .mark {
+    width: 56px; height: 56px; margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mark svg { width: 28px; height: 28px; }
+  h1 { font-size: 1.35rem; margin: 0 0 .6rem; letter-spacing: -0.01em; }
+  p { margin: 0 0 .5rem; color: var(--muted); }
+</style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/>
+      </svg>
+    </div>
+    <h1>That link expired</h1>
+    <p>Links to Stripe are single use and only last a few minutes.</p>
+    <p>Open TagAlong and start payment setup again to get a fresh one.</p>
+  </main>
+</body>
+</html>

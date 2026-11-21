@@ -74,14 +74,27 @@ class RideRepository {
     try {
       // Find user ride bookings and get corresponding ride IDs
       var bookingData = await rideBookingCollection.where('userId', isEqualTo: userId).get();
-      var rideIds = bookingData.docs.map((booking) => booking.data()['rideId']).toList();
+      // A user can book the same ride more than once (e.g. cancel and rebook), so de-duplicate.
+      final rideIds = bookingData.docs
+          .map((booking) => booking.data()['rideId'])
+          .whereType<String>()
+          .toSet()
+          .toList();
 
-      // Get all
-      List<RideModel> bookedRides = [];
-      final userRidesPassenger = await rideCollection.where('ride_id', whereIn: rideIds).get();
+      // Firestore rejects a 'whereIn' filter with an empty list, so a user with no
+      // bookings has no booked rides rather than an error.
+      if (rideIds.isEmpty) return [];
 
-      var userRides = userRidesPassenger.docs.map((ride) => RideModel.fromJson(ride.data())).toList();
-      return userRides;
+      // 'whereIn' accepts at most 30 values per query, so query in chunks.
+      const whereInLimit = 30;
+      final List<RideModel> bookedRides = [];
+      for (var start = 0; start < rideIds.length; start += whereInLimit) {
+        final end = start + whereInLimit < rideIds.length ? start + whereInLimit : rideIds.length;
+        final chunk = rideIds.sublist(start, end);
+        final snapshot = await rideCollection.where('ride_id', whereIn: chunk).get();
+        bookedRides.addAll(snapshot.docs.map((ride) => RideModel.fromJson(ride.data())));
+      }
+      return bookedRides;
     } catch (error) {
       throw RideException(ErrorModel.firebaseError(error.toString()));
     }
@@ -93,14 +106,20 @@ class RideRepository {
       final ridesDriver = await getMyOfferedRides(userId);
       final ridesPassenger = await getBookedRidesForUser(userId);
 
-      // Combine both lists and return
-      final List<RideModel> allRides = [...ridesDriver, ...ridesPassenger];
+      // Combine both lists, keeping one entry per ride in case a ride appears in both
+      final ridesById = <String, RideModel>{};
+      for (final ride in [...ridesDriver, ...ridesPassenger]) {
+        ridesById.putIfAbsent(ride.rideId, () => ride);
+      }
+      final List<RideModel> allRides = ridesById.values.toList();
 
       // Sort descending by ride departure time if ordered = true
       if (ordered ?? false) {
         allRides.sort((a, b) => b.departureDateTime.compareTo(a.departureDateTime));
       }
       return allRides;
+    } on RideException {
+      rethrow;
     } catch (error) {
       throw RideException(ErrorModel.firebaseError(error.toString()));
     }

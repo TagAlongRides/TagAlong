@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payments connected</title>
+<!--
+  Stripe redirects a driver here when hosted Connect onboarding finishes.
+
+  The TagAlong app opens onboarding in a web view and watches for this URL to
+  know the driver is done, so in normal use this page is never really seen -
+  the app intercepts the navigation and closes the web view. It exists so that
+  a driver who completes onboarding outside the app, or whose web view does not
+  intercept in time, lands somewhere that belongs to TagAlong and says
+  something sensible, rather than on a domain we do not own.
+-->
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #16202a;
+    --muted: #5b6b7a;
+    --accent: #1f7a5a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11171d;
+      --fg: #eef3f7;
+      --muted: #9fb0bf;
+      --accent: #4fc49a;
+    }
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    box-sizing: border-box;
+    color: var(--fg);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 26rem; text-align: center; }
+  .mark {
+    width: 56px; height: 56px; margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mark svg { width: 28px; height: 28px; }
+  h1 { font-size: 1.35rem; margin: 0 0 .6rem; letter-spacing: -0.01em; }
+  p { margin: 0 0 .5rem; color: var(--muted); }
+</style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17l-5-5"/>
+      </svg>
+    </div>
+    <h1>Payments connected</h1>
+    <p>Your payout details are with Stripe. You can close this page and return to TagAlong.</p>
+    <p>If anything still needs verifying, TagAlong will let you know.</p>
+  </main>
+</body>
+</html>

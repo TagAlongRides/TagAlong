@@ -1,15 +1,18 @@
 /**
  * TagAlong Cloud Functions.
  *
- * Replaces the Node 16 backend that lived outside this repository. Five
- * exports:
+ * Replaces the Node 16 backend that lived outside this repository. Exports:
  *
  *  - `api`                 the payment API the app calls, now authenticated
+ *  - `stripeWebhook`       Stripe dispute events
  *  - `markRideComplete`    hourly, closes rides whose departure has passed
- *  - `markRidePaid`        hourly, releases driver payouts after cool-off
+ *  - `markRidePaid`        daily, pays each driver for rides completed before
+ *                          today, out of the fares TagAlong has been holding
  *  - `onRideBooked`        pushes a notification to the driver (Milestone 4 §2.1)
- *  - `payments`            authorize / capture / release for the payment hold
- *                          (Milestone 4 §1.1 - §1.2, not yet wired to the app)
+ *
+ * There used to be a `payments` export for authorizing a card at booking and
+ * capturing it on completion. It was never wired to the app and is gone:
+ * booking charges in full, and TagAlong holds the money until payout.
  */
 
 const {onDocumentCreated} = require("firebase-functions/v2/firestore");
@@ -22,10 +25,12 @@ const cors = require("cors");
 
 admin.initializeApp();
 
-const {stripe, stripeSecretKey} = require("./lib/stripe");
+const {stripe, stripeSecretKey, stripeWebhookSecret} = require("./lib/stripe");
+const {onDisputeCreated, onDisputeClosed} = require("./lib/disputes");
 const {requireAuth} = require("./lib/auth");
 const paymentRoutes = require("./routes/payment");
 const {markRideComplete, markRidePaid} = require("./jobs/rideStatus");
+const {posterWallClock, readDeparture} = require("./lib/departure");
 
 const db = admin.firestore();
 
@@ -44,6 +49,67 @@ app.use((req, res) => {
 
 exports.api = onRequest({secrets: [stripeSecretKey]}, app);
 
+// ---------------------------------------------------------- Stripe events
+
+/**
+ * Stripe webhooks.
+ *
+ * Its own function rather than another route on `api`, because signature
+ * verification needs the unparsed request body and `api` mounts
+ * express.json() over everything.
+ *
+ * Only disputes are handled today. TagAlong takes passenger money as a
+ * destination charge, so Stripe debits a disputed amount from the *platform*
+ * balance and recovering the driver's share needs an explicit transfer
+ * reversal - there is no `reverse_transfer` shortcut as there is for refunds.
+ */
+exports.stripeWebhook = onRequest(
+    {secrets: [stripeSecretKey, stripeWebhookSecret]},
+    async (req, res) => {
+      const signature = req.headers["stripe-signature"];
+      if (!signature) {
+        res.status(400).send("Missing stripe-signature header");
+        return;
+      }
+
+      let event;
+      try {
+        event = stripe().webhooks.constructEvent(
+            req.rawBody, signature, stripeWebhookSecret.value());
+      } catch (error) {
+        // An unverified payload did not come from Stripe, whatever it says
+        // about itself. This endpoint is public, so this matters.
+        logger.warn("Rejected a webhook with an invalid signature", {
+          detail: error && error.message,
+        });
+        res.status(400).send("Signature verification failed");
+        return;
+      }
+
+      try {
+        switch (event.type) {
+          case "charge.dispute.created":
+            await onDisputeCreated(db, event.data.object);
+            break;
+          case "charge.dispute.closed":
+            await onDisputeClosed(db, event.data.object);
+            break;
+          default:
+            logger.debug(`Ignoring ${event.type}`);
+        }
+        res.json({received: true});
+      } catch (error) {
+        // 500 so Stripe retries. Swallowing this would mean silently losing a
+        // dispute we needed to act on, which costs real money.
+        logger.error("Webhook handling failed", {
+          eventType: event.type,
+          eventId: event.id,
+          detail: error && error.message,
+        });
+        res.status(500).send("Handler failed");
+      }
+    });
+
 // -------------------------------------------------------------- Scheduled
 
 exports.markRideComplete = onSchedule(
@@ -53,8 +119,11 @@ exports.markRideComplete = onSchedule(
     },
 );
 
+// Once a day, early morning Eastern, so drivers are paid for yesterday's rides
+// by the start of the day. markRideComplete runs hourly, so every ride that
+// departed yesterday is already marked complete by then.
 exports.markRidePaid = onSchedule(
-    {schedule: "0 * * * *", timeZone: "America/New_York", secrets: [stripeSecretKey]},
+    {schedule: "0 6 * * *", timeZone: "America/New_York", secrets: [stripeSecretKey]},
     async () => {
       await markRidePaid();
     },
@@ -75,17 +144,24 @@ function dropoffName(ride) {
   return dropoff.label || dropoff.city || "your destination";
 }
 
+/**
+ * "Sunday, November 22 at 12:00 PM" on the driver's own clock.
+ *
+ * The ride carries the poster's UTC offset, so the wall clock is the instant
+ * shifted by it and printed as UTC. A ride without one (shouldn't happen once
+ * migrated) falls back to Eastern time.
+ */
 function formatRideDate(ride) {
-  const departure = ride.departure_date_time;
-  if (!departure || typeof departure.toDate !== "function") {
+  const wall = posterWallClock(ride);
+  const {instant} = readDeparture(ride);
+  if (!instant) {
     return "";
   }
-  return departure.toDate().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    timeZone: "America/New_York",
-  });
+  const shown = wall || instant;
+  const timeZone = wall ? "UTC" : "America/New_York";
+  const date = shown.toLocaleDateString("en-US", {weekday: "long", month: "long", day: "numeric", timeZone});
+  const time = shown.toLocaleTimeString("en-US", {hour: "numeric", minute: "2-digit", timeZone});
+  return `${date} at ${time}`;
 }
 
 /**
@@ -153,98 +229,3 @@ exports.onRideBooked = onDocumentCreated("rideBooking/{bookingId}", async (event
     logger.error(`Failed to notify driver for booking ${snapshot.id}`, error);
   }
 });
-
-// --------------------------------------------------------- Payment holds
-
-/**
- * The passenger is authorized — not charged — when they book. The hold becomes
- * a charge when the driver completes the ride, and is released if either party
- * cancels (Milestone 4, §1.2).
- *
- * Not yet called by the app; booking still charges immediately through
- * /v1/payment/stripeConnect/charge/destination/paymentintent.
- */
-exports.payments = onRequest({secrets: [stripeSecretKey]}, async (req, res) => {
-  if (req.method !== "POST") {
-    res.status(405).json({error: "Use POST"});
-    return;
-  }
-
-  // Same bar as /v1/payment. These endpoints capture and refund money, so
-  // they must not be callable by anyone holding the URL.
-  let authed = false;
-  await requireAuth(req, res, () => {
-    authed = true;
-  });
-  if (!authed) {
-    return;
-  }
-
-  try {
-    switch (req.path) {
-      case "/hold":
-        res.json(await createHold(req.body));
-        return;
-      case "/capture":
-        res.json(await capture(req.body));
-        return;
-      case "/release":
-        res.json(await release(req.body));
-        return;
-      default:
-        res.status(404).json({error: `Unknown path ${req.path}`});
-    }
-  } catch (error) {
-    logger.error("Payment request failed", error);
-    res.status(400).json({error: error.message});
-  }
-});
-
-/**
- * Authorizes the full amount without taking the money. `capture_method:
- * manual` is what makes this a hold rather than a charge.
- */
-async function createHold(body) {
-  const intent = await stripe().paymentIntents.create({
-    amount: parseInt(body.amount, 10),
-    currency: "usd",
-    capture_method: "manual",
-    confirm: true,
-    customer: body.customerId || undefined,
-    payment_method: body.paymentMethodId,
-    receipt_email: body.email,
-    transfer_group: body.transferGroup,
-    application_fee_amount: parseInt(body.applicationFee, 10),
-    transfer_data: {destination: body.destination},
-    return_url: body.returnUrl,
-    off_session: false,
-  });
-
-  return {status: intent.status, id: intent.id, clientSecret: intent.client_secret};
-}
-
-/** Settles a hold once the ride is complete. */
-async function capture({paymentIntentId}) {
-  const intent = await stripe().paymentIntents.capture(paymentIntentId);
-  return {status: intent.status, id: intent.id};
-}
-
-/**
- * Releases a hold when a ride is canceled. An uncaptured intent is canceled
- * outright; anything already captured is refunded instead.
- */
-async function release({paymentIntentId}) {
-  const intent = await stripe().paymentIntents.retrieve(paymentIntentId);
-
-  if (intent.status === "succeeded") {
-    const refund = await stripe().refunds.create({
-      payment_intent: paymentIntentId,
-      refund_application_fee: true,
-      reverse_transfer: true,
-    });
-    return {status: "refunded", id: refund.id};
-  }
-
-  const canceled = await stripe().paymentIntents.cancel(paymentIntentId);
-  return {status: canceled.status, id: canceled.id};
-}

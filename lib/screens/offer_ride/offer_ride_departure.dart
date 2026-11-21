@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/screens/offer_ride/offer_ride_trip_details.dart';
 import 'package:tagalong/themes/tagalong_theme.dart' as theme;
 import 'package:tagalong/util/log.dart' as logger;
@@ -27,8 +26,8 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
             onPressed: () {
               // Back Button ; Pop out to previous Screen
               var vm = Provider.of<OfferRideViewModel>(context, listen: false);
-              vm.resetDepartureDateTime();
-              vm.resetDepartureTimeOfDay();
+              vm.resetDepartureDate();
+              vm.resetDepartureTime();
               Navigator.of(context).pop();
             }),
         title: _getProgressBar(),
@@ -84,7 +83,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                 ),
               ),
               onPressed: () async {
-                DateTime chosenDate = offerRideViewModel.departureDateTime ?? DateTime.now();
+                DateTime chosenDate = offerRideViewModel.departureDate ?? DateTime.now();
                 final DateTime? newDate = await showDatePicker(
                   context: context,
                   initialDate: chosenDate,
@@ -92,14 +91,14 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                   lastDate: DateTime.now().add(const Duration(days: 180)),
                   helpText: 'DEPARTURE DATE',
                 );
-                offerRideViewModel.updateDepartureDateTime(newDate);
+                offerRideViewModel.updateDepartureDate(newDate);
               },
               child: Row(
                 children: [
                   Flexible(
                     fit: FlexFit.tight,
                     child: Container(
-                      child: offerRideViewModel.departureDateTime != null
+                      child: offerRideViewModel.departureDate != null
                           ? FittedBox(
                               fit: BoxFit.contain,
                               child: RichText(
@@ -107,14 +106,14 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                                   style: Theme.of(context).textTheme.headlineMedium,
                                   children: [
                                     TextSpan(
-                                      text: DateFormat('EEEE').format(offerRideViewModel.departureDateTime!),
+                                      text: DateFormat('EEEE').format(offerRideViewModel.departureDate!),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
                                       ),
                                     ),
                                     TextSpan(
-                                      text: DateFormat(' MMMM dd').format(offerRideViewModel.departureDateTime!),
+                                      text: DateFormat(' MMMM dd').format(offerRideViewModel.departureDate!),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.normal,
                                         color: Colors.black,
@@ -174,16 +173,8 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                 ),
               ),
               onPressed: () async {
-                late TimeOfDay chosenTime;
-
-                // User HAS chosen a TimeOfDay to leave - convert String to TimeOfDay
-                if (offerRideViewModel.departureTimeOfDay != null) {
-                  chosenTime = RideModel.timeOfDayFromString(offerRideViewModel.departureTimeOfDay!);
-                }
-                // User HAS NOT chosen a TimeOfDay to leave - default to current time
-                else {
-                  chosenTime = const TimeOfDay(hour: 12, minute: 00);
-                }
+                // Reopen on the time already chosen, or noon.
+                final chosenTime = offerRideViewModel.departureTime ?? const TimeOfDay(hour: 12, minute: 00);
 
                 final TimeOfDay? newTime = await showTimePicker(
                   context: context,
@@ -191,21 +182,21 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
                   initialEntryMode: TimePickerEntryMode.input,
                   helpText: 'DEPARTURE TIME',
                 );
-                offerRideViewModel.updateDepartureTimeOfDay(newTime?.format(context));
+                offerRideViewModel.updateDepartureTime(newTime);
               },
               child: Row(
                 children: [
                   Flexible(
                     fit: FlexFit.tight,
                     child: Container(
-                      child: offerRideViewModel.departureTimeOfDay != null
+                      child: offerRideViewModel.departureTime != null
                           ? RichText(
                               textAlign: TextAlign.left,
                               text: TextSpan(
                                 style: Theme.of(context).textTheme.headlineMedium,
                                 children: [
                                   TextSpan(
-                                    text: offerRideViewModel.departureTimeOfDay,
+                                    text: offerRideViewModel.departureTime!.format(context),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.normal,
                                       color: Colors.black,
@@ -238,7 +229,7 @@ class _OfferRideDepartureState extends State<OfferRideDeparture> {
         child: const Icon(Icons.arrow_forward_ios),
         onPressed: () async {
           var vm = Provider.of<OfferRideViewModel>(context, listen: false);
-          if (vm.departureDateTime == null || vm.departureTimeOfDay == null) {
+          if (vm.departureDate == null || vm.departureTime == null) {
             await showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(

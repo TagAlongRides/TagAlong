@@ -1,267 +1,384 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:tagalong/themes/tagalong_tokens.dart';
 
+export 'package:tagalong/themes/tagalong_tokens.dart';
+
+/// The app-wide Material 3 theme for the pastel redesign.
+///
+/// Cream canvas, white cards, deep-ink text and one ink call to action per
+/// screen; pastel fills carry meaning (direction, status, role). The raw
+/// values live in `tagalong_tokens.dart`.
+///
+/// The older static members ([primarySwatch], [colorHighEmphasis],
+/// [lightTextTheme], the button themes, ...) are kept, remapped onto the new
+/// tokens, because screens that have not been rebuilt yet still read them
+/// directly. New code should use [TagAlongColors] and [TagAlongText].
 class TagAlongTheme {
-  // TagAlong primary color swatch (light blue)
+  TagAlongTheme._();
+
+  // ---------------------------------------------------------------------------
+  // Legacy colour names, remapped
+  // ---------------------------------------------------------------------------
+
+  /// Lavender ramp; 500 is the brand colour.
   static const MaterialColor primarySwatch = MaterialColor(
-    0xff38b6ff,
+    0xFF5B45D6,
     <int, Color>{
-      50: Color(0xffADE1FF),
-      100: Color(0xff99DAFF),
-      200: Color(0xff85D2FF),
-      300: Color(0xff70CBFF),
-      400: Color(0xff5CC3FF),
-      500: Color(0xff38B6FF),
-      600: Color(0xff33B4FF),
-      700: Color(0xff1FADFF),
-      800: Color(0xff0AA5FF),
-      900: Color(0xff009BF5),
+      50: TagAlongPalette.lavender100,
+      100: TagAlongPalette.lavender100,
+      200: TagAlongPalette.lavender300,
+      300: TagAlongPalette.lavender300,
+      400: TagAlongPalette.lavender500,
+      500: TagAlongPalette.lavender700,
+      600: TagAlongPalette.lavender700,
+      700: TagAlongPalette.lavender800,
+      800: TagAlongPalette.lavender800,
+      900: TagAlongPalette.ink900,
     },
   );
-  // TagAlong secondary color swatch (teal)
+
+  /// Warm neutrals; 50 is the canvas.
   static const MaterialColor secondarySwatch = MaterialColor(
-    0xff5CE1E6,
+    0xFFFFD9C7,
     <int, Color>{
-      50: Color(0xffB8F2F4),
-      100: Color(0xffA7EEF1),
-      200: Color(0xff95EBEE),
-      300: Color(0xff83E8EC),
-      400: Color(0xff72E5E9),
-      500: Color(0xff5CE1E6),
-      600: Color(0xff4FDEE3),
-      700: Color(0xff3DDBE1),
-      800: Color(0xff2BD8DE),
-      900: Color(0xff21CED4),
+      50: TagAlongPalette.cream50,
+      100: TagAlongPalette.peach100,
+      200: TagAlongPalette.lavender100,
+      300: TagAlongPalette.peach300,
+      400: TagAlongPalette.peach300,
+      500: TagAlongPalette.peach300,
+      600: TagAlongPalette.peach300,
+      700: TagAlongPalette.peach800,
+      800: TagAlongPalette.peach800,
+      900: TagAlongPalette.peach800,
     },
   );
 
-  // Other colors used throughout the app
-  static const Color colorHighEmphasis = Color.fromRGBO(79, 67, 88, .87);
-  static const Color colorMediumEmphasis = Color.fromRGBO(145, 127, 157, .60);
-  static const Color colorDisabled = Colors.black38;
-  static const Color colorError = Color.fromRGBO(239, 199, 194, 1);
+  static const Color colorHighEmphasis = TagAlongColors.textPrimary;
+  static const Color colorMediumEmphasis = TagAlongColors.textTertiary;
+  static const Color colorDisabled = TagAlongColors.borderStrong;
 
-  // Theme to define each text style
-  // Defaulting color to black in most cases, but may use .copyWith() to
-  // contextually override these colors (e.g. displaying error message)
+  /// A soft error fill (banners, cancelled notices). Put [TagAlongColors.errorInk]
+  /// text on it.
+  static const Color colorError = TagAlongColors.error;
+
+  // ---------------------------------------------------------------------------
+  // Text
+  // ---------------------------------------------------------------------------
+
+  /// Material's text roles mapped onto the redesign's 13-style scale. The old
+  /// sizes were one step larger across the board (and light-weight), so each
+  /// role lands on the nearest new style rather than its literal name.
   static TextTheme lightTextTheme = TextTheme(
-    displayLarge: GoogleFonts.nunitoSans(
-      fontSize: 96.0,
-      fontWeight: FontWeight.w300,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    displayMedium: GoogleFonts.nunitoSans(
-      fontSize: 60.0,
-      fontWeight: FontWeight.w300,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    displaySmall: GoogleFonts.nunitoSans(
-      fontSize: 48.0,
-      fontWeight: FontWeight.w300,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    headlineMedium: GoogleFonts.nunitoSans(
-      fontSize: 34.0,
-      fontWeight: FontWeight.w300,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    headlineSmall: GoogleFonts.nunitoSans(
-      fontSize: 28.0,
-      fontWeight: FontWeight.normal,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    titleLarge: GoogleFonts.nunitoSans(
-      fontSize: 22.0,
-      fontWeight: FontWeight.w400,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    titleMedium: GoogleFonts.nunitoSans(
-      fontSize: 16.0,
-      fontWeight: FontWeight.w600,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    titleSmall: GoogleFonts.nunitoSans(
-      fontSize: 14.0,
-      fontWeight: FontWeight.normal,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    bodyLarge: GoogleFonts.nunitoSans(
-      fontSize: 16.0,
-      fontWeight: FontWeight.normal,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    bodyMedium: GoogleFonts.nunitoSans(
-      fontSize: 14.0,
-      fontWeight: FontWeight.w400,
-      fontStyle: FontStyle.normal,
-      color: Colors.black,
-    ),
-    labelLarge: GoogleFonts.nunitoSans(
-      fontSize: 14.0,
-      fontWeight: FontWeight.w300,
-      fontStyle: FontStyle.normal,
-      color: colorHighEmphasis,
-      letterSpacing: 1,
-    ),
-    bodySmall: GoogleFonts.nunitoSans(
-      fontSize: 12.0,
-      fontWeight: FontWeight.normal,
-      fontStyle: FontStyle.normal,
-      color: colorHighEmphasis,
-    ),
-    labelSmall: GoogleFonts.nunitoSans(
-      fontSize: 10.0,
-      fontWeight: FontWeight.bold,
-      fontStyle: FontStyle.normal,
-      color: colorHighEmphasis,
-    ),
+    displayLarge: TagAlongText.hero,
+    displayMedium: TagAlongText.displayLarge,
+    displaySmall: TagAlongText.displayMedium,
+    headlineLarge: TagAlongText.displayMedium,
+    headlineMedium: TagAlongText.displayMedium,
+    headlineSmall: TagAlongText.titleLarge,
+    titleLarge: TagAlongText.titleMedium,
+    titleMedium: TagAlongText.titleSmall,
+    titleSmall: TagAlongText.labelMedium,
+    bodyLarge: TagAlongText.bodyLarge,
+    bodyMedium: TagAlongText.bodyMedium,
+    bodySmall: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textSecondary),
+    labelLarge: TagAlongText.labelLarge,
+    labelMedium: TagAlongText.labelMedium,
+    labelSmall: TagAlongText.overline.copyWith(color: TagAlongColors.textSecondary),
   );
 
-  // Widget theming
-  static AppBarTheme appBarTheme = AppBarTheme(
-    backgroundColor: primarySwatch.shade700,
-    titleTextStyle: lightTextTheme.titleLarge!.copyWith(
-      color: secondarySwatch.shade50,
-    ),
-    iconTheme: IconThemeData(
-      color: secondarySwatch.shade50,
-    ),
+  // ---------------------------------------------------------------------------
+  // Colour scheme
+  // ---------------------------------------------------------------------------
+
+  static const ColorScheme colorScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: TagAlongColors.brand,
+    onPrimary: TagAlongColors.textOnInverse,
+    primaryContainer: TagAlongColors.brandSoft,
+    onPrimaryContainer: TagAlongColors.textPrimary,
+    secondary: TagAlongColors.inverse,
+    onSecondary: TagAlongColors.textOnInverse,
+    secondaryContainer: TagAlongColors.brandSoft,
+    onSecondaryContainer: TagAlongColors.textPrimary,
+    tertiary: TagAlongColors.toCampus,
+    onTertiary: TagAlongColors.textPrimary,
+    tertiaryContainer: TagAlongColors.toCampusSoft,
+    onTertiaryContainer: TagAlongColors.toCampusInk,
+    error: TagAlongColors.errorInk,
+    onError: TagAlongColors.textOnInverse,
+    errorContainer: TagAlongColors.error,
+    onErrorContainer: TagAlongColors.errorInk,
+    surface: TagAlongColors.surface,
+    onSurface: TagAlongColors.textPrimary,
+    onSurfaceVariant: TagAlongColors.textSecondary,
+    surfaceContainerLowest: TagAlongColors.surface,
+    surfaceContainerLow: TagAlongColors.canvas,
+    surfaceContainer: TagAlongColors.surface,
+    surfaceContainerHigh: TagAlongColors.subtle,
+    surfaceContainerHighest: TagAlongColors.subtle,
+    outline: TagAlongColors.borderStrong,
+    outlineVariant: TagAlongColors.border,
+    inverseSurface: TagAlongColors.inverse,
+    onInverseSurface: TagAlongColors.textOnInverse,
+    inversePrimary: TagAlongColors.brandSoft,
+    shadow: TagAlongPalette.ink900,
+    scrim: TagAlongPalette.ink900,
+    surfaceTint: Colors.transparent,
+  );
+
+  // ---------------------------------------------------------------------------
+  // Component themes
+  // ---------------------------------------------------------------------------
+
+  static RoundedRectangleBorder get _pill => RoundedRectangleBorder(borderRadius: TagAlongRadius.pill);
+
+  static final AppBarTheme appBarTheme = AppBarTheme(
+    backgroundColor: TagAlongColors.canvas,
+    foregroundColor: TagAlongColors.textPrimary,
+    surfaceTintColor: Colors.transparent,
     elevation: 0,
+    scrolledUnderElevation: 0,
+    centerTitle: true,
+    titleTextStyle: TagAlongText.titleSmall,
+    iconTheme: const IconThemeData(color: TagAlongColors.textPrimary),
   );
 
-  static AppBarTheme progressBarTheme = const AppBarTheme(
+  static const AppBarTheme progressBarTheme = AppBarTheme(
     backgroundColor: Colors.transparent,
+    surfaceTintColor: Colors.transparent,
     iconTheme: IconThemeData(
-      color: colorHighEmphasis,
+      color: TagAlongColors.textPrimary,
       size: 18,
     ),
     elevation: 0,
+    scrolledUnderElevation: 0,
   );
 
-  static BottomNavigationBarThemeData bottomNavigationBarTheme = BottomNavigationBarThemeData(
-    selectedItemColor: Colors.yellow[200],
-    unselectedItemColor: secondarySwatch.shade50,
-    backgroundColor: primarySwatch.shade700,
-    unselectedLabelStyle: lightTextTheme.bodySmall,
-    selectedLabelStyle: lightTextTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
-    type: BottomNavigationBarType.fixed,
-  );
-
-  static FloatingActionButtonThemeData floatingActionButtonTheme = FloatingActionButtonThemeData(
-    foregroundColor: secondarySwatch.shade50,
-    backgroundColor: primarySwatch.shade900,
-  );
-
-  static ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      foregroundColor: secondarySwatch.shade50, textStyle: lightTextTheme.labelLarge!.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(1000))),
-      padding: const EdgeInsets.symmetric(
-        vertical: 10,
-        horizontal: 20,
-      ),
-    ),
-  );
-
-  static TextButtonThemeData textButtonTheme = TextButtonThemeData(
+  /// The primary button: ink fill, white label, pill, 52 tall. One per screen.
+  static final ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonThemeData(
     style: ButtonStyle(
-      foregroundColor: MaterialStateProperty.all(colorHighEmphasis),
-      backgroundColor: MaterialStateProperty.all(Colors.transparent),
-      textStyle: MaterialStateProperty.all(
-        lightTextTheme.labelLarge!.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
+      backgroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? TagAlongColors.border : TagAlongColors.inverse,
       ),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? TagAlongColors.textTertiary : TagAlongColors.textOnInverse,
+      ),
+      overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.08)),
+      elevation: const WidgetStatePropertyAll(0),
+      textStyle: WidgetStatePropertyAll(TagAlongText.labelLarge),
+      minimumSize: const WidgetStatePropertyAll(Size(64, 52)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: TagAlongSpace.s6)),
+      shape: WidgetStatePropertyAll(_pill),
     ),
   );
 
-  static OutlinedButtonThemeData outlinedButtonTheme = OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      alignment: Alignment.center,
-      textStyle: lightTextTheme.labelLarge!.copyWith(
-        fontWeight: FontWeight.bold,
-      ), disabledForegroundColor: secondarySwatch.shade50.withOpacity(0.38),
-      padding: const EdgeInsets.symmetric(
-        vertical: 10,
-        horizontal: 20,
+  /// The soft secondary button: lavender 300 fill, ink label.
+  static final FilledButtonThemeData filledButtonTheme = FilledButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? TagAlongColors.border : TagAlongColors.brandSoft,
       ),
-      // side: BorderSide.none,
-      shape: RoundedRectangleBorder(
-        // Using very large number to create semicircle ends of button; Flutter sets borderRadius to max allowable
-        borderRadius: BorderRadius.circular(500),
-        side: const BorderSide(
-          color: colorHighEmphasis,
-        ),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? TagAlongColors.textTertiary : TagAlongColors.textPrimary,
       ),
+      elevation: const WidgetStatePropertyAll(0),
+      textStyle: WidgetStatePropertyAll(TagAlongText.labelLarge),
+      minimumSize: const WidgetStatePropertyAll(Size(64, 52)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: TagAlongSpace.s6)),
+      shape: WidgetStatePropertyAll(_pill),
     ),
   );
 
-  static TimePickerThemeData timePickerTheme = TimePickerThemeData(
-    backgroundColor: secondarySwatch.shade50,
+  /// The tertiary button: 1.5px strong border, ink label.
+  static final OutlinedButtonThemeData outlinedButtonTheme = OutlinedButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? TagAlongColors.textTertiary : TagAlongColors.textPrimary,
+      ),
+      textStyle: WidgetStatePropertyAll(TagAlongText.labelLarge),
+      minimumSize: const WidgetStatePropertyAll(Size(64, 40)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: TagAlongSpace.s5)),
+      side: WidgetStateProperty.resolveWith(
+        (states) => BorderSide(
+          color: states.contains(WidgetState.disabled) ? TagAlongColors.border : TagAlongColors.borderStrong,
+          width: 1.5,
+        ),
+      ),
+      shape: WidgetStatePropertyAll(_pill),
+    ),
   );
 
-  static DialogTheme dialogTheme = const DialogTheme();
-  static BottomSheetThemeData bottomSheetTheme = const BottomSheetThemeData();
+  static final TextButtonThemeData textButtonTheme = TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled) ? TagAlongColors.textTertiary : TagAlongColors.textBrand,
+      ),
+      backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+      textStyle: WidgetStatePropertyAll(TagAlongText.labelMedium.copyWith(fontWeight: FontWeight.w700)),
+      shape: WidgetStatePropertyAll(_pill),
+    ),
+  );
 
-  static ChipThemeData chipTheme = ChipThemeData(
-    backgroundColor: secondarySwatch.shade200,
-    disabledColor: colorDisabled,
-    selectedColor: primarySwatch.shade700,
-    secondarySelectedColor: primarySwatch.shade700,
-    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-    labelStyle: lightTextTheme.titleSmall!,
-    secondaryLabelStyle: lightTextTheme.titleSmall!.copyWith(color: secondarySwatch.shade50),
+  static const FloatingActionButtonThemeData floatingActionButtonTheme = FloatingActionButtonThemeData(
+    foregroundColor: TagAlongColors.textPrimary,
+    backgroundColor: TagAlongColors.toCampus,
+    elevation: 0,
+    shape: StadiumBorder(),
+  );
+
+  /// Filter chips: white with a light border, ink when selected.
+  static final ChipThemeData chipTheme = ChipThemeData(
+    backgroundColor: TagAlongColors.surface,
+    selectedColor: TagAlongColors.inverse,
+    disabledColor: TagAlongColors.border,
+    checkmarkColor: TagAlongColors.textOnInverse,
+    showCheckmark: false,
+    padding: const EdgeInsets.symmetric(horizontal: TagAlongSpace.s2, vertical: TagAlongSpace.s2),
+    labelStyle: TagAlongText.labelMedium.copyWith(
+      color: WidgetStateColor.resolveWith(
+        (states) => states.contains(WidgetState.selected) ? TagAlongColors.textOnInverse : TagAlongColors.textPrimary,
+      ),
+    ),
+    iconTheme: const IconThemeData(size: 18),
+    side: WidgetStateBorderSide.resolveWith(
+      (states) => states.contains(WidgetState.selected)
+          ? const BorderSide(color: TagAlongColors.inverse, width: 1.5)
+          : const BorderSide(color: TagAlongColors.border, width: 1.5),
+    ),
+    shape: _pill,
     brightness: Brightness.light,
-    showCheckmark: true,
-    checkmarkColor: Colors.white,
-    side: const BorderSide(
-      color: colorMediumEmphasis,
+  );
+
+  /// Filled field with a floating label; 2px lavender ring on focus.
+  static final InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
+    filled: true,
+    fillColor: TagAlongColors.surface,
+    contentPadding: const EdgeInsets.symmetric(horizontal: TagAlongSpace.s4, vertical: TagAlongSpace.s3),
+    labelStyle: TagAlongText.bodyMedium.copyWith(color: TagAlongColors.textTertiary),
+    floatingLabelStyle: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textTertiary),
+    hintStyle: TagAlongText.bodyLarge.copyWith(color: TagAlongColors.textTertiary),
+    helperStyle: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textTertiary),
+    errorStyle: TagAlongText.bodySmall.copyWith(color: TagAlongColors.errorInk),
+    prefixIconColor: TagAlongColors.textSecondary,
+    suffixIconColor: TagAlongColors.textSecondary,
+    border: OutlineInputBorder(
+      borderRadius: TagAlongRadius.mdAll,
+      borderSide: const BorderSide(color: TagAlongColors.border, width: 1.5),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: TagAlongRadius.mdAll,
+      borderSide: const BorderSide(color: TagAlongColors.border, width: 1.5),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: TagAlongRadius.mdAll,
+      borderSide: const BorderSide(color: TagAlongColors.brand, width: 2),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: TagAlongRadius.mdAll,
+      borderSide: const BorderSide(color: TagAlongColors.errorInk, width: 1.5),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: TagAlongRadius.mdAll,
+      borderSide: const BorderSide(color: TagAlongColors.errorInk, width: 2),
+    ),
+    disabledBorder: OutlineInputBorder(
+      borderRadius: TagAlongRadius.mdAll,
+      borderSide: const BorderSide(color: TagAlongColors.border, width: 1.5),
     ),
   );
 
-  static InputDecorationTheme inputDecorationTheme = const InputDecorationTheme(
-    border: UnderlineInputBorder(),
-    focusedBorder: OutlineInputBorder(),
+  static final DialogThemeData dialogTheme = DialogThemeData(
+    backgroundColor: TagAlongColors.surface,
+    surfaceTintColor: Colors.transparent,
+    shape: RoundedRectangleBorder(borderRadius: TagAlongRadius.xlAll),
+    titleTextStyle: TagAlongText.titleLarge,
+    contentTextStyle: TagAlongText.bodyMedium.copyWith(color: TagAlongColors.textSecondary),
+  );
+
+  static const BottomSheetThemeData bottomSheetTheme = BottomSheetThemeData(
+    backgroundColor: TagAlongColors.canvas,
+    surfaceTintColor: Colors.transparent,
+    showDragHandle: true,
+    dragHandleColor: TagAlongColors.borderStrong,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(TagAlongRadius.xl)),
+    ),
+  );
+
+  static final SnackBarThemeData snackBarTheme = SnackBarThemeData(
+    backgroundColor: TagAlongColors.inverse,
+    contentTextStyle: TagAlongText.bodyMedium.copyWith(color: TagAlongColors.textOnInverse),
+    actionTextColor: TagAlongColors.brandSoft,
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(borderRadius: TagAlongRadius.mdAll),
+  );
+
+  static final CardThemeData cardTheme = CardThemeData(
+    color: TagAlongColors.surface,
+    surfaceTintColor: Colors.transparent,
+    elevation: 0,
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(borderRadius: TagAlongRadius.lgAll),
+  );
+
+  static final ListTileThemeData listTileTheme = ListTileThemeData(
+    iconColor: TagAlongColors.textPrimary,
+    textColor: TagAlongColors.textPrimary,
+    titleTextStyle: TagAlongText.titleSmall,
+    subtitleTextStyle: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textTertiary),
+    shape: RoundedRectangleBorder(borderRadius: TagAlongRadius.lgAll),
+  );
+
+  static final TimePickerThemeData timePickerTheme = TimePickerThemeData(
+    backgroundColor: TagAlongColors.surface,
+    shape: RoundedRectangleBorder(borderRadius: TagAlongRadius.xlAll),
+    dayPeriodColor: TagAlongColors.brandSoft,
+    hourMinuteColor: TagAlongColors.subtle,
+    dialBackgroundColor: TagAlongColors.subtle,
+  );
+
+  static final DatePickerThemeData datePickerTheme = DatePickerThemeData(
+    backgroundColor: TagAlongColors.surface,
+    surfaceTintColor: Colors.transparent,
+    headerBackgroundColor: TagAlongColors.canvas,
+    headerForegroundColor: TagAlongColors.textPrimary,
+    rangeSelectionBackgroundColor: TagAlongColors.subtle,
+    shape: RoundedRectangleBorder(borderRadius: TagAlongRadius.xlAll),
   );
 
   static ThemeData light() {
     return ThemeData(
-      // This theme is built the Material 2 way - a primarySwatch, no
-      // ColorScheme, and button colours chosen to sit on a coloured
-      // background. Flutter turns Material 3 on by default from 3.16, which
-      // gives ElevatedButton a pale surface background instead of the primary
-      // colour, so the theme's light foreground ended up pale-on-pale and
-      // every enabled button read as disabled.
-      // Opting out restores the intended design. Moving the palette to a
-      // ColorScheme and turning this back on is worth doing, but it is a
-      // visual redesign rather than a bug fix.
-      useMaterial3: false,
-      primarySwatch: primarySwatch,
-      canvasColor: secondarySwatch.shade50,
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: TagAlongColors.canvas,
+      canvasColor: TagAlongColors.canvas,
+      dividerColor: TagAlongColors.border,
+      fontFamily: TagAlongText.bodyMedium.fontFamily,
       textTheme: lightTextTheme,
+      iconTheme: const IconThemeData(color: TagAlongColors.textPrimary),
       appBarTheme: appBarTheme,
-      bottomNavigationBarTheme: bottomNavigationBarTheme,
       floatingActionButtonTheme: floatingActionButtonTheme,
       elevatedButtonTheme: elevatedButtonTheme,
+      filledButtonTheme: filledButtonTheme,
       outlinedButtonTheme: outlinedButtonTheme,
-      timePickerTheme: timePickerTheme,
-      dialogTheme: dialogTheme,
-      bottomSheetTheme: bottomSheetTheme,
+      textButtonTheme: textButtonTheme,
       chipTheme: chipTheme,
       inputDecorationTheme: inputDecorationTheme,
-      textButtonTheme: textButtonTheme,
+      dialogTheme: dialogTheme,
+      bottomSheetTheme: bottomSheetTheme,
+      snackBarTheme: snackBarTheme,
+      cardTheme: cardTheme,
+      listTileTheme: listTileTheme,
+      timePickerTheme: timePickerTheme,
+      datePickerTheme: datePickerTheme,
+      dividerTheme: const DividerThemeData(color: TagAlongColors.border, thickness: 1, space: 1),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: TagAlongColors.brand),
+      checkboxTheme: CheckboxThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        side: const BorderSide(color: TagAlongColors.borderStrong, width: 2),
+      ),
+      splashFactory: InkSparkle.splashFactory,
     );
   }
 }

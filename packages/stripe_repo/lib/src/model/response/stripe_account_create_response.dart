@@ -95,6 +95,22 @@ class StripeAccount {
   /// The unmodified account payload, for logging and for fields not modelled.
   final Map<String, dynamic> raw;
 
+  /// Whether this driver can actually be paid.
+  ///
+  /// Deliberately not [chargesEnabled]. That field describes accepting card
+  /// payments, and under Accounts v2 a driver's account is created with only
+  /// the `recipient` configuration - no `merchant` - because drivers never
+  /// take card payments themselves. So `charges_enabled` stays false no matter
+  /// how much onboarding they complete, and using it would leave every driver
+  /// looking permanently inactive.
+  ///
+  /// What matters instead is that the platform can transfer a ride's fare to
+  /// them, and that Stripe can pay their balance out to a bank account. Both
+  /// are required: transfers alone means the money cannot reach their bank,
+  /// and payouts alone means it can never reach their Stripe balance.
+  bool get canReceivePayouts =>
+      payoutsEnabled && (capabilities['transfers'] ?? '') == 'active';
+
   factory StripeAccount.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
     if (id is! String || id.isEmpty) {

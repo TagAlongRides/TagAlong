@@ -170,7 +170,10 @@ class RideBoardViewModel extends ChangeNotifier {
     if (filters.departureDateStart != null && filters.departureDateStart!.isAfter(earliest)) {
       earliest = filters.departureDateStart!;
     }
-    query = query.where('departure_date_time', isGreaterThan: Timestamp.fromDate(earliest));
+    // [RideFilters.matches] makes the exact cut; the slack keeps rides from
+    // older app versions, stored at midnight of their day, in the results.
+    query = query.where('departure_date_time',
+        isGreaterThan: Timestamp.fromDate(earliest.subtract(RideFilters.legacyQuerySlack)));
 
     if (filters.departureDateEnd != null) {
       query = query.where('departure_date_time', isLessThanOrEqualTo: Timestamp.fromDate(filters.departureDateEnd!));
@@ -202,14 +205,15 @@ class RideBoardViewModel extends ChangeNotifier {
           .where('status', isEqualTo: RideStatus.scheduled.name)
           .where('university', isEqualTo: university)
           .where('to_campus', isEqualTo: toCampus)
-          .where('departure_date_time', isGreaterThan: Timestamp.fromDate(DateTime.now()));
+          .where('departure_date_time',
+              isGreaterThan: Timestamp.fromDate(DateTime.now().subtract(RideFilters.legacyQuerySlack)));
 
       final snapshot = await query.orderBy('departure_date_time').limit(200).get();
 
       final options = <String>{};
       for (final doc in snapshot.docs) {
         final ride = RideModel.fromJson(doc.data() as Map<String, dynamic>);
-        if (ride.remainingSeats > 0) {
+        if (ride.remainingSeats > 0 && ride.departureDateTime.isAfter(DateTime.now())) {
           options.add(RideFilters.cityStateOf(ride));
         }
       }

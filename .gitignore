@@ -47,3 +47,6 @@ app.*.map.json
 /android/app/release
 # Native build output produced by the Android Gradle plugin
 /android/app/.cxx/
+
+# Firebase CLI deploy cache
+.firebase/
