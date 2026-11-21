@@ -1,221 +1,135 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/screens/ride_details.dart';
-import 'package:tagalong/themes/tagalong_theme.dart';
+import 'package:tagalong/themes/tagalong_tokens.dart';
 import 'package:tagalong/util/log.dart' as logger;
 import 'package:tagalong/viewmodels/ride_details_view_model.dart';
-import 'package:core/core.dart';
+import 'package:tagalong/widgets/common/tagalong_components.dart';
 
-/// Represents a RideBoardCard, the only element that should be shown on the
-/// RideBoard, and should surface basic information about a Ride as well as
-/// lead to a more detailed page onTap.
+/// A ride on the Ride Board.
+///
+/// Time first, then the route on a panel tinted by direction (peach to
+/// campus, sky from campus), then the driver and how many seats are left.
+/// Tapping opens [RideDetails].
 class RideBoardCard extends StatelessWidget {
   const RideBoardCard({required this.ride, Key? key}) : super(key: key);
 
   final RideModel ride;
 
+  static String placeName(Location location) => (location.label ?? location.city).toTitleCase() as String;
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        var rideDetailsViewModel = Provider.of<RideDetailsViewModel>(context, listen: false);
-        // Set up the RideDetailsViewModel with this card's [Ride] instance
-        rideDetailsViewModel.instantiateRide(ride: ride);
-        logger.log.fine("RideBoardCard - Tapped on Card");
-        Navigator.pushNamed(context, RideDetails.routeName);
-      },
-      child: Card(
-          color: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5), side: const BorderSide(color: Color.fromRGBO(145, 127, 159, .6))),
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: SizedBox(
-                  height: 180,
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                          _getLocations(ride), // To-From Locations (Expanded)
-                          _getDriverData(ride) // Driver Name, Picture (Expanded)
-                        ])),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          _getPrice(ride), // Price of Ride (Expanded)
-                          _getDepartureDate(ride), // Departure Date (Row)
-                          _getDepartureTime(ride), // Departure Time (Row)
-                          _getRemainingSeats(ride) // Remaining Seats (Expanded)
+    final seatsLeft = ride.remainingSeats;
+    final vehicle = [ride.vehicle.make, ride.vehicle.model].where((s) => s.isNotEmpty).join(' ');
+
+    return Semantics(
+      button: true,
+      label: '${ride.toCampus ? 'To campus' : 'From campus'} ride at ${ride.departureTimeLabel}, '
+          '${DateFormat('EEEE MMMM d').format(ride.departureDateTime)}, '
+          'from ${placeName(ride.pickupLocation)} to ${placeName(ride.dropoffLocation)}, '
+          '\$${ride.price}, $seatsLeft ${seatsLeft == 1 ? 'seat' : 'seats'} left',
+      excludeSemantics: true,
+      child: TagAlongCard(
+        onTap: () {
+          // Set up the RideDetailsViewModel with this card's ride.
+          Provider.of<RideDetailsViewModel>(context, listen: false).instantiateRide(ride: ride);
+          logger.log.fine('RideBoardCard - Tapped on Card');
+          Navigator.pushNamed(context, RideDetails.routeName);
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // When + price
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TagAlongTag.direction(ride.toCampus),
+                      const SizedBox(height: TagAlongSpace.s2),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        spacing: TagAlongSpace.s2,
+                        children: [
+                          Text(ride.departureTimeLabel, style: TagAlongText.titleLarge),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3),
+                            child: Text(
+                              DateFormat('EEE, MMM d').format(ride.departureDateTime),
+                              style: TagAlongText.bodyMedium.copyWith(color: TagAlongColors.textSecondary),
+                            ),
+                          ),
                         ],
                       ),
-                    )
-                  ])))),
-    );
-  }
-
-  /// Returns an Expanded Column widget which details the "To-From" Locations
-  /// of a given [RideModel]. This Widget MUST be used within a Row/Column.
-  /// The [RideModel] fields this utilizes is:
-  /// 1. Pickup Location
-  /// 2. Dropoff Location
-  Widget _getLocations(RideModel ride) {
-    // Column parent
-    return Expanded(
-        flex: 4,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
-                const Icon(
-                  Icons.circle_outlined,
-                  size: 24,
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 6),
-                // PICKUP / ORIGIN
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('\$${ride.price}', style: TagAlongText.price),
+                    Text('+ fees', style: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textTertiary)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // Route
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: TagAlongSpace.s3),
+              decoration: BoxDecoration(
+                color: TagAlongColors.directionSoft(ride.toCampus),
+                borderRadius: TagAlongRadius.mdAll,
+              ),
+              child: TagAlongRouteTimeline(
+                pickup: RouteStop(title: placeName(ride.pickupLocation)),
+                dropoff: RouteStop(title: placeName(ride.dropoffLocation)),
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // Driver + seats
+            Row(
+              children: [
+                TagAlongAvatar(
+                  name: ride.driverFullName,
+                  imageUrl: ride.driverProfilePictureUrl,
+                  size: 32,
+                ),
+                const SizedBox(width: 10),
                 Expanded(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      (ride.pickupLocation.label ?? ride.pickupLocation.city).toTitleCase() as String,
-                      style: TagAlongTheme.lightTextTheme.titleLarge,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(ride.getFirstNameAndInitial(), style: TagAlongText.labelMedium),
+                      if (vehicle.isNotEmpty)
+                        Text(
+                          vehicle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textTertiary),
+                        ),
+                    ],
                   ),
                 ),
-              ]),
-              const Icon(
-                Icons.more_vert,
-                size: 24,
-              ),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.circle_rounded,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 6),
-                  // DROPOFF / DESTINATION
-                  Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        (ride.dropoffLocation.label ?? ride.dropoffLocation.city).toTitleCase() as String,
-                        style: TagAlongTheme.lightTextTheme.titleLarge,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ]));
-  }
-
-  /// Returns an Expanded Widget that exposes the Driver's
-  /// 1. First Name, last initial
-  /// 2. Facebook Profile Picture
-  /// This widget MUST be used within a Column/Row.
-  Widget _getDriverData(RideModel ride) {
-    var firstNameWithInitial = ride.getFirstNameAndInitial();
-    return Expanded(
-      flex: 1,
-      //alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(ride.driverProfilePictureUrl),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          Text(
-            firstNameWithInitial,
-            style: TagAlongTheme.lightTextTheme.bodyLarge,
-          ),
-        ],
+                TagAlongSeatDots(total: ride.noPassengers, taken: ride.noPassengers - seatsLeft),
+                const SizedBox(width: TagAlongSpace.s2),
+                seatsLeft == 1
+                    ? const TagAlongTag(label: '1 seat left', tone: TagTone.butter)
+                    : Text('$seatsLeft left', style: TagAlongText.labelMedium),
+              ],
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  Widget _getPrice(RideModel ride) {
-    return Expanded(
-      child: Container(
-        child: Text(
-          "\$${ride.price}",
-          style: TagAlongTheme.lightTextTheme.headlineSmall,
-          // textAlign: TextAlign.right,
-        ),
-        alignment: Alignment.topRight,
-      ),
-    );
-  }
-
-  Widget _getDepartureDate(RideModel ride) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(
-          DateFormat('EEEE MMM d').format(ride.departureDateTime),
-          style: TagAlongTheme.lightTextTheme.bodyLarge,
-        ),
-        const SizedBox(
-          width: 3,
-        ),
-        const Icon(
-          Icons.today_outlined,
-          size: 16,
-        ),
-      ],
-    );
-  }
-
-  Widget _getDepartureTime(RideModel ride) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(
-          ride.departureTimeLabel,
-          style: TagAlongTheme.lightTextTheme.bodyLarge,
-        ),
-        const SizedBox(
-          width: 3,
-        ),
-        const Icon(
-          Icons.schedule_outlined,
-          size: 16,
-        )
-      ],
-    );
-  }
-
-  Widget _getRemainingSeats(RideModel ride) {
-    var seatsRemaining = ride.remainingSeats;
-    if (seatsRemaining > 1) {
-      return Expanded(
-        child: Container(
-          alignment: Alignment.bottomRight,
-          child: Text(
-            "$seatsRemaining SEATS REMAINING",
-            style: TagAlongTheme.lightTextTheme.bodySmall,
-          ),
-        ),
-      );
-    } else {
-      return Expanded(
-        child: Container(
-          alignment: Alignment.bottomRight,
-          child: Text(
-            "$seatsRemaining SEAT REMAINING",
-            style: TagAlongTheme.lightTextTheme.bodySmall,
-          ),
-        ),
-      );
-    }
   }
 }

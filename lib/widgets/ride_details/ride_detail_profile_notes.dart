@@ -4,13 +4,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_repo/ride_repo.dart';
 import 'package:tagalong/data/models/user.dart';
-import 'package:tagalong/themes/tagalong_theme.dart';
+import 'package:tagalong/themes/tagalong_tokens.dart';
 import 'package:tagalong/viewmodels/tagalong_user_view_model.dart';
 import 'package:tagalong/util/log.dart' as log;
+import 'package:tagalong/widgets/common/tagalong_components.dart';
+import 'package:tagalong/widgets/ride_details/ride_detail_misc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// The people on a ride: the driver (as seen by a passenger) or the booked
-/// passengers (as seen by the driver), plus the driver's notes.
+/// passengers (as seen by the driver), plus the driver's notes. With
+/// [showFacts] it also lists the car and luggage allowance.
 class RideDetailProfileNotes extends StatefulWidget {
   const RideDetailProfileNotes({
     Key? key,
@@ -20,6 +23,7 @@ class RideDetailProfileNotes extends StatefulWidget {
     this.isInFuture = true,
     this.isMyRides = false,
     this.isCancelled = false,
+    this.showFacts = false,
   }) : super(key: key);
 
   final BuildContext context;
@@ -28,6 +32,7 @@ class RideDetailProfileNotes extends StatefulWidget {
   final bool isInFuture;
   final bool isMyRides;
   final bool isCancelled;
+  final bool showFacts;
 
   @override
   State<RideDetailProfileNotes> createState() => _RideDetailProfileNotesState();
@@ -111,28 +116,29 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
       builder: (context, snapshot) {
         final loading = snapshot.connectionState == ConnectionState.waiting;
         final participants = snapshot.data ?? const _RideParticipants();
+        final showNotes = widget.isInFuture && widget.ride.notes != '';
 
-        return Container(
-          color: Colors.white,
-          padding: const EdgeInsets.only(top: 16, left: 24, right: 24),
-          child: Column(children: [
-            if (!widget.isDriver) _driverProfile(participants.driver, loading),
-            if (widget.isDriver)
-              loading ? const CircularProgressIndicator() : _passengerList(participants.passengers),
-
-            // Ride Notes
-            if (widget.isInFuture && widget.ride.notes != "") const SizedBox(height: 16),
-            if (widget.isInFuture && widget.ride.notes != "") _notes(),
-
-            if (widget.isMyRides && !widget.isDriver && widget.isInFuture && !widget.isCancelled)
-              _driverPhoneButton(participants.driver),
-
-            // Horizontal Divider
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: !widget.isDriver && widget.isInFuture ? const Divider(thickness: 1) : null,
-            )
-          ]),
+        return TagAlongCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!widget.isDriver) _driverProfile(participants.driver, loading),
+              if (widget.isDriver)
+                loading ? const Center(child: CircularProgressIndicator()) : _passengerList(participants.passengers),
+              if (widget.showFacts) ...[
+                const SizedBox(height: 14),
+                RideDetailMisc(ride: widget.ride),
+              ],
+              if (showNotes) ...[
+                const SizedBox(height: 14),
+                _notes(),
+              ],
+              if (widget.isMyRides && !widget.isDriver && widget.isInFuture && !widget.isCancelled) ...[
+                const SizedBox(height: 14),
+                _driverPhoneButton(participants.driver),
+              ],
+            ],
+          ),
         );
       },
     );
@@ -143,92 +149,87 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
     final profileUrl = driver?.facebookProfileUrl;
     return Row(
       children: [
+        TagAlongAvatar(name: widget.ride.driverFullName, imageUrl: widget.ride.driverProfilePictureUrl, size: 48),
+        const SizedBox(width: TagAlongSpace.s3),
         Expanded(
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(widget.ride.driverProfilePictureUrl),
-                ),
-              ),
-              Text(widget.ride.getFirstNameAndInitial(), style: Theme.of(context).textTheme.titleLarge),
+              Text(widget.ride.getFirstNameAndInitial(), style: TagAlongText.titleSmall),
+              const SizedBox(height: 2),
+              Text('Your driver', style: TagAlongText.bodySmall.copyWith(color: TagAlongColors.textTertiary)),
             ],
           ),
         ),
-        OutlinedButton.icon(
-          // Disabled while we look the driver up, and for drivers who signed
-          // up with a provider other than Facebook.
+        // Disabled while we look the driver up, and for drivers who signed up
+        // with a provider other than Facebook.
+        FilledButton.icon(
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(0, 40),
+            padding: const EdgeInsets.symmetric(horizontal: TagAlongSpace.s4),
+          ),
           onPressed: loading || profileUrl == null ? null : () => _openFacebookProfile(profileUrl),
-          icon: const FaIcon(FontAwesomeIcons.facebook),
-          label: const Text("View Profile"),
-          style: TagAlongTheme.outlinedButtonTheme.style,
-        )
+          icon: const FaIcon(FontAwesomeIcons.facebook, size: 16),
+          label: const Text('Profile'),
+        ),
       ],
     );
   }
 
   /// The riders booked onto this trip, shown to the driver.
   Widget _passengerList(List<TagAlongUser> passengers) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Passengers:', style: Theme.of(context).textTheme.titleLarge),
-          if (passengers.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 4),
-              child: Text('No passengers', style: TextStyle(fontStyle: FontStyle.italic)),
-            ),
-          ...passengers.map((passenger) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0),
-                    child: CircleAvatar(backgroundImage: NetworkImage(passenger.profilePictureUrl)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TagAlongSectionHeader(title: 'Passengers', count: '${passengers.length}'),
+        const SizedBox(height: TagAlongSpace.s3),
+        if (passengers.isEmpty)
+          Text('No one has booked a seat yet.',
+              style: TagAlongText.bodyMedium.copyWith(color: TagAlongColors.textSecondary)),
+        for (final passenger in passengers)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: TagAlongSpace.s1),
+            child: Row(
+              children: [
+                TagAlongAvatar(
+                  name: '${passenger.firstName} ${passenger.lastName}',
+                  imageUrl: passenger.profilePictureUrl,
+                ),
+                const SizedBox(width: TagAlongSpace.s3),
+                // First name, last initial for each rider
+                Expanded(
+                  child: Text(
+                    passenger.lastName.isEmpty
+                        ? passenger.firstName
+                        : '${passenger.firstName} ${passenger.lastName[0]}.',
+                    style: TagAlongText.titleSmall,
                   ),
-                  // Get first name, last initial for each rider
-                  Text("${passenger.firstName} ${passenger.lastName[0]}.",
-                      style: Theme.of(context).textTheme.bodyLarge),
-                  if (widget.isInFuture)
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: OutlinedButton(
-                          onPressed: () => _copyToClipboard(passenger.phoneNumber, 'Phone number'),
-                          child: Text(passenger.phoneNumber),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            );
-          }).toList(),
-        ],
-      ),
+                ),
+                if (widget.isInFuture)
+                  OutlinedButton.icon(
+                    onPressed: () => _copyToClipboard(passenger.phoneNumber, 'Phone number'),
+                    icon: const Icon(Icons.copy_rounded, size: 14),
+                    label: Text(passenger.phoneNumber),
+                  ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
   Widget _notes() {
     return Container(
-      padding: const EdgeInsets.all(8),
-      width: MediaQuery.of(context).size.width,
-      child: Text(widget.ride.notes),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        border: Border.all(
-          color: Colors.grey.shade400,
-          width: 1,
-        ),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.zero,
-          topRight: Radius.circular(8),
-          bottomLeft: Radius.circular(8),
-          bottomRight: Radius.circular(8),
-        ),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: TagAlongColors.canvas, borderRadius: TagAlongRadius.mdAll),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const TagAlongOverline('Notes from the driver'),
+          const SizedBox(height: TagAlongSpace.s1),
+          Text(widget.ride.notes, style: TagAlongText.bodyMedium),
+        ],
       ),
     );
   }
@@ -236,33 +237,27 @@ class _RideDetailProfileNotesState extends State<RideDetailProfileNotes> {
   /// Reveals the driver's phone number to a booked passenger, then lets them
   /// copy it.
   Widget _driverPhoneButton(TagAlongUser? driver) {
-    return Container(
-      padding: const EdgeInsets.only(top: 16),
-      width: MediaQuery.of(context).size.width,
-      child: TextButton.icon(
-        style: TagAlongTheme.textButtonTheme.style!.copyWith(
-          backgroundColor: MaterialStateProperty.all(_showPhone ? Colors.white : Colors.lightBlue.shade50),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              side: BorderSide(color: Colors.grey.shade500),
-              // Set huge value to get pill-shaped button
-              borderRadius: const BorderRadius.all(Radius.circular(1000)),
-            ),
-          ),
+    if (!_showPhone) {
+      return SizedBox(
+        width: double.infinity,
+        child: FilledButton.icon(
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+          onPressed: () => setState(() {
+            _driverPhone = driver?.phoneNumber;
+            _showPhone = true;
+          }),
+          icon: const Icon(Icons.phone_outlined, size: 18),
+          label: const Text('Show driver phone number'),
         ),
-        onPressed: !_showPhone
-            ? () {
-                setState(() {
-                  _driverPhone = driver?.phoneNumber;
-                  _showPhone = true;
-                });
-              }
-            : () => _copyToClipboard(_driverPhone ?? '', 'Phone number'),
-        icon: Icon(
-          _showPhone ? Icons.verified_outlined : Icons.phone,
-          color: _showPhone ? Colors.blue : Colors.black,
-        ),
-        label: Text(_showPhone ? 'Verified Phone Number: $_driverPhone' : 'Show driver phone number'),
+      );
+    }
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+        onPressed: () => _copyToClipboard(_driverPhone ?? '', 'Phone number'),
+        icon: const Icon(Icons.verified_outlined, size: 18, color: TagAlongColors.successInk),
+        label: Text('Verified phone: ${_driverPhone ?? ''}'),
       ),
     );
   }
