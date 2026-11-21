@@ -32,7 +32,9 @@ class _MyRideScreenState extends State<MyRideScreen> {
               onRefresh: () async {
                 setState(() {});
               },
+              // Always scrollable so pull-to-refresh works even when the list is short or empty
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: FutureBuilder<List<RideModel>>(
                   future: RideRepository.instance.getAllRidesForUser(_tagAlongUser.id, ordered: true),
                   builder: (context, snapshot) {
@@ -40,12 +42,17 @@ class _MyRideScreenState extends State<MyRideScreen> {
                       if (snapshot.data!.isEmpty) {
                         return const Text('You haven\'t offered or booked any rides yet!');
                       }
+                      // Split once against a single "now" so every ride lands in exactly one section
+                      final _now = DateTime.now();
+                      final _upcomingRides =
+                          snapshot.data!.where((ride) => ride.departureDateTime.isAfter(_now)).toList();
+                      final _completedRides =
+                          snapshot.data!.where((ride) => !ride.departureDateTime.isAfter(_now)).toList();
+
                       // Calculate upcoming ride earnings
                       var _upcomingEarnings = 0;
-                      for (var ride in snapshot.data!) {
-                        if (ride.driverId == _tagAlongUser.id &&
-                            ride.status == RideStatus.scheduled &&
-                            ride.departureDateTime.isAfter(DateTime.now())) {
+                      for (var ride in _upcomingRides) {
+                        if (ride.driverId == _tagAlongUser.id && ride.status == RideStatus.scheduled) {
                           //TODO - Create a more robust way to manage the number of currently booked passengers
                           _upcomingEarnings += ride.price * (ride.noPassengers - ride.remainingSeats);
                         }
@@ -86,53 +93,14 @@ class _MyRideScreenState extends State<MyRideScreen> {
                               ],
                             ),
 
-                          if (snapshot.data!.where((ride) => ride.departureDateTime.isAfter(DateTime.now())).isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: Text(
-                                'Upcoming',
-                                style: TagAlongTheme.lightTextTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final _rideData = snapshot.data![index];
-                              final _isDriver = _rideData.driverId == _tagAlongUser.id;
-                              final _isCancelled = _rideData.status == RideStatus.canceled ||
-                                  (!_isDriver && !_rideData.riderIds.contains(_tagAlongUser.id));
-                              if (_rideData.departureDateTime.isAfter(DateTime.now())) {
-                                return MyRideTile(isDriver: _isDriver, isCancelled: _isCancelled, rideData: _rideData);
-                              } else {
-                                return const SizedBox();
-                              }
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: Text(
-                              'Completed',
-                              style: TagAlongTheme.lightTextTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              final _rideData = snapshot.data![index];
-                              final _isDriver = _rideData.driverId == _tagAlongUser.id;
-                              final _isCancelled = _rideData.status == RideStatus.canceled ||
-                                  (!_isDriver && !_rideData.riderIds.contains(_tagAlongUser.id));
-                              // final rideBooking = snapshot.data![index];
-                              if (_rideData.departureDateTime.isBefore(DateTime.now())) {
-                                return MyRideTile(isDriver: _isDriver, isCancelled: _isCancelled, rideData: _rideData);
-                              } else {
-                                return const SizedBox();
-                              }
-                            },
-                          ),
+                          if (_upcomingRides.isNotEmpty) ...[
+                            _sectionHeader('Upcoming'),
+                            _rideList(_upcomingRides, _tagAlongUser.id),
+                          ],
+                          if (_completedRides.isNotEmpty) ...[
+                            _sectionHeader('Completed'),
+                            _rideList(_completedRides, _tagAlongUser.id),
+                          ],
                         ],
                       );
                     }
@@ -149,6 +117,32 @@ class _MyRideScreenState extends State<MyRideScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text(
+        title,
+        style: TagAlongTheme.lightTextTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  // The outer SingleChildScrollView does the scrolling, so the inner list must not scroll on its own
+  Widget _rideList(List<RideModel> rides, String userId) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: rides.length,
+      itemBuilder: (context, index) {
+        final _rideData = rides[index];
+        final _isDriver = _rideData.driverId == userId;
+        final _isCancelled =
+            _rideData.status == RideStatus.canceled || (!_isDriver && !_rideData.riderIds.contains(userId));
+        return MyRideTile(isDriver: _isDriver, isCancelled: _isCancelled, rideData: _rideData);
+      },
     );
   }
 }
