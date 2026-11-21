@@ -201,6 +201,32 @@ test("a ride that left today waits for tomorrow's run", async () => {
   assert.strictEqual(counts.waiting, 1);
 });
 
+test("an old-shape ride is due by its real departure, not its midnight", async () => {
+  reset();
+  // Posted by an old app version in Central time: midnight Nov 20 Central is
+  // 01:00 Eastern Nov 20 (yesterday), but the ride left at 11:30 PM Central,
+  // which is 00:30 Eastern today. Not due yet.
+  db.table("rides").set("doc_r1", {
+    ride_id: "r1", status: "complete", price: 20, stripe_account_id: "acct_a",
+    departure_date_time: {toDate: () => new Date("2026-11-20T06:00:00Z")},
+    departure_time_of_day: "11:30 PM",
+  });
+  booking("r1");
+  // Same shape, left at 10:00 AM Central yesterday. Due.
+  db.table("rides").set("doc_r2", {
+    ride_id: "r2", status: "complete", price: 20, stripe_account_id: "acct_a",
+    departure_date_time: {toDate: () => new Date("2026-11-20T06:00:00Z")},
+    departure_time_of_day: "10:00 AM",
+  });
+  booking("r2");
+
+  const counts = await run();
+
+  assert.strictEqual(counts.waiting, 1);
+  assert.strictEqual(counts.bookings, 1);
+  assert.strictEqual(rideStatus("r1"), "complete");
+});
+
 test("a second run the same day pays nothing twice", async () => {
   reset();
   ride("r1");

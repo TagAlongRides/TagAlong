@@ -30,6 +30,7 @@ const {onDisputeCreated, onDisputeClosed} = require("./lib/disputes");
 const {requireAuth} = require("./lib/auth");
 const paymentRoutes = require("./routes/payment");
 const {markRideComplete, markRidePaid} = require("./jobs/rideStatus");
+const {posterWallClock, readDeparture} = require("./lib/departure");
 
 const db = admin.firestore();
 
@@ -143,17 +144,24 @@ function dropoffName(ride) {
   return dropoff.label || dropoff.city || "your destination";
 }
 
+/**
+ * "Sunday, November 22 at 12:00 PM" on the driver's own clock.
+ *
+ * The ride carries the poster's UTC offset, so the wall clock is the instant
+ * shifted by it and printed as UTC. A ride without one (shouldn't happen once
+ * migrated) falls back to Eastern time.
+ */
 function formatRideDate(ride) {
-  const departure = ride.departure_date_time;
-  if (!departure || typeof departure.toDate !== "function") {
+  const wall = posterWallClock(ride);
+  const {instant} = readDeparture(ride);
+  if (!instant) {
     return "";
   }
-  return departure.toDate().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    timeZone: "America/New_York",
-  });
+  const shown = wall || instant;
+  const timeZone = wall ? "UTC" : "America/New_York";
+  const date = shown.toLocaleDateString("en-US", {weekday: "long", month: "long", day: "numeric", timeZone});
+  const time = shown.toLocaleTimeString("en-US", {hour: "numeric", minute: "2-digit", timeZone});
+  return `${date} at ${time}`;
 }
 
 /**

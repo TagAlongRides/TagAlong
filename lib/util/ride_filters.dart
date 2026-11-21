@@ -52,10 +52,32 @@ class RideFilters {
     return '${location.city}, ${location.state}';
   }
 
+  /// How far before the wanted range the Firestore query has to start.
+  ///
+  /// Rides posted by app versions from before the departure fix store
+  /// midnight of the departure day in `departure_date_time`, up to a day
+  /// before they really leave. Querying a day early keeps them in the results;
+  /// [matches] then checks the real departure.
+  static const Duration legacyQuerySlack = Duration(days: 1);
+
   /// Whether [ride] survives the filters we can't push into Firestore.
-  bool matches(RideModel ride) {
+  ///
+  /// [now] defaults to the current time.
+  bool matches(RideModel ride, {DateTime? now}) {
     // A fully booked ride comes off the board entirely (Milestone 2, §12.3).
     if (ride.remainingSeats <= 0) {
+      return false;
+    }
+    final departure = ride.departureDateTime;
+    var earliest = now ?? DateTime.now();
+    if (departureDateStart != null && departureDateStart!.isAfter(earliest)) {
+      earliest = departureDateStart!;
+    }
+    // Never show rides that have already left.
+    if (!departure.isAfter(earliest)) {
+      return false;
+    }
+    if (departureDateEnd != null && departure.isAfter(departureDateEnd!)) {
       return false;
     }
     if (!_matchesTimeOfDay(ride.departureDateTime)) {

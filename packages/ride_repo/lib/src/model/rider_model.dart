@@ -5,8 +5,8 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:ride_repo/src/enum/ride_status_enum.dart';
+import 'package:ride_repo/src/model/departure.dart';
 
 RideModel rodeModelFromJson(String str) => RideModel.fromJson(json.decode(str));
 
@@ -26,10 +26,9 @@ class RideModel {
     required this.createdAt,
     required this.toCampus,
     required this.vehicle,
-    required this.departureTimeOfDay,
     required this.driverProfilePictureUrl,
     required this.price,
-    required this.departureDateTime,
+    required this.departure,
     required this.noPassengers,
     required this.remainingSeats,
     required this.vaccinationCard,
@@ -54,10 +53,19 @@ class RideModel {
   final dynamic createdAt;
   final bool toCampus;
   final Vehicle vehicle;
-  final String departureTimeOfDay;
   final String driverProfilePictureUrl;
   final int price;
-  final DateTime departureDateTime;
+  /// When the ride leaves. See [Departure] for how it is stored.
+  final Departure departure;
+
+  /// The real moment the ride leaves, in this device's local time.
+  DateTime get departureDateTime => departure.instant.toLocal();
+
+  /// "12:00 PM": the departure time on this device's clock.
+  String get departureTimeLabel {
+    final local = departureDateTime;
+    return Departure.formatTimeOfDay(local.hour, local.minute);
+  }
   final int noPassengers;
   int remainingSeats;
   final bool vaccinationCard;
@@ -84,10 +92,9 @@ class RideModel {
         createdAt: _require<Object>(json, "created_at"),
         toCampus: _require<bool>(json, "to_campus"),
         vehicle: Vehicle.fromJson(_require<Map<String, dynamic>>(json, "vehicle")),
-        departureTimeOfDay: _require<String>(json, "departure_time_of_day"),
         driverProfilePictureUrl: json["driver_profile_picture_url"] ?? "",
         price: _require<int>(json, "price"),
-        departureDateTime: _require<Timestamp>(json, "departure_date_time").toDate(),
+        departure: Departure.fromFirestore(json),
         noPassengers: _require<int>(json, "no_passengers"),
         // A ride stored without a seat count has had nobody book it yet, so
         // every seat the driver offered is still free.
@@ -112,10 +119,9 @@ class RideModel {
         "created_at": createdAt,
         "to_campus": toCampus,
         "vehicle": vehicle.toJson(),
-        "departure_time_of_day": departureTimeOfDay,
         "driver_profile_picture_url": driverProfilePictureUrl,
         "price": price,
-        "departure_date_time": departureDateTime,
+        ...departure.toFirestore(),
         "no_passengers": noPassengers,
         "remaining_seats": remainingSeats,
         "vaccination_card": vaccinationCard,
@@ -132,11 +138,6 @@ class RideModel {
       throw UnsupportedError('Invalid ride - $field is $value');
     }
     return value;
-  }
-
-  /// Returns a [TimeOfDay] instance given a stringified TimeOfDay
-  static TimeOfDay timeOfDayFromString(String str) {
-    return TimeOfDay(hour: int.parse(str.split(':')[0]), minute: int.parse(str.split(':')[1].substring(0, 2)));
   }
 
   /// Returns a string First Name and last initial for a driver.

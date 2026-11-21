@@ -180,7 +180,7 @@ class RideBoardCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          ride.departureTimeOfDay,
+          ride.departureTimeLabel,
           style: TagAlongTheme.lightTextTheme.bodyLarge,
         ),
         const SizedBox(

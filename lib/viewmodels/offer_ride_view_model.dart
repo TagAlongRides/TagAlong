@@ -32,8 +32,23 @@ class OfferRideViewModel with ChangeNotifier {
   String? locationCity;
   String? locationState;
   String? locationZip;
-  DateTime? departureDateTime;
-  String? departureTimeOfDay;
+  /// The day the driver picked (any time on it; only the date is used).
+  DateTime? departureDate;
+
+  /// The time of day the driver picked, on their own clock.
+  TimeOfDay? departureTime;
+
+  /// The moment the ride leaves, once both a date and a time are chosen.
+  ///
+  /// Built in the device's local zone, so it is the instant the driver means.
+  DateTime? get departureDateTime {
+    final date = departureDate;
+    final time = departureTime;
+    if (date == null || time == null) {
+      return null;
+    }
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
   int noPassengers = 2; // Default
   int noBags = 2; // Default
   int price = 20; // Default
@@ -76,13 +91,13 @@ class OfferRideViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateDepartureDateTime(DateTime? departureDateTime) {
-    this.departureDateTime = departureDateTime;
+  void updateDepartureDate(DateTime? departureDate) {
+    this.departureDate = departureDate;
     notifyListeners();
   }
 
-  void updateDepartureTimeOfDay(String? departureTimeOfDay) {
-    this.departureTimeOfDay = departureTimeOfDay;
+  void updateDepartureTime(TimeOfDay? departureTime) {
+    this.departureTime = departureTime;
     notifyListeners();
   }
 
@@ -156,12 +171,12 @@ class OfferRideViewModel with ChangeNotifier {
     locationZip = null;
   }
 
-  void resetDepartureDateTime() {
-    departureDateTime = null;
+  void resetDepartureDate() {
+    departureDate = null;
   }
 
-  void resetDepartureTimeOfDay() {
-    departureTimeOfDay = null;
+  void resetDepartureTime() {
+    departureTime = null;
   }
 
   void resetNoPassengers() {
@@ -187,8 +202,8 @@ class OfferRideViewModel with ChangeNotifier {
     locationCity = null;
     locationState = null;
     locationZip = null;
-    departureDateTime = null;
-    departureTimeOfDay = null;
+    departureDate = null;
+    departureTime = null;
     noPassengers = 2; // Default
     noBags = 2; // Default
     price = 20; // Default
@@ -248,8 +263,7 @@ class OfferRideViewModel with ChangeNotifier {
       toCampus: toCampus,
       pickupLocation: pickupLocation,
       dropoffLocation: dropoffLocation,
-      departureDateTime: departureDateTime!,
-      departureTimeOfDay: departureTimeOfDay!,
+      departure: Departure.local(departureDateTime!),
       noPassengers: noPassengers,
       remainingSeats: noPassengers, // Initialize this to be the total number of seats driver is offering
       noBags: noBags,
@@ -286,7 +300,6 @@ class OfferRideViewModel with ChangeNotifier {
       'locationCity': locationCity,
       'locationZip': locationZip,
       'departureDateTime': departureDateTime,
-      'departureTimeOfDay': departureTimeOfDay,
       'noPassengers': noPassengers,
       // 'remainingSeats': remainingSeats,
       'noBags': noBags,
