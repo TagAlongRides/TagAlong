@@ -23,6 +23,7 @@
 const logger = require("firebase-functions/logger");
 const {isWithheld} = require("./disputes");
 const {parseCents} = require("./amount");
+const {departedBy} = require("./departure");
 
 /** The day boundary drivers are paid on. */
 const TIME_ZONE = "America/New_York";
@@ -116,7 +117,8 @@ async function payDrivers({db, stripe, now = new Date(), rideIds, dryRun = false
   for (const rideDoc of rides.docs) {
     const ride = rideDoc.data();
     if (!inScope(ride.ride_id)) continue;
-    if (easternDate(ride.departure_date_time.toDate()) >= today) {
+    const departed = departedBy(ride);
+    if (!departed || easternDate(departed) >= today) {
       counts.waiting++;
       continue;
     }

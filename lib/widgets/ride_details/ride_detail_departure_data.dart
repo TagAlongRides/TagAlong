@@ -31,7 +31,7 @@ class RideDetailDepartureData extends StatelessWidget {
                   child: VerticalDivider(
                     thickness: 1,
                   )),
-              Expanded(flex: 1, child: Text(ride.departureTimeOfDay, style: Theme.of(context).textTheme.titleLarge))
+              Expanded(flex: 1, child: Text(ride.departureTimeLabel, style: Theme.of(context).textTheme.titleLarge))
             ]),
           ),
           const SizedBox(height: 8),

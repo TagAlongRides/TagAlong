@@ -268,7 +268,7 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Hooray!'),
         content: Text(
-            'You’ve successfully booked a ride with ${ride.getFirstNameAndInitial()} to $dropoff, departing on $date at ${ride.departureTimeOfDay}.'),
+            'You’ve successfully booked a ride with ${ride.getFirstNameAndInitial()} to $dropoff, departing on $date at ${ride.departureTimeLabel}.'),
         actions: <Widget>[
           TextButton(child: const Text('View my ride'), onPressed: () => Navigator.pop(context)),
         ],
