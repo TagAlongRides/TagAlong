@@ -1,23 +1,21 @@
 /*
- * Dispute handling for destination charges.
+ * Dispute handling.
  *
- * TagAlong takes the passenger's money as a destination charge: the platform
- * is the merchant of record, and the driver's share is transferred to their
- * connected account at the moment of the charge. When a passenger disputes a
- * ride, Stripe debits the disputed amount *and* the dispute fee from the
- * platform balance, not the driver's. Recovering the driver's share is not
- * automatic - unlike a refund, where `reverse_transfer: true` does it for us -
- * and needs an explicit transfer reversal.
+ * TagAlong charges the passenger's full fare to its own Stripe balance and
+ * pays drivers once a day for completed rides (lib/payouts.js). Stripe debits
+ * a disputed amount and the dispute fee from TagAlong's balance either way.
+ *
+ * - Disputed before the driver is paid (the usual case): the fare is withheld
+ *   from payout while the dispute is open. If it is lost, the driver was never
+ *   paid, so there is nothing to recover. If it is won, the next payout pays it.
+ * - Disputed after the driver is paid: if lost, this fare's share is reversed
+ *   out of the driver's payout transfer. Their money may already be in their
+ *   bank, in which case the reversal drives their Stripe balance negative.
+ * - Bookings from before the switch were destination charges, transferred at
+ *   the moment of the charge; a lost dispute reverses that transfer, as before.
  *
  * Timing follows Stripe's guidance: reverse only once a dispute is actually
- * lost. Reversing early and then winning means transferring the money back,
- * which can fail outright on an insufficient platform balance.
- *
- * The lever that makes this work is the manual payout schedule. Driver funds
- * sit in their Stripe balance until markRidePaid releases them, so withholding
- * a disputed fare keeps it reversible. Reversing a transfer whose money has
- * already reached the driver's bank just drives their balance negative, and
- * recovery then depends on `debit_negative_balances`.
+ * lost. Reversing early and then winning means transferring the money back.
  */
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
@@ -53,8 +51,8 @@ async function findBooking(db, dispute) {
 /**
  * A dispute was opened. Flag the booking so markRidePaid withholds the fare.
  *
- * Nothing is reversed here. The money stays in the driver's Stripe balance,
- * which is exactly where it needs to be if the dispute is later lost.
+ * Nothing is reversed here. While it is withheld the fare stays in TagAlong's
+ * balance, which is exactly where it needs to be if the dispute is later lost.
  */
 async function onDisputeCreated(db, dispute) {
   const booking = await findBooking(db, dispute);
@@ -127,15 +125,45 @@ async function onDisputeClosed(db, dispute) {
     return {handled: true, bookingId: booking.id, action: "already reversed"};
   }
 
+  // A fare charged to TagAlong's own balance reaches the driver only through
+  // a daily payout batch. If its batch has transferred, take back exactly
+  // this fare's share of that transfer - the rest of it is other rides.
+  if (existing.payoutBatchId) {
+    const batchDoc = await db.collection("payoutBatches").doc(existing.payoutBatchId).get();
+    const batch = batchDoc.exists ? batchDoc.data() : null;
+    const share = batch && batch.shares && batch.shares[booking.id];
+    if (batch && batch.transferId && share && share.mode === "transfer") {
+      const reversal = await stripe().transfers.createReversal(batch.transferId, {
+        amount: share.cents,
+        metadata: {booking_id: booking.id, dispute_id: dispute.id},
+      }, {idempotencyKey: `dispute_reversal_${dispute.id}`});
+      await booking.ref.update({
+        disputeStatus: "lost",
+        disputeResolvedAt: admin.firestore.FieldValue.serverTimestamp(),
+        transferReversalId: reversal.id,
+        transferReversedAmount: reversal.amount,
+      });
+      logger.info("Recovered driver share from their payout transfer after a lost dispute", {
+        bookingId: booking.id,
+        disputeId: dispute.id,
+        transferId: batch.transferId,
+        reversalId: reversal.id,
+        amount: reversal.amount,
+      });
+      return {handled: true, bookingId: booking.id, action: "reversed", reversalId: reversal.id};
+    }
+  }
+
   const charge = await stripe().charges.retrieve(dispute.charge);
   const transferId = typeof charge.transfer === "string" ?
     charge.transfer :
     charge.transfer && charge.transfer.id;
 
   if (!transferId) {
-    // No transfer means the driver never received this money, so there is
-    // nothing to recover. The platform absorbs it.
-    logger.warn("Lost dispute has no transfer to reverse", {
+    // No transfer means the driver never received this money - the normal
+    // case now, since fares are held in TagAlong's balance until payout and
+    // a disputed fare is withheld from it. Nothing to recover.
+    logger.info("Lost dispute on a fare the driver was never paid", {
       bookingId: booking.id,
       disputeId: dispute.id,
       charge: dispute.charge,

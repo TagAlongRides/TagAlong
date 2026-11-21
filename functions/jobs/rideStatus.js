@@ -1,13 +1,7 @@
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const {stripe} = require("../lib/stripe");
-const {isWithheld} = require("../lib/disputes");
-
-/**
- * How long after departure a completed ride waits before the driver is paid,
- * leaving room for disputes and cancellations.
- */
-const COOL_OFF_DAYS = 2;
+const {payDrivers} = require("../lib/payouts");
 
 /** Appends a line to the scheduleJob audit collection. */
 async function log(job, message) {
@@ -63,101 +57,16 @@ async function markRideComplete() {
 }
 
 /**
- * Pays drivers for rides that have cleared the cool-off period.
- *
- * Connected accounts are created with a manual payout schedule, so the money
- * sits in the driver's Stripe balance until this job releases it.
+ * The daily driver payout: every driver is paid, in one transfer and one
+ * payout, for their rides completed before today (Eastern time). See
+ * lib/payouts.js for how the money moves and why a rerun is safe.
  */
 async function markRidePaid() {
-  const db = admin.firestore();
-  const rides = await db.collection("rides").where("status", "==", "complete").get();
-
-  if (rides.empty) {
-    await log("markRidePaid", "No completed rides found");
-    return;
-  }
-
-  let paid = 0;
-  let waiting = 0;
-  let failed = 0;
-  let withheld = 0;
-
-  await Promise.all(rides.docs.map(async (doc) => {
-    const ride = doc.data();
-    const departure = ride.departure_date_time.toDate();
-    const daysSince = (Date.now() - departure) / (1000 * 60 * 60 * 24);
-
-    if (daysSince <= COOL_OFF_DAYS) {
-      waiting++;
-      return;
-    }
-
-    const bookings = await db
-        .collection("rideBooking")
-        .where("rideId", "==", ride.ride_id)
-        .where("status", "==", "complete")
-        .get();
-
-    if (bookings.empty) {
-      // Nobody rode, so there is nothing to pay out. Close the ride off so it
-      // isn't reconsidered on every subsequent run.
-      await doc.ref.update({status: "paid"});
-      return;
-    }
-
-    // A disputed fare must not reach the driver's bank account. Recovering a
-    // destination-charge dispute means reversing the transfer, and that only
-    // works cleanly while the money is still sitting in the driver's Stripe
-    // balance. Filtering here rather than in the query keeps this off the
-    // composite indexes, and a ride has a handful of bookings at most.
-    const payable = bookings.docs.filter((booking) => !isWithheld(booking.data()));
-    const held = bookings.size - payable.length;
-
-    if (payable.length === 0) {
-      if (bookings.docs.some((booking) => booking.data().disputeStatus === "open")) {
-        // Leave the ride "complete" so it is reconsidered once the dispute
-        // resolves one way or the other.
-        withheld += bookings.size;
-        return;
-      }
-      // Every fare was lost to a dispute, so there is nothing left to pay.
-      await doc.ref.update({status: "paid"});
-      return;
-    }
-
-    const amount = payable.length * ride.price;
-
-    try {
-      const payout = await stripe().payouts.create(
-          {amount: amount * 100, currency: "usd"},
-          {stripeAccount: ride.stripe_account_id},
-      );
-
-      await Promise.all(payable.map((booking) => booking.ref.update({status: "paid"})));
-
-      if (held === 0) {
-        await doc.ref.update({status: "paid"});
-      } else {
-        // Leave the ride open so the withheld fares can still be paid once
-        // their disputes resolve. The bookings just paid are now "paid", so
-        // the next run will not pay them twice.
-        withheld += held;
-        logger.info(
-            `Ride ${ride.ride_id} partially paid; ${held} fare(s) withheld pending a dispute`);
-      }
-
-      paid++;
-      logger.info(`Ride ${ride.ride_id} paid out ${amount} (${payout.id})`);
-    } catch (error) {
-      // One driver's payout failing must not abandon the rest. The ride stays
-      // "complete" and will be retried on the next run.
-      failed++;
-      logger.error(`Payout failed for ride ${ride.ride_id}`, error);
-    }
-  }));
-
+  const c = await payDrivers({db: admin.firestore(), stripe: stripe()});
   await log("markRidePaid",
-      `${paid} paid, ${waiting} in cool-off, ${withheld} withheld for disputes, ${failed} failed`);
+      `${c.drivers} driver(s) paid ${c.cents} cents for ${c.bookings} fare(s); ` +
+      `${c.withheld} withheld for disputes, ${c.waiting} ride(s) not yet due, ` +
+      `${c.skipped} need review, ${c.failed} failed`);
 }
 
 module.exports = {markRideComplete, markRidePaid};

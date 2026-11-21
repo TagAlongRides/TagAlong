@@ -219,6 +219,29 @@ test("an inquiry closing is recorded without touching money", async () => {
   assert.deepStrictEqual(calls, []);
 });
 
+test("losing a dispute after payout reverses only that fare from the batch transfer", async () => {
+  resetStripe();
+  const rows = [booking()];
+  rows[0].data.payoutBatchId = "batch_1";
+  const db = fakeDb(rows);
+  db.collection = ((original) => (name) => name === "payoutBatches" ?
+    {doc: () => ({get: async () => ({exists: true, data: () => ({
+      transferId: "tr_batch",
+      shares: {booking_1: {cents: 2000, mode: "transfer"}},
+    })})})} :
+    original(name))(db.collection);
+
+  const result = await onDisputeClosed(db, {id: "dp_1", charge: "ch_123", status: "lost"});
+
+  assert.strictEqual(result.action, "reversed");
+  assert.strictEqual(calls.length, 1);
+  assert.strictEqual(calls[0][0], "transfers.createReversal");
+  assert.strictEqual(calls[0][1], "tr_batch");
+  // The batch transfer covers the driver's other rides too.
+  assert.strictEqual(calls[0][2].amount, 2000);
+  assert.strictEqual(rows[0].data.transferReversalId, "trr_123");
+});
+
 test("isWithheld covers exactly the states where money must not move", () => {
   assert.strictEqual(isWithheld({disputeStatus: "open"}), true);
   assert.strictEqual(isWithheld({disputeStatus: "lost"}), true);
