@@ -19,7 +19,14 @@ class _ColorDropDownButtonState extends State<ColorDropDownButton> {
     super.initState();
     _registerDriverViewModel = Provider.of<RegisterDriverViewModel>(context, listen: false);
     if (widget.initValue != null) {
-      _registerDriverViewModel.updateColor(color: widget.initValue!);
+      // Seeding notifies listeners, which the form is one of; doing that
+      // during initState rebuilds it mid-build. Wait for the frame to end.
+      // Make, model and color seed in that order, so each one's reset of the
+      // next field still lands before that field is seeded.
+      final initValue = widget.initValue!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _registerDriverViewModel.updateColor(color: initValue);
+      });
     }
   }
 
