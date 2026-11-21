@@ -42,13 +42,19 @@ class _RideStripePaymentScreenState extends State<RideStripePaymentScreen> {
     controller.addListener(update);
     super.initState();
     tagAlongUser = Provider.of<TagAlongUserViewModel>(context, listen: false).tagAlongUser!;
-    _savedCards = StripeCustomerRepository.instance.getPaymentMethod(tagAlongUser.stripeCustomerId);
+    _savedCards = StripeCustomerRepository.instance.getMyPaymentMethods();
     _savedCards.then((response) {
       final cards = response.data.data;
       if (!mounted || _defaultChosen) return;
       setState(() {
         _defaultChosen = true;
-        if (cards.isNotEmpty) _selectedMethodId = cards.first.id;
+        // The default card if the user has one, else their first card.
+        final defaultId = response.data.defaultPaymentMethod;
+        if (cards.any((card) => card.id == defaultId)) {
+          _selectedMethodId = defaultId;
+        } else if (cards.isNotEmpty) {
+          _selectedMethodId = cards.first.id;
+        }
       });
     }).catchError((Object error) {
       logger.log.fine(error);

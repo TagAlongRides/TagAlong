@@ -101,6 +101,17 @@ class HttpApiClient {
     }
   }
 
+  Future<dynamic> delete(String path,
+      {dynamic data, Map<String, String>? headers}) async {
+    try {
+      final response = await _dio.delete(path,
+          data: data, options: Options(headers: headers));
+      return response.data;
+    } on DioException catch (error) {
+      _errorHandle(error);
+    }
+  }
+
   void _errorHandle(DioException error) {
     // The server answered and told us what went wrong - surface that.
     if (error.type == DioExceptionType.badResponse && error.response?.data != null) {

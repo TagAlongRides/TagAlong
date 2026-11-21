@@ -45,6 +45,7 @@ class _Data {
     required this.data,
     required this.hasMore,
     required this.url,
+    this.defaultPaymentMethod,
   });
 
   final String object;
@@ -52,12 +53,17 @@ class _Data {
   final bool hasMore;
   final String url;
 
+  /// Id of the customer's default card. Only the `me/paymentMethods` route
+  /// sends it; null when there is no default or the older route answered.
+  final String? defaultPaymentMethod;
+
   factory _Data.fromJson(Map<String, dynamic> json) => _Data(
         object: json["object"],
         data: List<PaymentMethod>.from(
             json["data"].map((x) => PaymentMethod.fromJson(x))),
         hasMore: json["has_more"],
         url: json["url"],
+        defaultPaymentMethod: json["default_payment_method"] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -65,6 +71,7 @@ class _Data {
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
         "has_more": hasMore,
         "url": url,
+        if (defaultPaymentMethod != null) "default_payment_method": defaultPaymentMethod,
       };
 }
 
