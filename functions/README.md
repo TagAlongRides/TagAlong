@@ -99,11 +99,43 @@ the key first** and store the new one:
 firebase functions:secrets:set STRIPE_SECRET_KEY
 ```
 
+Store the Google Maps key that `/v1/places` uses for address autocomplete and
+validation in Offer Ride. Enable **Places API (New)** and **Geocoding API** on
+the project, then restrict the key to those two APIs. `api` will not deploy
+until this secret exists.
+
+```bash
+firebase functions:secrets:set GOOGLE_MAPS_API_KEY
+```
+
 ```bash
 firebase deploy --only "functions,firestore:indexes"
 ```
 
 Quote the `--only` list — PowerShell splits it on the comma otherwise.
+
+## Testing locally on a phone
+
+There is no staging project, so test backend changes against the Functions
+emulator before deploying. Put local secrets in `functions/.secret.local`
+(gitignored), one `NAME=value` per line, then:
+
+```powershell
+firebase emulators:start --only functions
+```
+
+On a **physical** Android phone over USB, forward its port 5001 to the PC
+(`10.0.2.2` only works inside the Android emulator) and point the app at it.
+Re-run the `adb reverse` after reconnecting the phone.
+
+```powershell
+adb reverse tcp:5001 tcp:5001
+flutter run --dart-define=TAGALONG_API_BASE_URL=http://127.0.0.1:5001/tagalong-1c5fb/us-central1/api
+```
+
+Debug builds allow plain `http` for this (`android/app/src/debug/AndroidManifest.xml`).
+Only Functions is emulated: Auth and Firestore are still production, so a ride
+posted while testing lands on the real ride board.
 
 ## Cutting over from the old backend
 

@@ -66,8 +66,6 @@ dependencies:
   # 3/25/22 - intl
   intl: ^0.20.2
 
-  # 4/12/22 - Added us_states - get US state data
-  us_states: ^1.1.5
   sign_in_with_apple: ^7.0.1
   flutter_stripe: ^11.5.0
   flutter_credit_card: ^4.1.0
